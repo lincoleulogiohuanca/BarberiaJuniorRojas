@@ -312,6 +312,18 @@ function yuniorrojas_crear_reserva(array $data)
     $culqi_token      = isset($data['culqi_token']) ? sanitize_text_field((string) $data['culqi_token']) : '';
     $reprogramar_id = isset($data['reprogramar_id']) ? (int) $data['reprogramar_id'] : 0;
     $actual         = null;
+    $productos_in   = isset($data['productos']) && is_array($data['productos']) ? $data['productos'] : array();
+
+    // Resolver líneas de productos (opcionales en checkout).
+    $lineas_productos = array();
+    $total_productos  = 0.0;
+    if ($reprogramar_id <= 0 && $productos_in !== array() && function_exists('yuniorrojas_normalizar_lineas_productos')) {
+        $lineas_productos = yuniorrojas_normalizar_lineas_productos($productos_in);
+        foreach ($lineas_productos as $line) {
+            $total_productos += ((float) $line['precio']) * ((int) $line['qty']);
+        }
+        $total_productos = round($total_productos, 2);
+    }
 
     // Resolver medio dinámico (CPT) → tipo de cobro.
     $medio = null;
@@ -478,15 +490,42 @@ function yuniorrojas_crear_reserva(array $data)
         return new WP_Error('agenda_bloqueada', 'El barbero no atiende esa fecha (feriado o bloqueo).', array('status' => 409));
     }
 
-    // Cobro Culqi ANTES de crear la reserva.
+    // Lock anti doble-reserva en el mismo slot (no aplica a reprogramar).
+    $slot_locked = false;
+    if ($reprogramar_id <= 0 && function_exists('yuniorrojas_slot_adquirir_lock')) {
+        $slot_locked = yuniorrojas_slot_adquirir_lock($barbero_id, $fecha, $hora);
+        if (!$slot_locked) {
+            return new WP_Error(
+                'horario_ocupado',
+                'Ese horario se está reservando ahora. Elige otro o espera unos segundos.',
+                array('status' => 409)
+            );
+        }
+        // Revalidar tras obtener el lock.
+        if (yuniorrojas_reserva_existe_conflicto($barbero_id, $fecha, $hora, $reprogramar_id, $duracion)) {
+            yuniorrojas_slot_liberar_lock($barbero_id, $fecha, $hora);
+            return new WP_Error('horario_ocupado', 'Ese horario ya no está disponible.', array('status' => 409));
+        }
+    }
+
+    // Cobro Culqi ANTES de crear la reserva (con refund si falla el insert).
     $culqi_charge_id = '';
     $culqi_outcome   = '';
+    $amount_centimos = 0;
+    try {
     if ($tipo_cobro === 'culqi' && $reprogramar_id <= 0 && $culqi_token !== '') {
         $amount = function_exists('yuniorrojas_precio_a_centimos')
             ? yuniorrojas_precio_a_centimos($precio)
             : (int) round(((float) preg_replace('/[^\d.]/', '', $precio)) * 100);
+        if ($total_productos > 0) {
+            $amount += (int) round($total_productos * 100);
+        }
+        $amount_centimos = $amount;
 
         if ($amount < 100) {
+            if ($slot_locked) {
+                yuniorrojas_slot_liberar_lock($barbero_id, $fecha, $hora);
+            }
             return new WP_Error('monto_invalido', 'El precio del servicio no es válido para cobro online.', array('status' => 400));
         }
 
@@ -507,12 +546,18 @@ function yuniorrojas_crear_reserva(array $data)
         ));
 
         if (is_wp_error($cargo)) {
+            if ($slot_locked) {
+                yuniorrojas_slot_liberar_lock($barbero_id, $fecha, $hora);
+            }
             return $cargo;
         }
 
         $culqi_charge_id = (string) ($cargo['id'] ?? '');
         $culqi_outcome   = (string) ($cargo['outcome']['type'] ?? 'venta_exitosa');
         if ($culqi_charge_id === '') {
+            if ($slot_locked) {
+                yuniorrojas_slot_liberar_lock($barbero_id, $fecha, $hora);
+            }
             return new WP_Error('culqi_cargo', 'El pago no devolvió un ID de cargo. Inténtalo de nuevo.', array('status' => 502));
         }
     }
@@ -559,6 +604,9 @@ function yuniorrojas_crear_reserva(array $data)
             true
         );
         if (is_wp_error($updated)) {
+            if ($slot_locked) {
+                yuniorrojas_slot_liberar_lock($barbero_id, $fecha, $hora);
+            }
             return $updated;
         }
         $reserva_id = $reprogramar_id;
@@ -573,8 +621,25 @@ function yuniorrojas_crear_reserva(array $data)
             true
         );
 
-        if (is_wp_error($reserva_id)) {
-            return $reserva_id;
+        if (is_wp_error($reserva_id) || !(int) $reserva_id) {
+            // Cobro OK pero falló crear reserva → refund inmediato.
+            if ($culqi_charge_id !== '' && function_exists('yuniorrojas_culqi_refund_cargo')) {
+                $refund = yuniorrojas_culqi_refund_cargo($culqi_charge_id, $amount_centimos, 'solicitud_comprador');
+                if (is_wp_error($refund) && function_exists('error_log')) {
+                    error_log('[yuniorrojas] Refund tras insert fallido charge=' . $culqi_charge_id . ' err=' . $refund->get_error_message());
+                }
+            }
+            if ($slot_locked) {
+                yuniorrojas_slot_liberar_lock($barbero_id, $fecha, $hora);
+            }
+            if (is_wp_error($reserva_id)) {
+                return new WP_Error(
+                    'reserva_insert',
+                    'El pago pudo haberse procesado pero no se guardó la cita. Si ves un cargo, contacta al estudio con el comprobante; se reembolsará automáticamente cuando sea posible.',
+                    array('status' => 500, 'previous' => $reserva_id->get_error_message())
+                );
+            }
+            return new WP_Error('reserva_insert', 'No se pudo crear la reserva. Inténtalo de nuevo.', array('status' => 500));
         }
     }
 
@@ -613,6 +678,13 @@ function yuniorrojas_crear_reserva(array $data)
         $metas['culqi_charge_id']  = $culqi_charge_id;
         $metas['culqi_outcome']    = $culqi_outcome;
         $metas['pago_proveedor']   = 'culqi';
+        if ($amount_centimos > 0) {
+            $metas['culqi_amount_centimos'] = (string) $amount_centimos;
+        }
+    }
+    if ($lineas_productos !== array()) {
+        $metas['productos']        = wp_json_encode($lineas_productos);
+        $metas['total_productos']  = (string) $total_productos;
     }
 
     if ($reprogramar_id <= 0) {
@@ -637,6 +709,11 @@ function yuniorrojas_crear_reserva(array $data)
     }
 
     return (int) $reserva_id;
+    } finally {
+        if ($slot_locked && function_exists('yuniorrojas_slot_liberar_lock')) {
+            yuniorrojas_slot_liberar_lock($barbero_id, $fecha, $hora);
+        }
+    }
 }
 
 /**
@@ -749,6 +826,11 @@ function yuniorrojas_cancelar_reserva(int $reserva_id, int $user_id)
     }
 
     update_post_meta($reserva_id, yuniorrojas_reserva_meta_key('estado'), 'cancelada');
+
+    // Admin: reembolso Culqi si hay cargo (cliente solo cancela estudio, sin charge).
+    if (user_can($user_id, 'manage_options') && function_exists('yuniorrojas_reserva_refund_culqi_si_aplica')) {
+        yuniorrojas_reserva_refund_culqi_si_aplica($reserva_id, 'solicitud_comprador');
+    }
 
     if (function_exists('yuniorrojas_notificar_reserva')) {
         yuniorrojas_notificar_reserva($reserva_id, 'cancelada');

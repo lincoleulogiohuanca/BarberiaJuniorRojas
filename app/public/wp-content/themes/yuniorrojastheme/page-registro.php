@@ -21,6 +21,8 @@ $telefono = '';
 if (!$ya_logueado && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['yuniorrojas_registro_nonce'])) {
     if (!yuniorrojas_verificar_nonce('yuniorrojas_registro_nonce', 'yuniorrojas_registro')) {
         $errores[] = 'La solicitud no es válida. Recarga la página e inténtalo de nuevo.';
+    } elseif (function_exists('yuniorrojas_rate_limit_ok') && !yuniorrojas_rate_limit_ok('registro', 5, 30 * MINUTE_IN_SECONDS)) {
+        $errores[] = 'Demasiados intentos de registro. Espera un momento e inténtalo de nuevo.';
     } else {
         $nombre    = sanitize_text_field(wp_unslash((string) ($_POST['nombre'] ?? '')));
         $email     = sanitize_email(wp_unslash((string) ($_POST['email'] ?? '')));

@@ -104,6 +104,58 @@ function yuniorrojas_productos_opciones(): array
 }
 
 /**
+ * Normaliza líneas de producto desde checkout (API / form).
+ *
+ * @param array<int, mixed> $raw
+ * @return list<array{id:int,nombre:string,precio:float,qty:int}>
+ */
+function yuniorrojas_normalizar_lineas_productos(array $raw): array
+{
+    $lines = array();
+    foreach ($raw as $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+        $pid = absint($row['id'] ?? 0);
+        $qty = max(1, min(20, absint($row['qty'] ?? 1)));
+        if ($pid <= 0 || get_post_type($pid) !== YUNIORROJAS_CPT_PRODUCTOS || get_post_status($pid) !== 'publish') {
+            continue;
+        }
+        $precio = (float) str_replace(',', '.', (string) get_post_meta($pid, '_jr_producto_precio', true));
+        if ($precio < 0) {
+            $precio = 0;
+        }
+        $lines[] = array(
+            'id'     => $pid,
+            'nombre' => get_the_title($pid),
+            'precio' => $precio,
+            'qty'    => $qty,
+        );
+    }
+    return $lines;
+}
+
+/**
+ * Productos publicables en checkout (array indexado para JSON).
+ *
+ * @return list<array{id:int,nombre:string,precio:float,precio_label:string}>
+ */
+function yuniorrojas_productos_checkout_lista(): array
+{
+    $out = array();
+    foreach (yuniorrojas_productos_opciones() as $p) {
+        $precio = (float) str_replace(',', '.', (string) ($p['precio'] ?? '0'));
+        $out[]  = array(
+            'id'           => (int) $p['id'],
+            'nombre'       => (string) $p['nombre'],
+            'precio'       => $precio,
+            'precio_label' => 'S/. ' . number_format($precio, 2, '.', ''),
+        );
+    }
+    return $out;
+}
+
+/**
  * Líneas de productos de una reserva.
  *
  * @return list<array{id:int,nombre:string,precio:float,qty:int}>

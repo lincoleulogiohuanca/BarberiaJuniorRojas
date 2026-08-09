@@ -44,7 +44,7 @@ function yuniorrojas_pagos_defaults(): array
 }
 
 /**
- * Si las option están vacías, importa desde wp-config (constantes) o seeds de prueba una sola vez.
+ * Si las option están vacías, importa SOLO desde constantes de wp-config (nunca llaves embebidas).
  */
 function yuniorrojas_culqi_hidratar_llaves_si_vacio(): void
 {
@@ -63,24 +63,20 @@ function yuniorrojas_culqi_hidratar_llaves_si_vacio(): void
     $secret  = trim((string) ($saved['culqi_secret_key'] ?? ''));
     $changed = false;
 
+    // Solo constantes de entorno / wp-config — nunca semillas test en código.
     if ($public === '' && defined('YUNIORROJAS_CULQI_PUBLIC_KEY') && (string) YUNIORROJAS_CULQI_PUBLIC_KEY !== '') {
-        $saved['culqi_public_key'] = (string) YUNIORROJAS_CULQI_PUBLIC_KEY;
+        $saved['culqi_public_key'] = trim((string) YUNIORROJAS_CULQI_PUBLIC_KEY);
         $public  = $saved['culqi_public_key'];
         $changed = true;
     }
     if ($secret === '' && defined('YUNIORROJAS_CULQI_SECRET_KEY') && (string) YUNIORROJAS_CULQI_SECRET_KEY !== '') {
-        $saved['culqi_secret_key'] = (string) YUNIORROJAS_CULQI_SECRET_KEY;
+        $saved['culqi_secret_key'] = trim((string) YUNIORROJAS_CULQI_SECRET_KEY);
         $secret  = $saved['culqi_secret_key'];
         $changed = true;
     }
 
-    // Migración local: llaves test que estaban en wp-config (solo si sigue vacío).
-    if ($public === '' && $secret === '' && !get_option('yuniorrojas_culqi_keys_imported', false)) {
-        $saved['culqi_public_key'] = 'pk_test_AXEwZuPbByAfn7UE';
-        $saved['culqi_secret_key'] = 'sk_test_UpbfImXXzu6YDQq5';
-        $changed = true;
-        update_option('yuniorrojas_culqi_keys_imported', 1, false);
-    }
+    // Limpieza: si en un deploy previo se importaron test keys hardcodeadas y el admin no las tocó,
+    // no las reintroducimos; el admin debe pegar live/test desde el panel Culqi.
 
     if ($changed) {
         update_option('yuniorrojas_pagos_settings', $saved, false);
@@ -398,4 +394,123 @@ function yuniorrojas_culqi_mensaje_error(array $data, int $http_code = 0): strin
     }
 
     return 'No se pudo completar el pago con tarjeta. Intenta de nuevo o elige otro método.';
+}
+
+/**
+ * Reembolso total (o parcial) de un cargo Culqi.
+ *
+ * @return array<string,mixed>|WP_Error
+ */
+function yuniorrojas_culqi_refund_cargo(string $charge_id, int $amount_centimos = 0, string $reason = 'solicitud_comprador')
+{
+    $charge_id = sanitize_text_field($charge_id);
+    if ($charge_id === '' || !preg_match('/^chr_(test|live)_/', $charge_id)) {
+        return new WP_Error('culqi_refund', 'ID de cargo Culqi no válido.', array('status' => 400));
+    }
+    if (!yuniorrojas_culqi_esta_configurado()) {
+        return new WP_Error('culqi_no_config', 'Culqi no está configurado para reembolsar.', array('status' => 503));
+    }
+
+    $allowed_reasons = array(
+        'duplicado',
+        'fraudulento',
+        'solicitud_comprador',
+    );
+    if (!in_array($reason, $allowed_reasons, true)) {
+        $reason = 'solicitud_comprador';
+    }
+
+    $body = array(
+        'amount'    => $amount_centimos > 0 ? $amount_centimos : null,
+        'charge_id' => $charge_id,
+        'reason'    => $reason,
+    );
+    // Sin amount = reembolso total en Culqi API v2.
+    if ($amount_centimos <= 0) {
+        unset($body['amount']);
+    }
+
+    $response = wp_remote_post(
+        'https://api.culqi.com/v2/refunds',
+        array(
+            'timeout' => 45,
+            'headers' => array(
+                'Authorization' => 'Bearer ' . yuniorrojas_culqi_secret_key(),
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json',
+            ),
+            'body'    => wp_json_encode($body),
+        )
+    );
+
+    if (is_wp_error($response)) {
+        return new WP_Error(
+            'culqi_red',
+            'No pudimos conectar con Culqi para reembolsar.',
+            array('status' => 502)
+        );
+    }
+
+    $code = (int) wp_remote_retrieve_response_code($response);
+    $raw  = (string) wp_remote_retrieve_body($response);
+    $data = json_decode($raw, true);
+    if (!is_array($data)) {
+        $data = array();
+    }
+
+    if ($code >= 200 && $code < 300 && !empty($data['id'])) {
+        return $data;
+    }
+
+    $msg = isset($data['merchant_message'])
+        ? (string) $data['merchant_message']
+        : 'No se pudo reembolsar el cargo en Culqi.';
+
+    return new WP_Error(
+        'culqi_refund',
+        $msg,
+        array('status' => $code >= 400 ? $code : 502, 'culqi' => $data)
+    );
+}
+
+/**
+ * Intenta reembolsar el cargo de una reserva y guarda meta.
+ *
+ * @return true|WP_Error
+ */
+function yuniorrojas_reserva_refund_culqi_si_aplica(int $reserva_id, string $motivo = 'solicitud_comprador')
+{
+    $reserva_id = absint($reserva_id);
+    if ($reserva_id <= 0 || !function_exists('yuniorrojas_reserva_meta_key')) {
+        return new WP_Error('reserva', 'Reserva no válida.');
+    }
+
+    $ya = (string) get_post_meta($reserva_id, yuniorrojas_reserva_meta_key('culqi_refund_id'), true);
+    if ($ya !== '') {
+        return true;
+    }
+
+    $charge_id = (string) get_post_meta($reserva_id, yuniorrojas_reserva_meta_key('culqi_charge_id'), true);
+    if ($charge_id === '' || !function_exists('yuniorrojas_culqi_refund_cargo')) {
+        return true; // Nada que reembolsar.
+    }
+
+    $result = yuniorrojas_culqi_refund_cargo($charge_id, 0, $motivo);
+    if (is_wp_error($result)) {
+        update_post_meta(
+            $reserva_id,
+            yuniorrojas_reserva_meta_key('culqi_refund_error'),
+            $result->get_error_message()
+        );
+        if (function_exists('error_log')) {
+            error_log('[yuniorrojas] Culqi refund falló reserva ' . $reserva_id . ': ' . $result->get_error_message());
+        }
+        return $result;
+    }
+
+    update_post_meta($reserva_id, yuniorrojas_reserva_meta_key('culqi_refund_id'), (string) ($result['id'] ?? ''));
+    update_post_meta($reserva_id, yuniorrojas_reserva_meta_key('culqi_refund_at'), current_time('mysql'));
+    delete_post_meta($reserva_id, yuniorrojas_reserva_meta_key('culqi_refund_error'));
+
+    return true;
 }

@@ -93,6 +93,9 @@ function yuniorrojas_resena_formatear(int $resena_id, int $viewer_id = 0): ?arra
         return null;
     }
 
+    // En listados públicos solo se formatea published (except own pending via caller).
+    // Aquí permitimos pending para formatear mi reseña en el formulario.
+
     $rating = (int) get_post_meta($resena_id, yuniorrojas_resena_meta_key('rating'), true);
     $rating = max(1, min(5, $rating > 0 ? $rating : 5));
 
@@ -115,10 +118,11 @@ function yuniorrojas_resena_formatear(int $resena_id, int $viewer_id = 0): ?arra
         'nombre'      => $nombre,
         'texto'       => (string) $post->post_content,
         'fecha'       => get_the_date('d M Y', $post),
+        'status'      => (string) $post->post_status,
         'likes'       => count($likes),
         'liked'       => $liked,
         'es_propia'   => $es_propia,
-        'puede_like'  => $viewer_id > 0 && !$es_propia,
+        'puede_like'  => $viewer_id > 0 && !$es_propia && $post->post_status === 'publish',
     );
 }
 
@@ -231,6 +235,17 @@ function yuniorrojas_servicio_resenas(int $servicio_id, int $user_id = 0): array
 
     $total = count($items);
 
+    // Mi reseña puede estar pendiente de moderación (no sale en el listado público).
+    if ($mi === null && $user_id > 0) {
+        $own_id = yuniorrojas_servicio_resena_del_usuario($servicio_id, $user_id);
+        if ($own_id > 0) {
+            $own = yuniorrojas_resena_formatear($own_id, $user_id);
+            if ($own !== null) {
+                $mi = $own;
+            }
+        }
+    }
+
     return array(
         'items'     => $items,
         'promedio'  => $total > 0 ? round($suma / $total, 1) : 0.0,
@@ -306,9 +321,16 @@ function yuniorrojas_servicio_guardar_resena(int $servicio_id, int $user_id, int
     }
 
     $existente = yuniorrojas_servicio_resena_del_usuario($servicio_id, $user_id);
+    $post_status = 'pending'; // Moderación: las nuevas quedan pendientes.
+    if ($existente > 0) {
+        $st = get_post_status($existente);
+        // Si ya estaba publicada, los edites del autor se mantienen publicados.
+        $post_status = ($st === 'publish') ? 'publish' : 'pending';
+    }
+
     $postarr   = array(
         'post_type'    => YUNIORROJAS_CPT_RESENAS,
-        'post_status'  => 'publish',
+        'post_status'  => $post_status,
         'post_title'   => $nombre,
         'post_content' => $texto,
         'post_author'  => $user_id,
@@ -332,12 +354,17 @@ function yuniorrojas_servicio_guardar_resena(int $servicio_id, int $user_id, int
     $resena = yuniorrojas_resena_formatear($resena_id, $user_id);
     $stats  = yuniorrojas_servicio_resenas($servicio_id, $user_id);
 
+    $msg = $existente > 0
+        ? ($post_status === 'publish'
+            ? 'Reseña actualizada. Gracias por tu opinión.'
+            : 'Reseña actualizada. Seguirá visible tras la moderación del estudio.')
+        : 'Reseña enviada. El estudio la publicará tras revisarla.';
+
     return array(
         'ok'       => true,
-        'message'  => $existente > 0
-            ? 'Reseña actualizada. Gracias por tu opinión.'
-            : 'Reseña publicada. Gracias por tu opinión.',
+        'message'  => $msg,
         'resena'   => $resena,
+        'pending'  => $post_status !== 'publish',
         'promedio' => $stats['promedio'],
         'total'    => $stats['total'],
     );
@@ -413,6 +440,13 @@ function yuniorrojas_rest_listar_resenas_servicio(WP_REST_Request $request)
  */
 function yuniorrojas_rest_guardar_resena_servicio(WP_REST_Request $request)
 {
+    if (function_exists('yuniorrojas_rate_limit')) {
+        $rl = yuniorrojas_rate_limit('rest_resena_post', 12, 15 * MINUTE_IN_SECONDS);
+        if (is_wp_error($rl)) {
+            return $rl;
+        }
+    }
+
     $params = $request->get_json_params();
     if (!is_array($params)) {
         $params = $request->get_params();

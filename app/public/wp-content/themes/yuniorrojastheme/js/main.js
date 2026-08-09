@@ -429,6 +429,102 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Servicios: filtros + paginación (4 por página)
+  const serviciosFilterRoot = document.querySelector("[data-servicios-filters]");
+  const serviciosRoot = document.querySelector("[data-servicios-root]");
+
+  if (serviciosFilterRoot && serviciosRoot && window.yuniorrojasTheme && yuniorrojasTheme.restServicios) {
+    let serviciosRequestId = 0;
+    let serviciosState = {
+      filter: "*",
+      group: "tag",
+      page: 1,
+    };
+
+    const loadServicios = async () => {
+      const current = ++serviciosRequestId;
+      serviciosRoot.classList.add("is-loading");
+
+      const params = new URLSearchParams();
+      params.set("page", String(serviciosState.page));
+
+      if (serviciosState.filter && serviciosState.filter !== "*") {
+        if (serviciosState.group === "tag") {
+          params.set("etiqueta", serviciosState.filter);
+        } else {
+          params.set("categoria", serviciosState.filter);
+        }
+      }
+
+      const url = `${yuniorrojasTheme.restServicios}?${params.toString()}`;
+
+      try {
+        const response = await fetch(url, {
+          headers: {
+            Accept: "application/json",
+            "X-WP-Nonce": yuniorrojasTheme.restNonce || "",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("No se pudo cargar los servicios");
+        }
+
+        const data = await response.json();
+        if (current !== serviciosRequestId) {
+          return;
+        }
+
+        serviciosRoot.innerHTML = data.html || "";
+        serviciosState.page = data.page || serviciosState.page;
+      } catch (error) {
+        if (current === serviciosRequestId) {
+          serviciosRoot.innerHTML =
+            '<p class="servicios-grid__empty">No se pudo cargar los servicios.</p>';
+        }
+      } finally {
+        if (current === serviciosRequestId) {
+          serviciosRoot.classList.remove("is-loading");
+        }
+      }
+    };
+
+    serviciosFilterRoot.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-filter]");
+      if (!button) {
+        return;
+      }
+
+      serviciosState.filter = button.getAttribute("data-filter") || "*";
+      serviciosState.group = button.classList.contains("servicios-filters__tag")
+        ? "tag"
+        : "cat";
+      serviciosState.page = 1;
+
+      serviciosFilterRoot.querySelectorAll("[data-filter]").forEach((el) => {
+        el.classList.toggle("is-active", el === button);
+      });
+
+      loadServicios();
+    });
+
+    serviciosRoot.addEventListener("click", (event) => {
+      const pageBtn = event.target.closest("[data-servicios-page]");
+      if (!pageBtn || pageBtn.disabled) {
+        return;
+      }
+
+      const nextPage = Number(pageBtn.getAttribute("data-servicios-page") || "1");
+      if (!Number.isFinite(nextPage) || nextPage < 1 || nextPage === serviciosState.page) {
+        return;
+      }
+
+      serviciosState.page = nextPage;
+      loadServicios();
+      serviciosRoot.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
   // Reserva: pasos experiencia → cita (UI)
   const reservaRoot = document.querySelector("[data-reserva]");
 
@@ -581,6 +677,47 @@ document.addEventListener("DOMContentLoaded", () => {
       esEstudio: false,
       voucherDownloaded: false,
       serviciosRedirectTimer: 0,
+    };
+
+    const getSelectedProductos = () => {
+      /** @type {{id:number,qty:number}[]} */
+      const lines = [];
+      reservaRoot.querySelectorAll("[data-producto-check]").forEach((el) => {
+        if (!(el instanceof HTMLInputElement) || !el.checked) {
+          return;
+        }
+        const id = Number.parseInt(el.getAttribute("data-producto-id") || "0", 10) || 0;
+        if (id <= 0) {
+          return;
+        }
+        const qtyInput = reservaRoot.querySelector(
+          `[data-producto-qty="${id}"]`
+        );
+        let qty = 1;
+        if (qtyInput instanceof HTMLInputElement) {
+          qty = Math.max(1, Math.min(10, Number.parseInt(qtyInput.value || "1", 10) || 1));
+        }
+        lines.push({ id, qty });
+      });
+      return lines;
+    };
+
+    const getProductosTotalCentimos = () => {
+      let total = 0;
+      reservaRoot.querySelectorAll("[data-producto-check]").forEach((el) => {
+        if (!(el instanceof HTMLInputElement) || !el.checked) {
+          return;
+        }
+        const price = Number.parseFloat(el.getAttribute("data-producto-precio") || "0") || 0;
+        const id = el.getAttribute("data-producto-id") || "";
+        const qtyInput = reservaRoot.querySelector(`[data-producto-qty="${id}"]`);
+        let qty = 1;
+        if (qtyInput instanceof HTMLInputElement) {
+          qty = Math.max(1, Math.min(10, Number.parseInt(qtyInput.value || "1", 10) || 1));
+        }
+        total += Math.round(price * 100) * qty;
+      });
+      return total;
     };
 
     const CITA_STORAGE_KEY = "jr_reserva_cita_v1";
@@ -1449,13 +1586,35 @@ document.addEventListener("DOMContentLoaded", () => {
       if (checkoutSubtotal instanceof HTMLElement) {
         checkoutSubtotal.textContent = money;
       }
+      const prodCents = getProductosTotalCentimos();
+      const servCents = parsePrecioACentimos(precioRaw);
+      const totalCents = servCents + prodCents;
+      const totalMoney =
+        "S/. " + (totalCents / 100).toFixed(2);
+      const prodEl = reservaRoot.querySelector("[data-checkout-productos-total]");
+      if (prodEl instanceof HTMLElement) {
+        prodEl.textContent = "S/. " + (prodCents / 100).toFixed(2);
+      }
       if (checkoutTotal instanceof HTMLElement) {
-        checkoutTotal.textContent = money;
+        checkoutTotal.textContent = totalMoney;
       }
       if (yapeMonto instanceof HTMLElement) {
-        yapeMonto.textContent = money;
+        yapeMonto.textContent = totalMoney;
       }
     };
+
+    reservaRoot.addEventListener("change", (event) => {
+      const t = event.target;
+      if (!(t instanceof Element)) {
+        return;
+      }
+      if (
+        t.matches("[data-producto-check]") ||
+        t.matches("[data-producto-qty]")
+      ) {
+        syncCheckoutSummary();
+      }
+    });
 
     const parseHoraToMinutes = (label) => {
       const match = String(label || "").match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
@@ -2220,7 +2379,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const getMontoCheckoutCentimos = () => {
       const servicio = getSelectedServicio();
-      return parsePrecioACentimos(servicio?.getAttribute("data-precio") || "0");
+      const base = parsePrecioACentimos(servicio?.getAttribute("data-precio") || "0");
+      return base + getProductosTotalCentimos();
     };
 
     /**
@@ -2613,6 +2773,7 @@ document.addEventListener("DOMContentLoaded", () => {
         codigo_operacion:
           codigoInput instanceof HTMLInputElement ? codigoInput.value.trim() : "",
         culqi_token: culqiToken || "",
+        productos: JSON.stringify(getSelectedProductos()),
       };
     };
 
@@ -4309,11 +4470,14 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
           if (data?.resena) {
-            prependOrUpdateItem(data.resena);
+            // Solo listar en público si ya está publicada.
+            if (!data.pending && data.resena.status !== "pending") {
+              prependOrUpdateItem(data.resena);
+            }
           }
           updateSummary(data?.promedio ?? 0, data?.total ?? 0);
           setStatus(
-            data?.message || "Reseña publicada. Gracias por tu opinión.",
+            data?.message || "Reseña enviada. Gracias por tu opinión.",
             "ok"
           );
           if (submitBtn instanceof HTMLButtonElement) {

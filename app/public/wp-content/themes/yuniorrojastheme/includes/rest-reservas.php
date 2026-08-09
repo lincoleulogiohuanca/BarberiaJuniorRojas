@@ -239,13 +239,21 @@ function yuniorrojas_rest_subir_comprobante_desde_request(WP_REST_Request $reque
         return 0;
     }
 
+    $max = defined('YUNIORROJAS_COMPROBANTE_MAX_BYTES')
+        ? (int) YUNIORROJAS_COMPROBANTE_MAX_BYTES
+        : 4 * 1024 * 1024;
+    $size = isset($file['size']) ? (int) $file['size'] : 0;
+    if ($size <= 0 || $size > $max) {
+        return 0;
+    }
+
     require_once ABSPATH . 'wp-admin/includes/file.php';
     require_once ABSPATH . 'wp-admin/includes/media.php';
     require_once ABSPATH . 'wp-admin/includes/image.php';
 
     $overrides = array(
-        'test_form' => false,
-        'mimes'     => array(
+        'test_form'                => false,
+        'mimes'                    => array(
             'jpg|jpeg|jpe' => 'image/jpeg',
             'png'          => 'image/png',
             'webp'         => 'image/webp',
@@ -284,10 +292,28 @@ function yuniorrojas_rest_subir_comprobante_desde_request(WP_REST_Request $reque
  */
 function yuniorrojas_rest_crear_reserva(WP_REST_Request $request)
 {
+    if (function_exists('yuniorrojas_rate_limit')) {
+        $rl = yuniorrojas_rate_limit('rest_reservas_post', 8, 10 * MINUTE_IN_SECONDS);
+        if (is_wp_error($rl)) {
+            return $rl;
+        }
+    }
+
     $reprogramar_id = (int) $request->get_param('reprogramar_id');
     $comprobante_id = yuniorrojas_rest_subir_comprobante_desde_request($request);
     if ($comprobante_id <= 0) {
         $comprobante_id = absint($request->get_param('comprobante_id'));
+    }
+
+    $productos_param = $request->get_param('productos');
+    $productos       = array();
+    if (is_array($productos_param)) {
+        $productos = $productos_param;
+    } elseif (is_string($productos_param) && $productos_param !== '') {
+        $decoded = json_decode(wp_unslash($productos_param), true);
+        if (is_array($decoded)) {
+            $productos = $decoded;
+        }
     }
 
     $result = yuniorrojas_crear_reserva(array(
@@ -306,6 +332,7 @@ function yuniorrojas_rest_crear_reserva(WP_REST_Request $request)
         'comprobante_id'   => $comprobante_id,
         'culqi_token'      => (string) $request->get_param('culqi_token'),
         'medio_pago_id'    => absint($request->get_param('medio_pago_id')),
+        'productos'        => $productos,
     ));
 
     if (is_wp_error($result)) {
@@ -393,7 +420,7 @@ function yuniorrojas_rest_subir_comprobante_reserva(WP_REST_Request $request)
     if ($attach_id <= 0) {
         return new WP_Error(
             'comprobante',
-            'Selecciona una imagen del comprobante (JPG, PNG o WEBP).',
+            'Selecciona una imagen del comprobante (JPG, PNG o WEBP, máx. 4 MB).',
             array('status' => 400)
         );
     }

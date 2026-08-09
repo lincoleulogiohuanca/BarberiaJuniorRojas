@@ -1,14 +1,8 @@
 <?php
 /**
- * Fallback de listado de servicios (si no se usa la plantilla Page).
+ * Fallback de listado de servicios (posts page / home.php).
+ * Antes mostraba todos los servicios sin filtros ni paginación.
  */
 get_header();
-?>
-
-<main class="contenedor seccion">
-    <h1 class="section-title">Servicios</h1>
-    <?php yuniorrojas_lista_servicios(); ?>
-</main>
-
-<?php
+get_template_part('template-parts/listado', 'servicios');
 get_footer();

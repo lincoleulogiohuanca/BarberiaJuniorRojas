@@ -67,6 +67,10 @@ function yuniorrojas_admin_accion_reserva(int $reserva_id, string $accion)
             if (function_exists('yuniorrojas_admin_notif_marcar')) {
                 yuniorrojas_admin_notif_marcar('pago_' . $reserva_id);
             }
+            // Reembolso Culqi automático si hubo cargo online.
+            if (function_exists('yuniorrojas_reserva_refund_culqi_si_aplica')) {
+                yuniorrojas_reserva_refund_culqi_si_aplica($reserva_id, 'solicitud_comprador');
+            }
             // Liberar hueco para lista de espera.
             $bid = (int) ($reserva['barbero_id'] ?? 0);
             $fecha = (string) ($reserva['fecha'] ?? '');

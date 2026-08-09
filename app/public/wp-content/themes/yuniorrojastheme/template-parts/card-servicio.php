@@ -15,7 +15,7 @@ if ($descripcion === '' && is_string($slogan) && $slogan !== '') {
     $descripcion = $slogan;
 }
 if ($descripcion === '') {
-    $descripcion = wp_trim_words(wp_strip_all_tags((string) get_the_content()), 32);
+    $descripcion = wp_trim_words(wp_strip_all_tags((string) get_the_content()), 40);
 }
 
 if ($variante === 'home') :
@@ -68,6 +68,10 @@ endif;
         <?php if (yuniorrojas_puede_reservar_en_front()) : ?>
             <a class="servicio-card__cta" href="<?php echo esc_url(yuniorrojas_url_reservar(array('servicio' => (int) get_the_ID()))); ?>">
                 Reservar cita
+            </a>
+        <?php else : ?>
+            <a class="servicio-card__cta" href="<?php the_permalink(); ?>">
+                Ver servicio
             </a>
         <?php endif; ?>
     </div>

@@ -8,25 +8,86 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * @param int    $cantidad
- * @param bool   $mostrar_precio
- * @param string $variante        default|home|listado
+ * Listado de servicios. En variante "listado": 4 por página + filtros.
+ *
+ * @param int         $cantidad
+ * @param bool        $mostrar_precio
+ * @param string      $variante        default|home|listado
+ * @param string|null $categoria       slug categoria_servicio
+ * @param string|null $etiqueta        slug etiqueta_servicio
+ * @param int         $pagina
+ * @return array{total:int,pages:int,page:int}
  */
-function yuniorrojas_lista_servicios($cantidad = -1, $mostrar_precio = true, string $variante = 'default'): void
-{
+function yuniorrojas_lista_servicios(
+    $cantidad = -1,
+    $mostrar_precio = true,
+    string $variante = 'default',
+    $categoria = null,
+    $etiqueta = null,
+    int $pagina = 1
+): array {
+    $paginado = ($variante === 'listado');
+
+    if ($paginado) {
+        $cantidad = 4;
+        $pagina   = max(1, $pagina);
+    } else {
+        $pagina = 1;
+    }
+
     $args = array(
-        'post_type'      => YUNIORROJAS_CPT_SERVICIOS,
-        'posts_per_page' => $cantidad,
-        'post_status'    => 'publish',
-        'orderby'        => 'menu_order',
-        'order'          => 'ASC',
+        'post_type'           => YUNIORROJAS_CPT_SERVICIOS,
+        'posts_per_page'      => $paginado ? 4 : $cantidad,
+        'post_status'         => 'publish',
+        'orderby'             => 'menu_order title',
+        'order'               => 'ASC',
+        'ignore_sticky_posts' => true,
+        'no_found_rows'       => false,
     );
 
+    if ($paginado) {
+        $args['paged'] = $pagina;
+    }
+
+    $tax_query = array();
+
+    if ($paginado && $categoria) {
+        $tax_query[] = array(
+            'taxonomy' => 'categoria_servicio',
+            'field'    => 'slug',
+            'terms'    => $categoria,
+        );
+    }
+
+    if ($paginado && $etiqueta) {
+        $tax_query[] = array(
+            'taxonomy' => 'etiqueta_servicio',
+            'field'    => 'slug',
+            'terms'    => $etiqueta,
+        );
+    }
+
+    if (count($tax_query) > 1) {
+        $tax_query['relation'] = 'AND';
+        $args['tax_query']     = $tax_query;
+    } elseif (count($tax_query) === 1) {
+        $args['tax_query'] = $tax_query;
+    }
+
     $servicios = new WP_Query($args);
+    $total     = (int) $servicios->found_posts;
+    $pages     = $paginado ? max(1, (int) $servicios->max_num_pages) : 1;
 
     if (!$servicios->have_posts()) {
-        echo '<p class="servicios-grid__empty">Aún no hay servicios publicados.</p>';
-        return;
+        $msg = $paginado
+            ? 'No hay servicios para este filtro.'
+            : 'Aún no hay servicios publicados.';
+        echo '<p class="servicios-grid__empty">' . esc_html($msg) . '</p>';
+        return array(
+            'total' => 0,
+            'pages' => 1,
+            'page'  => $pagina,
+        );
     }
 
     $grid_mods = array(
@@ -40,9 +101,25 @@ function yuniorrojas_lista_servicios($cantidad = -1, $mostrar_precio = true, str
 
     $card_mod = $variante === 'home' ? ' servicio-card--home' : ($variante === 'listado' ? ' servicio-card--listado' : '');
     ?>
-    <ul class="<?php echo esc_attr($grid_class); ?>">
+    <ul class="<?php echo esc_attr($grid_class); ?>"<?php echo $paginado ? ' data-servicios-grid' : ''; ?>>
         <?php while ($servicios->have_posts()) : $servicios->the_post(); ?>
-            <li class="servicio-card<?php echo esc_attr($card_mod); ?>">
+            <?php
+            $filters = array();
+            if ($paginado) {
+                $cats = wp_get_post_terms(get_the_ID(), 'categoria_servicio', array('fields' => 'slugs'));
+                $tags = wp_get_post_terms(get_the_ID(), 'etiqueta_servicio', array('fields' => 'slugs'));
+                $filters = array_merge(
+                    is_wp_error($cats) ? array() : $cats,
+                    is_wp_error($tags) ? array() : $tags
+                );
+            }
+            ?>
+            <li
+                class="servicio-card<?php echo esc_attr($card_mod); ?>"
+                <?php if ($filters !== array()) : ?>
+                    data-filters="<?php echo esc_attr(implode(' ', $filters)); ?>"
+                <?php endif; ?>
+            >
                 <?php get_template_part('template-parts/card', 'servicio', array(
                     'mostrar_precio' => $mostrar_precio,
                     'variante'       => $variante === 'default' ? 'listado' : $variante,
@@ -51,6 +128,62 @@ function yuniorrojas_lista_servicios($cantidad = -1, $mostrar_precio = true, str
         <?php endwhile; ?>
         <?php wp_reset_postdata(); ?>
     </ul>
+    <?php
+
+    if ($paginado) {
+        yuniorrojas_servicios_paginacion($pagina, $pages);
+    }
+
+    return array(
+        'total' => $total,
+        'pages' => $pages,
+        'page'  => $pagina,
+    );
+}
+
+/**
+ * Controles de paginación del listado de servicios.
+ */
+function yuniorrojas_servicios_paginacion(int $pagina, int $pages): void
+{
+    if ($pages <= 1) {
+        return;
+    }
+    ?>
+    <nav class="servicios-pagination" data-servicios-pagination aria-label="<?php esc_attr_e('Paginación de servicios', YUNIORROJAS_TEXT_DOMAIN); ?>">
+        <button
+            type="button"
+            class="servicios-pagination__btn"
+            data-servicios-page="<?php echo esc_attr((string) max(1, $pagina - 1)); ?>"
+            <?php disabled($pagina <= 1); ?>
+        >
+            ←
+        </button>
+
+        <ul class="servicios-pagination__pages">
+            <?php for ($i = 1; $i <= $pages; $i++) : ?>
+                <li>
+                    <button
+                        type="button"
+                        class="servicios-pagination__page<?php echo $i === $pagina ? ' is-active' : ''; ?>"
+                        data-servicios-page="<?php echo esc_attr((string) $i); ?>"
+                        aria-current="<?php echo $i === $pagina ? 'page' : 'false'; ?>"
+                    >
+                        <?php echo esc_html((string) $i); ?>
+                    </button>
+                </li>
+            <?php endfor; ?>
+        </ul>
+
+        <button
+            type="button"
+            class="servicios-pagination__btn"
+            data-servicios-page="<?php echo esc_attr((string) min($pages, $pagina + 1)); ?>"
+            <?php disabled($pagina >= $pages); ?>
+        >
+            →
+        </button>
+    </nav>
     <?php
 }
 

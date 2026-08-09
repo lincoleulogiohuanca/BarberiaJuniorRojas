@@ -159,15 +159,67 @@ function yuniorrojas_registrar_cpts(): void
             'show_in_rest'        => false,
         ));
     }
+
+    $cpt_servicios = YUNIORROJAS_CPT_SERVICIOS;
+
+    if (!taxonomy_exists('categoria_servicio')) {
+        register_taxonomy('categoria_servicio', $cpt_servicios, array(
+            'labels' => array(
+                'name'          => __('Categorías (filtros izq.)', YUNIORROJAS_TEXT_DOMAIN),
+                'singular_name' => __('Categoría', YUNIORROJAS_TEXT_DOMAIN),
+                'search_items'  => __('Buscar categorías', YUNIORROJAS_TEXT_DOMAIN),
+                'all_items'     => __('Todas las categorías', YUNIORROJAS_TEXT_DOMAIN),
+                'edit_item'     => __('Editar categoría', YUNIORROJAS_TEXT_DOMAIN),
+                'update_item'   => __('Actualizar categoría', YUNIORROJAS_TEXT_DOMAIN),
+                'add_new_item'  => __('Añadir categoría', YUNIORROJAS_TEXT_DOMAIN),
+                'new_item_name' => __('Nueva categoría', YUNIORROJAS_TEXT_DOMAIN),
+                'menu_name'     => __('Categorías', YUNIORROJAS_TEXT_DOMAIN),
+            ),
+            'public'            => true,
+            'hierarchical'      => true,
+            'show_ui'           => true,
+            'show_admin_column' => true,
+            'show_in_rest'      => true,
+            'rewrite'           => array('slug' => 'categoria-servicio'),
+        ));
+    } else {
+        register_taxonomy_for_object_type('categoria_servicio', $cpt_servicios);
+    }
+
+    if (!taxonomy_exists('etiqueta_servicio')) {
+        register_taxonomy('etiqueta_servicio', $cpt_servicios, array(
+            'labels' => array(
+                'name'              => __('Etiquetas (filtros der.)', YUNIORROJAS_TEXT_DOMAIN),
+                'singular_name'     => __('Etiqueta', YUNIORROJAS_TEXT_DOMAIN),
+                'search_items'      => __('Buscar etiquetas', YUNIORROJAS_TEXT_DOMAIN),
+                'all_items'         => __('Todas las etiquetas', YUNIORROJAS_TEXT_DOMAIN),
+                'parent_item'       => __('Etiqueta superior', YUNIORROJAS_TEXT_DOMAIN),
+                'parent_item_colon' => __('Etiqueta superior:', YUNIORROJAS_TEXT_DOMAIN),
+                'edit_item'         => __('Editar etiqueta', YUNIORROJAS_TEXT_DOMAIN),
+                'update_item'       => __('Actualizar etiqueta', YUNIORROJAS_TEXT_DOMAIN),
+                'add_new_item'      => __('Añadir etiqueta', YUNIORROJAS_TEXT_DOMAIN),
+                'new_item_name'     => __('Nueva etiqueta', YUNIORROJAS_TEXT_DOMAIN),
+                'menu_name'         => __('Etiquetas', YUNIORROJAS_TEXT_DOMAIN),
+            ),
+            'public'            => true,
+            'hierarchical'      => true,
+            'show_ui'           => true,
+            'show_admin_column' => true,
+            'show_in_rest'      => true,
+            'rewrite'           => array('slug' => 'etiqueta-servicio'),
+        ));
+    } else {
+        register_taxonomy_for_object_type('etiqueta_servicio', $cpt_servicios);
+    }
 }
 add_action('init', 'yuniorrojas_registrar_cpts', 20);
 
 /**
- * Fuerza checklist en etiquetas de galería (como categorías).
+ * Fuerza checklist en etiquetas de galería/servicios (como categorías).
  */
-function yuniorrojas_etiqueta_galeria_checklist(array $args, string $taxonomy): array
+function yuniorrojas_etiqueta_checklist(array $args, string $taxonomy): array
 {
-    if ($taxonomy !== 'etiqueta_galeria') {
+    if ($taxonomy !== 'etiqueta_galeria' && $taxonomy !== 'etiqueta_servicio') {
         return $args;
     }
 
@@ -178,7 +230,7 @@ function yuniorrojas_etiqueta_galeria_checklist(array $args, string $taxonomy): 
 
     return $args;
 }
-add_filter('register_taxonomy_args', 'yuniorrojas_etiqueta_galeria_checklist', 30, 2);
+add_filter('register_taxonomy_args', 'yuniorrojas_etiqueta_checklist', 30, 2);
 
 /**
  * Crea términos base de filtros de galería una sola vez.
@@ -222,6 +274,76 @@ function yuniorrojas_sembrar_terminos_galeria(): void
     update_option('yuniorrojas_galeria_terms_v2', '1');
 }
 add_action('init', 'yuniorrojas_sembrar_terminos_galeria', 30);
+
+/**
+ * Crea términos base de filtros de servicios (mockup: Cabello / Barba / Cuidado facial).
+ */
+function yuniorrojas_sembrar_terminos_servicios(): void
+{
+    if (get_option('yuniorrojas_servicios_terms_v2') === '1') {
+        return;
+    }
+
+    if (!taxonomy_exists('categoria_servicio') || !taxonomy_exists('etiqueta_servicio')) {
+        return;
+    }
+
+    $categorias = array(
+        'cabello'         => 'Cabello',
+        'barba'           => 'Barba',
+        'cuidado-facial'  => 'Cuidado facial',
+    );
+
+    foreach ($categorias as $slug => $nombre) {
+        if (!term_exists($slug, 'categoria_servicio')) {
+            wp_insert_term($nombre, 'categoria_servicio', array('slug' => $slug));
+        }
+    }
+
+    $etiquetas = array(
+        'mas-vendidos' => 'Más vendidos',
+        'nuevos'       => 'Nuevos',
+        'sets'         => 'Sets',
+    );
+
+    foreach ($etiquetas as $slug => $nombre) {
+        if (!term_exists($slug, 'etiqueta_servicio')) {
+            wp_insert_term($nombre, 'etiqueta_servicio', array('slug' => $slug));
+        }
+    }
+
+    // Limpia términos seed v1 vacíos (no borra si tienen posts asignados).
+    $legacy = array(
+        'categoria_servicio' => array('cortes', 'barbas', 'combo', 'tratamientos', 'premium'),
+        'etiqueta_servicio'  => array('express', 'clasicos', 'modernos'),
+    );
+
+    foreach ($legacy as $tax => $slugs) {
+        foreach ($slugs as $slug) {
+            $term = get_term_by('slug', $slug, $tax);
+            if ($term instanceof WP_Term && (int) $term->count === 0) {
+                wp_delete_term((int) $term->term_id, $tax);
+            }
+        }
+    }
+
+    update_option('yuniorrojas_servicios_terms_v2', '1');
+}
+add_action('init', 'yuniorrojas_sembrar_terminos_servicios', 30);
+
+/**
+ * Flush de permalinks tras registrar taxonomías de servicios.
+ */
+function yuniorrojas_flush_rewrite_servicios_tax(): void
+{
+    if (get_option('yuniorrojas_flush_servicios_tax_v1') === '1') {
+        return;
+    }
+
+    flush_rewrite_rules(false);
+    update_option('yuniorrojas_flush_servicios_tax_v1', '1');
+}
+add_action('init', 'yuniorrojas_flush_rewrite_servicios_tax', 99);
 
 /**
  * Evita conflicto Página /barberos/ vs CPT barberos.

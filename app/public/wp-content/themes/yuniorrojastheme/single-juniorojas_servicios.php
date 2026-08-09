@@ -120,7 +120,7 @@ get_header();
                                 : esc_html__('Deja tu reseña', YUNIORROJAS_TEXT_DOMAIN); ?>
                         </h3>
                         <p class="servicio-resenas__form-lead">
-                            <?php esc_html_e('Califica tu experiencia y comparte un breve comentario.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                            <?php esc_html_e('Califica tu experiencia y comparte un breve comentario. Se publicará tras la revisión del estudio.', YUNIORROJAS_TEXT_DOMAIN); ?>
                         </p>
                         <div class="servicio-resenas__field">
                             <span class="servicio-resenas__label"><?php esc_html_e('Tu calificación', YUNIORROJAS_TEXT_DOMAIN); ?></span>

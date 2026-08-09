@@ -38,8 +38,10 @@ $yuniorrojas_includes = array(
     'includes/admin-medios-pago.php',
     'includes/settings-pagos.php',
     'includes/rest-galeria.php',
+    'includes/rest-servicios.php',
     'includes/rest-reservas.php',
     'includes/servicio-resenas.php',
+    'includes/prod-hardening.php',
     'includes/widgets.php',
     'includes/contacto.php',
     'includes/settings-contacto.php',
@@ -162,13 +164,20 @@ function yuniorrojas_scripts_styles(): void
         file_exists($script_path) ? (string) filemtime($script_path) : '1.0.0',
         true
     );
+    // WP 6.3+: carga diferida sin bloquear el render.
+    wp_script_add_data('yuniorrojas-scripts', 'strategy', 'defer');
 
     $pago_alt = function_exists('yuniorrojas_datos_pago_alternativo')
         ? yuniorrojas_datos_pago_alternativo()
         : array();
 
+    $productos_checkout = function_exists('yuniorrojas_productos_checkout_lista')
+        ? yuniorrojas_productos_checkout_lista()
+        : array();
+
     wp_localize_script('yuniorrojas-scripts', 'yuniorrojasTheme', array(
         'restGaleria'        => esc_url_raw(rest_url('yuniorrojas/v1/galeria')),
+        'restServicios'      => esc_url_raw(rest_url('yuniorrojas/v1/listado-servicios')),
         'restReservas'       => esc_url_raw(rest_url('yuniorrojas/v1/reservas')),
         'restDisponibilidad' => esc_url_raw(rest_url('yuniorrojas/v1/disponibilidad')),
         'restListaEspera'    => esc_url_raw(rest_url('yuniorrojas/v1/lista-espera')),
@@ -190,6 +199,7 @@ function yuniorrojas_scripts_styles(): void
         'mediosPago'         => function_exists('yuniorrojas_medios_pago_checkout_js')
             ? yuniorrojas_medios_pago_checkout_js()
             : array(),
+        'productos'          => $productos_checkout,
         'culqi'              => array(
             'enabled'   => $culqi_enabled,
             'publicKey' => $culqi_enabled ? yuniorrojas_culqi_public_key() : '',

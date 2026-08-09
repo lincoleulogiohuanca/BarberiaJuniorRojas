@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 
 /**
  * Headers HTML para wp_mail.
+ * Usa SMTP From (panel / YUNIORROJAS_SMTP_FROM*) si está definido; si no, admin_email.
  *
  * @return string[]
  */
@@ -16,6 +17,18 @@ function yuniorrojas_mail_headers_html(): array
 {
     $from_name  = wp_specialchars_decode((string) get_bloginfo('name'), ENT_QUOTES);
     $from_email = (string) get_option('admin_email');
+
+    if (function_exists('yuniorrojas_prod_settings')) {
+        $s = yuniorrojas_prod_settings();
+        if (!empty($s['smtp_enabled'])) {
+            if ($s['smtp_from'] !== '' && is_email($s['smtp_from'])) {
+                $from_email = $s['smtp_from'];
+            }
+            if ($s['smtp_from_name'] !== '') {
+                $from_name = $s['smtp_from_name'];
+            }
+        }
+    }
 
     return array(
         'Content-Type: text/html; charset=UTF-8',
@@ -183,7 +196,8 @@ function yuniorrojas_notificar_reserva(int $reserva_id, string $evento): void
  */
 function yuniorrojas_cron_recordatorios_reservas(): void
 {
-    $manana = gmdate('Y-m-d', strtotime(current_time('Y-m-d') . ' +1 day'));
+    // Fecha "mañana" en la zona del sitio (no mezclar con gmdate).
+    $manana = wp_date('Y-m-d', strtotime(current_time('Y-m-d') . ' +1 day') ?: time());
 
     $ids = get_posts(array(
         'post_type'              => YUNIORROJAS_CPT_RESERVAS,
@@ -225,10 +239,14 @@ function yuniorrojas_cron_recordatorios_reservas(): void
 add_action('yuniorrojas_cron_recordatorios', 'yuniorrojas_cron_recordatorios_reservas');
 
 /**
- * Programa el cron diario.
+ * Programa el cron diario (delegado también a prod-hardening).
  */
 function yuniorrojas_activar_cron_recordatorios(): void
 {
+    if (function_exists('yuniorrojas_cron_recordatorios_ensure')) {
+        yuniorrojas_cron_recordatorios_ensure();
+        return;
+    }
     if (!wp_next_scheduled('yuniorrojas_cron_recordatorios')) {
         wp_schedule_event(time() + HOUR_IN_SECONDS, 'hourly', 'yuniorrojas_cron_recordatorios');
     }

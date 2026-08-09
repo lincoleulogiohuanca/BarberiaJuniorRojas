@@ -938,6 +938,46 @@ if (is_user_logged_in()) {
                             </div>
                         </div>
 
+                        <?php
+                        $productos_front = function_exists('yuniorrojas_productos_checkout_lista')
+                            ? yuniorrojas_productos_checkout_lista()
+                            : array();
+                        if ($productos_front !== array()) :
+                            ?>
+                        <div class="reservar-checkout-summary__productos" data-checkout-productos>
+                            <span class="reservar-checkout-summary__label"><?php esc_html_e('Productos (opcional)', YUNIORROJAS_TEXT_DOMAIN); ?></span>
+                            <ul class="reservar-checkout-productos">
+                                <?php foreach ($productos_front as $prod) : ?>
+                                    <li class="reservar-checkout-productos__item">
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                data-producto-id="<?php echo esc_attr((string) $prod['id']); ?>"
+                                                data-producto-precio="<?php echo esc_attr((string) $prod['precio']); ?>"
+                                                data-producto-check
+                                            >
+                                            <span><?php echo esc_html($prod['nombre']); ?></span>
+                                            <em><?php echo esc_html($prod['precio_label']); ?></em>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            max="10"
+                                            value="1"
+                                            data-producto-qty="<?php echo esc_attr((string) $prod['id']); ?>"
+                                            class="reservar-checkout-productos__qty"
+                                            aria-label="<?php esc_attr_e('Cantidad', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                                        >
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <div class="reservar-checkout-summary__line reservar-checkout-summary__line--prod">
+                                <span><?php esc_html_e('Productos', YUNIORROJAS_TEXT_DOMAIN); ?></span>
+                                <span data-checkout-productos-total>S/. 0.00</span>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
                         <div class="reservar-checkout-summary__pricing">
                             <div class="reservar-checkout-summary__line">
                                 <span>Subtotal</span>

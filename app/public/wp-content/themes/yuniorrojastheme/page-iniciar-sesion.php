@@ -20,6 +20,8 @@ $form_action   = get_permalink() ?: home_url('/iniciar-sesion/');
 if (!$ya_logueado && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['yuniorrojas_login_nonce'])) {
     if (!yuniorrojas_verificar_nonce('yuniorrojas_login_nonce', 'yuniorrojas_login')) {
         $login_error = 'La solicitud no es válida. Recarga la página e inténtalo de nuevo.';
+    } elseif (function_exists('yuniorrojas_rate_limit_ok') && !yuniorrojas_rate_limit_ok('login', 10, 15 * MINUTE_IN_SECONDS)) {
+        $login_error = 'Demasiados intentos de acceso. Espera unos minutos e inténtalo de nuevo.';
     } else {
         $login_raw = sanitize_text_field(wp_unslash((string) ($_POST['log'] ?? '')));
         $password  = (string) wp_unslash($_POST['pwd'] ?? ''); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
