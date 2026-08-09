@@ -197,6 +197,88 @@ function yuniorrojas_obtener_reserva(int $reserva_id): ?array
 }
 
 /**
+ * ¿Método de pago que se verifica manualmente (Plin, transferencia, etc.)?
+ */
+function yuniorrojas_reserva_es_pago_manual(string $metodo): bool
+{
+    $metodo = sanitize_key($metodo);
+
+    return in_array($metodo, array('plin', 'yape', 'transferencia', 'manual'), true);
+}
+
+/**
+ * El cliente puede adjuntar captura de transferencia a esta reserva.
+ *
+ * @param array<string, mixed> $reserva
+ */
+function yuniorrojas_cliente_puede_subir_comprobante(array $reserva): bool
+{
+    $estado = sanitize_key((string) ($reserva['estado'] ?? ''));
+    if (!in_array($estado, array('pendiente', 'confirmada'), true)) {
+        return false;
+    }
+    if (!empty($reserva['pago_verificado'])) {
+        return false;
+    }
+    $metodo = sanitize_key((string) ($reserva['metodo_pago'] ?? ''));
+
+    return yuniorrojas_reserva_es_pago_manual($metodo);
+}
+
+/**
+ * Asocia comprobante (attachment) a una reserva del cliente logueado.
+ *
+ * @return array{ok:bool,comprobante_id:int,comprobante_url:string}|WP_Error
+ */
+function yuniorrojas_cliente_adjuntar_comprobante(int $reserva_id, int $user_id, int $attachment_id)
+{
+    $reserva_id    = absint($reserva_id);
+    $user_id       = absint($user_id);
+    $attachment_id = absint($attachment_id);
+
+    if ($reserva_id <= 0 || $user_id <= 0 || $attachment_id <= 0) {
+        return new WP_Error('comprobante', 'Datos de comprobante incompletos.', array('status' => 400));
+    }
+
+    $reserva = yuniorrojas_obtener_reserva($reserva_id);
+    if (!is_array($reserva)) {
+        return new WP_Error('reserva', 'Reserva no encontrada.', array('status' => 404));
+    }
+
+    if ((int) ($reserva['cliente_user_id'] ?? 0) !== $user_id) {
+        return new WP_Error('permiso', 'No puedes modificar esta reserva.', array('status' => 403));
+    }
+
+    if (!yuniorrojas_cliente_puede_subir_comprobante($reserva)) {
+        return new WP_Error(
+            'comprobante',
+            'Esta reserva no admite subida de comprobante (ya está verificada o no es pago manual).',
+            array('status' => 400)
+        );
+    }
+
+    if (get_post_type($attachment_id) !== 'attachment') {
+        return new WP_Error('comprobante', 'Archivo no válido.', array('status' => 400));
+    }
+
+    $mime = (string) get_post_mime_type($attachment_id);
+    if ($mime === '' || strpos($mime, 'image/') !== 0) {
+        return new WP_Error('comprobante', 'El comprobante debe ser una imagen (JPG, PNG o WEBP).', array('status' => 400));
+    }
+
+    update_post_meta($reserva_id, yuniorrojas_reserva_meta_key('comprobante_id'), (string) $attachment_id);
+
+    $url = (string) wp_get_attachment_url($attachment_id);
+
+    return array(
+        'ok'              => true,
+        'comprobante_id'  => $attachment_id,
+        'comprobante_url' => $url,
+        'message'         => 'Comprobante subido. El estudio lo revisará para verificar tu pago.',
+    );
+}
+
+/**
  * ¿La reserva pertenece a un cliente con cuenta WP?
  */
 function yuniorrojas_reserva_es_cliente_registrado(array $reserva): bool
@@ -898,23 +980,34 @@ function yuniorrojas_cuenta_datos_cliente(int $user_id): array
     foreach ($proximas as $item) {
         $metodo = sanitize_key((string) ($item['metodo_pago'] ?? 'estudio'));
         $estado = (string) ($item['estado'] ?? 'confirmada');
+        $comp_id = (int) ($item['comprobante_id'] ?? 0);
+        $comp_url = (string) ($item['comprobante_url'] ?? '');
+        $puede_comprobante = yuniorrojas_cliente_puede_subir_comprobante($item);
         $proximas_ui[] = array(
-            'id'               => (int) $item['id'],
-            'dia'              => (string) ($item['dia'] ?? ''),
-            'mes'              => (string) ($item['mes'] ?? ''),
-            'servicio'         => (string) ($item['servicio_nombre'] ?? ''),
-            'hora'             => (string) ($item['hora_label'] ?? $item['hora'] ?? ''),
-            'barbero'          => (string) ($item['barbero_nombre'] ?? ''),
-            'servicio_id'      => (int) ($item['servicio_id'] ?? 0),
-            'barbero_id'       => (int) ($item['barbero_id'] ?? 0),
-            'estado'           => $estado,
-            'estado_label'     => function_exists('yuniorrojas_reserva_estado_label_cliente')
+            'id'                     => (int) $item['id'],
+            'dia'                    => (string) ($item['dia'] ?? ''),
+            'mes'                    => (string) ($item['mes'] ?? ''),
+            'servicio'               => (string) ($item['servicio_nombre'] ?? ''),
+            'hora'                   => (string) ($item['hora_label'] ?? $item['hora'] ?? ''),
+            'barbero'                => (string) ($item['barbero_nombre'] ?? ''),
+            'precio'                 => (string) ($item['precio'] ?? ''),
+            'servicio_id'            => (int) ($item['servicio_id'] ?? 0),
+            'barbero_id'             => (int) ($item['barbero_id'] ?? 0),
+            'estado'                 => $estado,
+            'estado_label'           => function_exists('yuniorrojas_reserva_estado_label_cliente')
                 ? yuniorrojas_reserva_estado_label_cliente($estado)
                 : $estado,
-            'metodo_pago'      => $metodo !== '' ? $metodo : 'estudio',
-            'pago_verificado'  => !empty($item['pago_verificado']),
-            'puede_cancelar'   => yuniorrojas_reserva_permite_cancelar_cliente($metodo),
-            'puede_reprogramar'=> in_array($estado, array('pendiente', 'confirmada'), true),
+            'metodo_pago'            => $metodo !== '' ? $metodo : 'estudio',
+            'metodo_pago_label'      => function_exists('yuniorrojas_reserva_metodo_pago_label')
+                ? yuniorrojas_reserva_metodo_pago_label($metodo !== '' ? $metodo : 'estudio')
+                : $metodo,
+            'codigo_operacion'       => (string) ($item['codigo_operacion'] ?? ''),
+            'pago_verificado'        => !empty($item['pago_verificado']),
+            'comprobante_id'         => $comp_id,
+            'comprobante_url'        => $comp_url,
+            'puede_subir_comprobante'=> $puede_comprobante,
+            'puede_cancelar'         => yuniorrojas_reserva_permite_cancelar_cliente($metodo),
+            'puede_reprogramar'      => in_array($estado, array('pendiente', 'confirmada'), true),
         );
     }
 

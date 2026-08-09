@@ -514,6 +514,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const confirmUbicacion = reservaRoot.querySelector("[data-confirm-ubicacion]");
     const voucherRoot = reservaRoot.querySelector("[data-reserva-voucher]");
     const voucherDownloadBtn = reservaRoot.querySelector("[data-voucher-download]");
+    const voucherContinuarBtn = reservaRoot.querySelector("[data-voucher-continuar]");
     const shareBtns = Array.from(reservaRoot.querySelectorAll("[data-share]"));
 
     const calMonthEl = reservaRoot.querySelector("[data-cal-month]");
@@ -579,6 +580,7 @@ document.addEventListener("DOMContentLoaded", () => {
       requiereCodigo: false,
       esEstudio: false,
       voucherDownloaded: false,
+      serviciosRedirectTimer: 0,
     };
 
     const CITA_STORAGE_KEY = "jr_reserva_cita_v1";
@@ -1624,7 +1626,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
 
-    const finishAfterVoucherDownload = () => {
+    const clearServiciosRedirect = () => {
+      if (state.serviciosRedirectTimer) {
+        window.clearTimeout(state.serviciosRedirectTimer);
+        state.serviciosRedirectTimer = 0;
+      }
+    };
+
+    /**
+     * Tras reserva exitosa (Plin / Culqi / estudio): ir a página de servicios.
+     */
+    const goToServicios = () => {
+      clearServiciosRedirect();
       try {
         window.sessionStorage.removeItem(CITA_STORAGE_KEY);
       } catch (error) {
@@ -1639,6 +1652,17 @@ document.addEventListener("DOMContentLoaded", () => {
         window.yuniorrojasTheme?.homeUrl ||
         "/";
       window.location.assign(serviciosUrl);
+    };
+
+    const scheduleRedirectToServicios = (delayMs = 3200) => {
+      clearServiciosRedirect();
+      state.serviciosRedirectTimer = window.setTimeout(() => {
+        goToServicios();
+      }, delayMs);
+    };
+
+    const finishAfterVoucherDownload = () => {
+      goToServicios();
     };
 
     const shareVoucher = async (channel) => {
@@ -1703,15 +1727,23 @@ document.addEventListener("DOMContentLoaded", () => {
         if (ok) {
           // Pequeña pausa para que el navegador dispare la descarga.
           window.setTimeout(() => {
-            finishAfterVoucherDownload();
+            goToServicios();
           }, 450);
         }
+      });
+    }
+
+    if (voucherContinuarBtn instanceof HTMLButtonElement) {
+      voucherContinuarBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        goToServicios();
       });
     }
 
     shareBtns.forEach((btn) => {
       btn.addEventListener("click", (event) => {
         event.preventDefault();
+        // No cancelar el auto-redirect: pueden compartir y seguir a servicios.
         const channel = btn.getAttribute("data-share") || "nativo";
         shareVoucher(channel);
       });
@@ -1741,9 +1773,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (state.pagoTipo === "estudio" || state.esEstudio) {
           procederPagoBtn.innerHTML = 'Confirmar reserva <span aria-hidden="true">→</span>';
         } else if (state.requiereCodigo) {
-          procederPagoBtn.innerHTML = 'Enviar comprobante <span aria-hidden="true">→</span>';
+          procederPagoBtn.innerHTML = 'Finalizar reserva <span aria-hidden="true">→</span>';
         } else {
-          procederPagoBtn.innerHTML = 'Proceder al pago <span aria-hidden="true">→</span>';
+          procederPagoBtn.innerHTML = 'Pagar ahora <span aria-hidden="true">→</span>';
         }
       }
     };
@@ -1762,6 +1794,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const openConfirmadaModal = () => {
       if (!(confirmadaModal instanceof HTMLElement)) {
+        // Sin modal (DOM incompleto): ir directo a servicios.
+        scheduleRedirectToServicios(400);
         return;
       }
       state.voucherDownloaded = false;
@@ -1771,6 +1805,8 @@ document.addEventListener("DOMContentLoaded", () => {
       confirmadaModal.hidden = false;
       document.body.classList.add("is-reserva-confirmada-modal");
       document.body.style.overflow = "hidden";
+      // Tras Plin / pago exitoso no dejamos al usuario atrapado en el checkout.
+      scheduleRedirectToServicios(3200);
     };
 
     const closeConfirmadaModal = (force = false) => {
@@ -1778,13 +1814,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       if (!force && !state.voucherDownloaded && !confirmadaModal.hidden) {
-        const hint = confirmadaModal.querySelector("[data-voucher-hint]");
-        if (hint instanceof HTMLElement) {
-          hint.classList.add("is-attention");
-          window.setTimeout(() => hint.classList.remove("is-attention"), 1200);
-        }
+        // Cerrar = continuar a servicios (antes se exigía descargar).
+        goToServicios();
         return;
       }
+      clearServiciosRedirect();
       confirmadaModal.hidden = true;
       document.body.classList.remove("is-reserva-confirmada-modal");
       document.body.style.overflow = "";
@@ -2561,9 +2595,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const codigoInput = reservaRoot.querySelector(
         `[data-medio-codigo="${state.pagoMetodo}"]`
       ) || reservaRoot.querySelector("[data-yape-codigo]");
-      const fileInput = reservaRoot.querySelector(
-        `[data-medio-comprobante="${state.pagoMetodo}"]`
-      ) || reservaRoot.querySelector("[data-yape-comprobante]");
 
       return {
         servicio_id: Number.parseInt(servicio?.getAttribute("data-id") || "0", 10) || 0,
@@ -2581,10 +2612,6 @@ document.addEventListener("DOMContentLoaded", () => {
           Number.parseInt(reservaRoot.getAttribute("data-reprogramar-id") || "0", 10) || 0,
         codigo_operacion:
           codigoInput instanceof HTMLInputElement ? codigoInput.value.trim() : "",
-        comprobante:
-          fileInput instanceof HTMLInputElement && fileInput.files && fileInput.files[0]
-            ? fileInput.files[0]
-            : null,
         culqi_token: culqiToken || "",
       };
     };
@@ -2653,12 +2680,6 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const formData = new FormData();
         Object.keys(payload).forEach((key) => {
-          if (key === "comprobante") {
-            if (payload.comprobante) {
-              formData.append("comprobante", payload.comprobante);
-            }
-            return;
-          }
           formData.append(key, payload[key] == null ? "" : String(payload[key]));
         });
 
@@ -3087,6 +3108,121 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       event.preventDefault();
       openCancelModal(btn);
+    });
+
+    // Subir captura de pago Plin / manual desde "Próximas citas".
+    clienteDash.addEventListener("change", async (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLInputElement) || target.type !== "file") {
+        return;
+      }
+      if (!target.hasAttribute("data-comprobante-input")) {
+        return;
+      }
+
+      const file = target.files && target.files[0] ? target.files[0] : null;
+      const wrap = target.closest("[data-comprobante-wrap]");
+      const reservaId =
+        target.getAttribute("data-reserva-id") ||
+        (wrap instanceof HTMLElement ? wrap.getAttribute("data-reserva-id") : "") ||
+        "";
+      const statusEl =
+        wrap instanceof HTMLElement
+          ? wrap.querySelector("[data-comprobante-status]")
+          : null;
+      const base = window.yuniorrojasTheme?.restReservas || "";
+
+      const setStatus = (text, isError) => {
+        if (!(statusEl instanceof HTMLElement)) {
+          return;
+        }
+        statusEl.hidden = !text;
+        statusEl.textContent = text || "";
+        statusEl.classList.toggle("is-error", Boolean(isError));
+        statusEl.classList.toggle("is-ok", Boolean(text) && !isError);
+      };
+
+      if (!file || !reservaId || !base) {
+        setStatus("Selecciona una imagen válida.", true);
+        return;
+      }
+      if (!file.type || file.type.indexOf("image/") !== 0) {
+        setStatus("El archivo debe ser una imagen (JPG, PNG o WEBP).", true);
+        target.value = "";
+        return;
+      }
+
+      setStatus("Subiendo captura…", false);
+      target.disabled = true;
+
+      try {
+        const formData = new FormData();
+        formData.append("comprobante", file);
+        const response = await fetch(
+          `${base.replace(/\/$/, "")}/${reservaId}/comprobante`,
+          {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+              "X-WP-Nonce": window.yuniorrojasTheme?.restNonce || "",
+            },
+            body: formData,
+          }
+        );
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          setStatus(
+            String(
+              data?.message ||
+                data?.data?.message ||
+                "No se pudo subir el comprobante."
+            ),
+            true
+          );
+          return;
+        }
+
+        setStatus(
+          String(data?.message || "Comprobante subido correctamente."),
+          false
+        );
+
+        const newUrl = String(data?.comprobante_url || "");
+        if (newUrl && wrap instanceof HTMLElement) {
+          const viewLink = wrap.querySelector("[data-comprobante-view]");
+          if (viewLink instanceof HTMLAnchorElement) {
+            viewLink.href = newUrl;
+          } else {
+            const row = wrap.querySelector(".cliente-cita__comprobante-row");
+            if (row instanceof HTMLElement) {
+              const a = document.createElement("a");
+              a.className = "cliente-cita__comprobante-link";
+              a.href = newUrl;
+              a.target = "_blank";
+              a.rel = "noopener noreferrer";
+              a.setAttribute("data-comprobante-view", "");
+              a.innerHTML =
+                '<i class="ti ti-photo" aria-hidden="true"></i> Ver captura';
+              row.insertBefore(a, row.firstChild);
+            }
+          }
+          const lead = wrap.querySelector(".cliente-cita__comprobante-lead");
+          if (lead instanceof HTMLElement) {
+            lead.textContent =
+              "Ya enviaste una captura. Puedes reemplazarla si hace falta.";
+          }
+          const btnLabel = wrap.querySelector(".cliente-cita__btn--comprobante");
+          if (btnLabel instanceof HTMLElement) {
+            btnLabel.innerHTML =
+              '<i class="ti ti-upload" aria-hidden="true"></i> Cambiar captura';
+          }
+        }
+      } catch (error) {
+        setStatus("Error de conexión. Intenta de nuevo.", true);
+      } finally {
+        target.disabled = false;
+        target.value = "";
+      }
     });
   }
 

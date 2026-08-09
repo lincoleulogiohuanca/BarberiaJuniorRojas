@@ -5871,7 +5871,8 @@ body.is-reserva-error-modal {
 }
 
 .reservar-confirmada__download,
-.reservar-confirmada__whatsapp {
+.reservar-confirmada__whatsapp,
+.reservar-confirmada__continuar {
   width: 100%;
   min-height: 4.6rem;
   padding: 1.15rem 1.3rem;
@@ -5880,21 +5881,40 @@ body.is-reserva-error-modal {
   text-transform: uppercase;
 }
 
-.reservar-confirmada__whatsapp {
+.reservar-confirmada__continuar {
+  grid-column: 1 / -1;
   background: var(--color-dorado);
   color: var(--color-negro-profundo);
   border-color: var(--color-dorado);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
 }
 
-.reservar-confirmada__whatsapp:hover,
-.reservar-confirmada__whatsapp:focus-visible {
+.reservar-confirmada__continuar:hover,
+.reservar-confirmada__continuar:focus-visible {
   background: var(--color-dorado-brillante);
   border-color: var(--color-dorado-brillante);
   color: var(--color-negro-profundo);
 }
 
+.reservar-confirmada__whatsapp {
+  background: transparent;
+  color: var(--color-dorado);
+  border-color: var(--color-dorado);
+}
+
+.reservar-confirmada__whatsapp:hover,
+.reservar-confirmada__whatsapp:focus-visible {
+  background: rgba(212, 175, 55, 0.12);
+  border-color: var(--color-dorado-brillante);
+  color: var(--color-dorado-brillante);
+}
+
 .reservar-confirmada__download i,
-.reservar-confirmada__whatsapp i {
+.reservar-confirmada__whatsapp i,
+.reservar-confirmada__continuar i {
   font-size: 1.7rem;
 }
 
@@ -6004,7 +6024,8 @@ body.is-reserva-error-modal {
   }
 
   .reservar-confirmada__download,
-  .reservar-confirmada__whatsapp {
+  .reservar-confirmada__whatsapp,
+  .reservar-confirmada__continuar {
     min-height: 4.2rem;
     padding: 1rem 1.2rem;
   }
@@ -7771,6 +7792,85 @@ body.is-cliente-cancel-modal {
 
 .cliente-cita__estado--completada {
   color: #aab2bd;
+}
+
+.cliente-cita__pago-ok {
+  color: #7dcea0;
+}
+
+.cliente-cita__pago-codigo {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.92em;
+}
+
+.cliente-cita__comprobante {
+  margin-top: 1rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  background: rgba(212, 175, 55, 0.06);
+  border-radius: 0.35rem;
+}
+
+.cliente-cita__comprobante--readonly {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.cliente-cita__comprobante-lead {
+  margin: 0 0 0.75rem;
+  font-size: 1.4rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.cliente-cita__comprobante-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.cliente-cita__comprobante-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-dorado);
+  font-size: 1.1rem;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+
+.cliente-cita__comprobante-link:hover,
+.cliente-cita__comprobante-link:focus-visible {
+  color: var(--color-dorado-brillante);
+  text-decoration: underline;
+}
+
+.cliente-cita__comprobante-file {
+  display: inline-flex;
+  margin: 0;
+  cursor: pointer;
+}
+
+.cliente-cita__btn--comprobante {
+  min-height: 3.2rem;
+  padding: 0.65rem 1rem;
+  font-size: 1rem;
+}
+
+.cliente-cita__comprobante-status {
+  margin: 0.65rem 0 0;
+  font-size: 1.1rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cliente-cita__comprobante-status.is-ok {
+  color: #7dcea0;
+}
+
+.cliente-cita__comprobante-status.is-error {
+  color: #f09090;
 }
 
 .cliente-nivel__beneficios {

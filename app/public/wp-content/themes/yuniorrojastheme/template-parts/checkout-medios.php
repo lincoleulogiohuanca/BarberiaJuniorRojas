@@ -173,17 +173,8 @@ if (!isset($medios_checkout) || !is_array($medios_checkout)) {
                         data-yape-codigo
                         data-medio-codigo="<?php echo esc_attr($slug); ?>"
                     >
-                    <label class="reservar-checkout__label" for="checkout-file-<?php echo esc_attr($slug); ?>">Captura (opcional)</label>
-                    <input
-                        type="file"
-                        id="checkout-file-<?php echo esc_attr($slug); ?>"
-                        class="reservar-checkout__input reservar-checkout__input--file"
-                        accept="image/jpeg,image/png,image/webp"
-                        data-yape-comprobante
-                        data-medio-comprobante="<?php echo esc_attr($slug); ?>"
-                    >
                     <p class="reservar-yape__hint">
-                        Transfiere el monto exacto, ingresa el código y confirma. El estudio verificará tu pago.
+                        Transfiere el monto exacto e ingresa el código. Si aún no tienes la captura, puedes subirla después desde <strong>Mi cuenta</strong>.
                     </p>
                 </div>
             </div>

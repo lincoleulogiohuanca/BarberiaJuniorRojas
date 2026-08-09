@@ -95,6 +95,13 @@ $render_cita = static function (array $cita) use ($reservar_url): void {
     $puede_cancelar = array_key_exists('puede_cancelar', $cita)
         ? (bool) $cita['puede_cancelar']
         : yuniorrojas_reserva_permite_cancelar_cliente($metodo);
+    $puede_comprobante = !empty($cita['puede_subir_comprobante']);
+    $comp_url          = (string) ($cita['comprobante_url'] ?? '');
+    $codigo_op         = (string) ($cita['codigo_operacion'] ?? '');
+    $metodo_label      = (string) ($cita['metodo_pago_label'] ?? '');
+    if ($metodo_label === '' && function_exists('yuniorrojas_reserva_metodo_pago_label')) {
+        $metodo_label = yuniorrojas_reserva_metodo_pago_label($metodo);
+    }
 
     $reprog_args = array('paso' => 'cita');
     if ($servicio_id > 0) {
@@ -124,6 +131,17 @@ $render_cita = static function (array $cita) use ($reservar_url): void {
                     <i class="ti ti-scissors" aria-hidden="true"></i>
                     <?php echo esc_html((string) ($cita['barbero'] ?? '')); ?>
                 </li>
+                <?php if ($metodo_label !== '') : ?>
+                    <li>
+                        <i class="ti ti-wallet" aria-hidden="true"></i>
+                        <?php echo esc_html($metodo_label); ?>
+                        <?php if (!empty($cita['pago_verificado'])) : ?>
+                            <span class="cliente-cita__pago-ok">· Pago verificado</span>
+                        <?php elseif ($codigo_op !== '') : ?>
+                            <span class="cliente-cita__pago-codigo">· Op. <?php echo esc_html($codigo_op); ?></span>
+                        <?php endif; ?>
+                    </li>
+                <?php endif; ?>
                 <?php if (!empty($cita['estado_label'])) : ?>
                     <li>
                         <i class="ti ti-info-circle" aria-hidden="true"></i>
@@ -133,6 +151,60 @@ $render_cita = static function (array $cita) use ($reservar_url): void {
                     </li>
                 <?php endif; ?>
             </ul>
+
+            <?php if ($puede_comprobante && $id > 0) : ?>
+                <div class="cliente-cita__comprobante" data-comprobante-wrap data-reserva-id="<?php echo esc_attr((string) $id); ?>">
+                    <p class="cliente-cita__comprobante-lead">
+                        <?php if ($comp_url !== '') : ?>
+                            <?php esc_html_e('Ya enviaste una captura. Puedes reemplazarla si hace falta.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                        <?php else : ?>
+                            <?php esc_html_e('Cuando tengas la captura del pago, súbela aquí para acelerar la verificación.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                        <?php endif; ?>
+                    </p>
+                    <div class="cliente-cita__comprobante-row">
+                        <?php if ($comp_url !== '') : ?>
+                            <a
+                                class="cliente-cita__comprobante-link"
+                                href="<?php echo esc_url($comp_url); ?>"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                data-comprobante-view
+                            >
+                                <i class="ti ti-photo" aria-hidden="true"></i>
+                                <?php esc_html_e('Ver captura', YUNIORROJAS_TEXT_DOMAIN); ?>
+                            </a>
+                        <?php endif; ?>
+                        <label class="cliente-cita__comprobante-file">
+                            <span class="cliente-cita__btn cliente-cita__btn--outline cliente-cita__btn--comprobante">
+                                <i class="ti ti-upload" aria-hidden="true"></i>
+                                <?php echo $comp_url !== ''
+                                    ? esc_html__('Cambiar captura', YUNIORROJAS_TEXT_DOMAIN)
+                                    : esc_html__('Subir captura', YUNIORROJAS_TEXT_DOMAIN); ?>
+                            </span>
+                            <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                hidden
+                                data-comprobante-input
+                                data-reserva-id="<?php echo esc_attr((string) $id); ?>"
+                            >
+                        </label>
+                    </div>
+                    <p class="cliente-cita__comprobante-status" data-comprobante-status hidden></p>
+                </div>
+            <?php elseif ($comp_url !== '' && $id > 0) : ?>
+                <div class="cliente-cita__comprobante cliente-cita__comprobante--readonly">
+                    <a
+                        class="cliente-cita__comprobante-link"
+                        href="<?php echo esc_url($comp_url); ?>"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <i class="ti ti-photo" aria-hidden="true"></i>
+                        <?php esc_html_e('Ver comprobante enviado', YUNIORROJAS_TEXT_DOMAIN); ?>
+                    </a>
+                </div>
+            <?php endif; ?>
         </div>
         <div class="cliente-cita__actions">
             <?php if (!empty($cita['puede_reprogramar']) || !isset($cita['puede_reprogramar'])) : ?>

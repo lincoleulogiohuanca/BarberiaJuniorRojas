@@ -136,6 +136,21 @@ function yuniorrojas_registrar_rest_reservas(): void
         ),
     ));
 
+    register_rest_route('yuniorrojas/v1', '/reservas/(?P<id>\d+)/comprobante', array(
+        'methods'             => 'POST',
+        'permission_callback' => static function (): bool {
+            return is_user_logged_in() && function_exists('yuniorrojas_es_cliente') && yuniorrojas_es_cliente();
+        },
+        'callback'            => 'yuniorrojas_rest_subir_comprobante_reserva',
+        'args'                => array(
+            'id' => array(
+                'required'          => true,
+                'type'              => 'integer',
+                'sanitize_callback' => 'absint',
+            ),
+        ),
+    ));
+
     register_rest_route('yuniorrojas/v1', '/cuenta/preferencias', array(
         'methods'             => 'POST',
         'permission_callback' => static function (): bool {
@@ -343,6 +358,38 @@ function yuniorrojas_rest_cancelar_reserva(WP_REST_Request $request)
         'id'      => $id,
         'message' => 'Reserva cancelada.',
     ), 200);
+}
+
+/**
+ * Cliente: sube captura de pago (Plin / transferencia) a una reserva propia.
+ *
+ * @param WP_REST_Request $request Request.
+ * @return WP_REST_Response|WP_Error
+ */
+function yuniorrojas_rest_subir_comprobante_reserva(WP_REST_Request $request)
+{
+    $reserva_id = (int) $request->get_param('id');
+    $attach_id  = yuniorrojas_rest_subir_comprobante_desde_request($request);
+
+    if ($attach_id <= 0) {
+        return new WP_Error(
+            'comprobante',
+            'Selecciona una imagen del comprobante (JPG, PNG o WEBP).',
+            array('status' => 400)
+        );
+    }
+
+    $result = yuniorrojas_cliente_adjuntar_comprobante(
+        $reserva_id,
+        (int) get_current_user_id(),
+        $attach_id
+    );
+
+    if (is_wp_error($result)) {
+        return $result;
+    }
+
+    return new WP_REST_Response($result, 200);
 }
 
 /**

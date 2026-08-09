@@ -767,7 +767,9 @@ if (is_user_logged_in()) {
                                 <?php if ($culqi_test) : ?>
                                     <p class="reservar-checkout__test-badge" data-culqi-test-hint>
                                         <i class="ti ti-flask" aria-hidden="true"></i>
-                                        Modo prueba Culqi: usa tarjetas de test o Yape de prueba en CulqiPanel.
+                                        <strong>Modo prueba Culqi</strong> — no uses datos reales.
+                                        Tarjeta: 4111 1111 1111 1111 · 12/30 · CVV 123.
+                                        Yape: celular <strong>900 000 001</strong> y cualquier código de 6 dígitos (ej. 123456).
                                     </p>
                                 <?php endif; ?>
                             <?php else : ?>
@@ -876,18 +878,9 @@ if (is_user_logged_in()) {
                                     data-yape-codigo
                                     data-plin-codigo
                                 >
-                                <label class="reservar-checkout__label" for="checkout-comprobante">Captura del pago (opcional)</label>
-                                <input
-                                    type="file"
-                                    id="checkout-comprobante"
-                                    class="reservar-checkout__input reservar-checkout__input--file"
-                                    accept="image/jpeg,image/png,image/webp"
-                                    data-yape-comprobante
-                                    data-plin-comprobante
-                                >
                                 <p class="reservar-yape__hint">
-                                    Abre Plin → Transfiere el monto exacto al número de arriba → Copia el código de operación →
-                                    pégalo aquí y confirma. El estudio revisará el depósito y confirmará tu cita.
+                                    Abre Plin → Transfiere el monto exacto → pega el código de operación y confirma.
+                                    La captura del pago la puedes subir después en <strong>Mi cuenta</strong>.
                                 </p>
                             </div>
                         </div>
@@ -1152,9 +1145,13 @@ if (is_user_logged_in()) {
                             <i class="ti ti-brand-whatsapp" aria-hidden="true"></i>
                             WhatsApp
                         </button>
+                        <button type="button" class="btn reservar-confirmada__continuar" data-voucher-continuar>
+                            Ir a servicios
+                            <i class="ti ti-arrow-right" aria-hidden="true"></i>
+                        </button>
                     </div>
                     <p class="reservar-confirmada__hint" data-voucher-hint>
-                        Descarga tu comprobante para continuar. Luego te llevaremos a Servicios.
+                        Puedes descargar o compartir el comprobante. En unos segundos te llevamos a Servicios.
                     </p>
                 </div>
             </div>
