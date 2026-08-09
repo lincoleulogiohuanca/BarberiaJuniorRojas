@@ -51,6 +51,113 @@ get_header();
                 <blockquote class="servicio__frase-item"><?php echo esc_html($frase_1); ?></blockquote>
                 <blockquote class="servicio__frase-item"><?php echo esc_html($frase_2); ?></blockquote>
             </div>
+
+            <?php
+            $servicio_id   = (int) get_the_ID();
+            $user_id_res   = is_user_logged_in() ? (int) get_current_user_id() : 0;
+            $resenas_data  = function_exists('yuniorrojas_servicio_resenas')
+                ? yuniorrojas_servicio_resenas($servicio_id, $user_id_res)
+                : array('items' => array(), 'promedio' => 0, 'total' => 0, 'mi_resena' => null);
+            $puede_reseñar = function_exists('yuniorrojas_es_cliente') && yuniorrojas_es_cliente();
+            $mi_resena     = is_array($resenas_data['mi_resena'] ?? null) ? $resenas_data['mi_resena'] : null;
+            $rating_form   = $mi_resena ? (int) $mi_resena['rating'] : 5;
+            $texto_form    = $mi_resena ? (string) $mi_resena['texto'] : '';
+            ?>
+            <section
+                class="servicio-resenas"
+                data-servicio-resenas
+                data-servicio-id="<?php echo esc_attr((string) $servicio_id); ?>"
+                aria-labelledby="servicio-resenas-title"
+            >
+                <header class="servicio-resenas__head">
+                    <h2 id="servicio-resenas-title" class="servicio-resenas__title">
+                        <?php esc_html_e('Reseñas', YUNIORROJAS_TEXT_DOMAIN); ?>
+                    </h2>
+                    <div class="servicio-resenas__summary" data-resenas-summary>
+                        <?php if ((int) $resenas_data['total'] > 0) : ?>
+                            <?php echo yuniorrojas_resena_estrellas_html((float) $resenas_data['promedio']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                            <span class="servicio-resenas__avg" data-resenas-avg>
+                                <?php echo esc_html(number_format((float) $resenas_data['promedio'], 1)); ?>
+                            </span>
+                            <span class="servicio-resenas__count" data-resenas-count>
+                                (<?php echo esc_html((string) (int) $resenas_data['total']); ?>)
+                            </span>
+                        <?php else : ?>
+                            <p class="servicio-resenas__empty-summary" data-resenas-empty-summary>
+                                <?php esc_html_e('Sé el primero en calificar este servicio.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                            </p>
+                        <?php endif; ?>
+                    </div>
+                </header>
+
+                <div class="servicio-resenas__list" data-resenas-list>
+                    <?php if (empty($resenas_data['items'])) : ?>
+                        <p class="servicio-resenas__empty" data-resenas-empty>
+                            <?php esc_html_e('Aún no hay comentarios públicos.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                        </p>
+                    <?php else : ?>
+                        <?php foreach ($resenas_data['items'] as $item) : ?>
+                            <article class="servicio-resenas__item" data-resena-id="<?php echo esc_attr((string) $item['id']); ?>">
+                                <div class="servicio-resenas__item-top">
+                                    <strong class="servicio-resenas__author"><?php echo esc_html((string) $item['nombre']); ?></strong>
+                                    <time class="servicio-resenas__date"><?php echo esc_html((string) $item['fecha']); ?></time>
+                                </div>
+                                <?php echo yuniorrojas_resena_estrellas_html((float) $item['rating']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                <p class="servicio-resenas__text"><?php echo esc_html((string) $item['texto']); ?></p>
+                                <div class="servicio-resenas__item-foot">
+                                    <?php echo yuniorrojas_resena_like_html($item); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+
+                <?php if ($puede_reseñar) : ?>
+                    <form class="servicio-resenas__form" data-resena-form novalidate>
+                        <h3 class="servicio-resenas__form-title">
+                            <?php echo $mi_resena
+                                ? esc_html__('Actualiza tu reseña', YUNIORROJAS_TEXT_DOMAIN)
+                                : esc_html__('Deja tu reseña', YUNIORROJAS_TEXT_DOMAIN); ?>
+                        </h3>
+                        <p class="servicio-resenas__form-lead">
+                            <?php esc_html_e('Califica tu experiencia y comparte un breve comentario.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                        </p>
+                        <div class="servicio-resenas__field">
+                            <span class="servicio-resenas__label"><?php esc_html_e('Tu calificación', YUNIORROJAS_TEXT_DOMAIN); ?></span>
+                            <?php echo yuniorrojas_resena_estrellas_html((float) $rating_form, true); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                            <input type="hidden" name="rating" value="<?php echo esc_attr((string) $rating_form); ?>" data-resena-rating>
+                        </div>
+                        <label class="servicio-resenas__field">
+                            <span class="servicio-resenas__label"><?php esc_html_e('Comentario', YUNIORROJAS_TEXT_DOMAIN); ?></span>
+                            <textarea
+                                name="texto"
+                                rows="4"
+                                maxlength="800"
+                                data-resena-texto
+                                placeholder="<?php esc_attr_e('¿Cómo fue tu experiencia con este servicio?', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                                required
+                            ><?php echo esc_textarea($texto_form); ?></textarea>
+                        </label>
+                        <button type="submit" class="servicio-resenas__submit" data-resena-submit>
+                            <?php echo $mi_resena
+                                ? esc_html__('Guardar cambios', YUNIORROJAS_TEXT_DOMAIN)
+                                : esc_html__('Publicar reseña', YUNIORROJAS_TEXT_DOMAIN); ?>
+                        </button>
+                        <p class="servicio-resenas__status" data-resena-status hidden></p>
+                    </form>
+                <?php elseif (is_user_logged_in()) : ?>
+                    <p class="servicio-resenas__login-note">
+                        <?php esc_html_e('Solo las cuentas de cliente pueden dejar reseñas.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                    </p>
+                <?php else : ?>
+                    <p class="servicio-resenas__login-note">
+                        <a href="<?php echo esc_url(yuniorrojas_url_login()); ?>">
+                            <?php esc_html_e('Inicia sesión', YUNIORROJAS_TEXT_DOMAIN); ?>
+                        </a>
+                        <?php esc_html_e('como cliente para calificar y comentar.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                    </p>
+                <?php endif; ?>
+            </section>
         </aside>
 
         <div class="servicio__main">
@@ -110,7 +217,11 @@ get_header();
                             <img
                                 src="<?php echo esc_url($imagen_url); ?>"
                                 alt="<?php echo esc_attr($alt); ?>"
-                                class="servicio__galeria-imagen">
+                                class="servicio__galeria-imagen"
+                                loading="lazy"
+                                decoding="async"
+                                width="640"
+                                height="640">
                         </article>
                     <?php endforeach; ?>
                 </div>

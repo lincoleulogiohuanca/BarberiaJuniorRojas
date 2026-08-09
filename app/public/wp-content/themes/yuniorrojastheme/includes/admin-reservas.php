@@ -72,6 +72,26 @@ function yuniorrojas_reserva_metodo_pago_label(string $metodo): string
 }
 
 /**
+ * Etiqueta de estado de pago orientada al cliente.
+ *
+ * @param array<string, mixed> $reserva
+ */
+function yuniorrojas_reserva_pago_label_cliente(array $reserva): string
+{
+    if (!empty($reserva['pago_verificado'])) {
+        return __('Pago verificado', YUNIORROJAS_TEXT_DOMAIN);
+    }
+
+    $metodo = sanitize_key((string) ($reserva['metodo_pago'] ?? ''));
+    if ($metodo === '' || $metodo === 'estudio' || $metodo === 'efectivo') {
+        return __('Pago pendiente', YUNIORROJAS_TEXT_DOMAIN);
+    }
+
+    // Plin / transferencia / manual: el estudio debe revisar el depósito.
+    return __('Pago pendiente de verificación', YUNIORROJAS_TEXT_DOMAIN);
+}
+
+/**
  * Estados “activas” (citas vigentes).
  *
  * @return string[]

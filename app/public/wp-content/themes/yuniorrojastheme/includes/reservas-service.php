@@ -518,9 +518,10 @@ function yuniorrojas_crear_reserva(array $data)
     }
 
     // Estado según tipo de cobro.
+    // Estudio: cita confirmada (va al local); el dinero se verifica al cobrar en el barbería.
     if ($tipo_cobro === 'estudio') {
         $estado_inicial  = 'confirmada';
-        $pago_verificado = '1';
+        $pago_verificado = '0';
     } elseif ($tipo_cobro === 'culqi' && $culqi_charge_id !== '') {
         $estado_inicial  = 'confirmada';
         $pago_verificado = '1';
@@ -528,6 +529,7 @@ function yuniorrojas_crear_reserva(array $data)
         $estado_inicial  = 'pendiente';
         $pago_verificado = '0';
     } else {
+        // Plin / transferencia manual: pendiente de verificación de comprobante.
         $estado_inicial  = 'pendiente';
         $pago_verificado = '0';
     }
@@ -944,6 +946,45 @@ function yuniorrojas_nivel_cliente(int $user_id): array
 }
 
 /**
+ * URL de imagen destacada de un servicio (por ID o, si falta, por nombre).
+ */
+function yuniorrojas_servicio_imagen_url(int $servicio_id, string $servicio_nombre = '', string $size = 'large'): string
+{
+    $servicio_id = absint($servicio_id);
+    if ($servicio_id > 0 && get_post_type($servicio_id) === YUNIORROJAS_CPT_SERVICIOS) {
+        $thumb = get_the_post_thumbnail_url($servicio_id, $size);
+        if (is_string($thumb) && $thumb !== '') {
+            return $thumb;
+        }
+    }
+
+    $nombre = trim($servicio_nombre);
+    if ($nombre === '') {
+        return '';
+    }
+
+    $found = get_posts(array(
+        'post_type'              => YUNIORROJAS_CPT_SERVICIOS,
+        'post_status'            => 'publish',
+        'title'                  => $nombre,
+        'posts_per_page'         => 1,
+        'fields'                 => 'ids',
+        'no_found_rows'          => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => false,
+    ));
+
+    if (!empty($found[0])) {
+        $thumb = get_the_post_thumbnail_url((int) $found[0], $size);
+        if (is_string($thumb) && $thumb !== '') {
+            return $thumb;
+        }
+    }
+
+    return '';
+}
+
+/**
  * Datos del panel cliente (reales + fallback vacío).
  *
  * @return array<string, mixed>
@@ -957,9 +998,18 @@ function yuniorrojas_cuenta_datos_cliente(int $user_id): array
 
     $historial_ui = array();
     foreach ($historial as $item) {
-        $imagen_raw = (string) ($item['imagen'] ?? '');
-        $tiene_foto = $imagen_raw !== '' && filter_var($imagen_raw, FILTER_VALIDATE_URL);
-        $imagen     = $tiene_foto ? $imagen_raw : ($theme_uri . '/img/logo.png');
+        $imagen_raw  = (string) ($item['imagen'] ?? '');
+        $tiene_foto  = $imagen_raw !== '' && (bool) filter_var($imagen_raw, FILTER_VALIDATE_URL);
+        $servicio_id = (int) ($item['servicio_id'] ?? 0);
+        $servicio_img = yuniorrojas_servicio_imagen_url($servicio_id, (string) ($item['servicio_nombre'] ?? ''));
+        // Prioridad: foto del corte → imagen del servicio → logo.
+        if ($tiene_foto) {
+            $imagen = $imagen_raw;
+        } elseif ($servicio_img !== '') {
+            $imagen = $servicio_img;
+        } else {
+            $imagen = $theme_uri . '/img/logo.png';
+        }
         $historial_ui[] = array(
             'id'          => (int) $item['id'],
             'titulo'      => (string) $item['servicio_nombre'],
@@ -971,7 +1021,7 @@ function yuniorrojas_cuenta_datos_cliente(int $user_id): array
             'imagen'      => $imagen,
             'tiene_foto'  => $tiene_foto,
             'cta'         => 'solid',
-            'servicio_id' => (int) $item['servicio_id'],
+            'servicio_id' => $servicio_id,
             'barbero_id'  => (int) $item['barbero_id'],
         );
     }
@@ -987,8 +1037,12 @@ function yuniorrojas_cuenta_datos_cliente(int $user_id): array
             'id'                     => (int) $item['id'],
             'dia'                    => (string) ($item['dia'] ?? ''),
             'mes'                    => (string) ($item['mes'] ?? ''),
+            'fecha'                  => (string) ($item['fecha'] ?? ''),
             'servicio'               => (string) ($item['servicio_nombre'] ?? ''),
             'hora'                   => (string) ($item['hora_label'] ?? $item['hora'] ?? ''),
+            'hora_raw'               => (string) ($item['hora'] ?? ''),
+            'hora_fin'               => (string) ($item['hora_fin'] ?? ''),
+            'duracion'               => (int) ($item['duracion'] ?? 0),
             'barbero'                => (string) ($item['barbero_nombre'] ?? ''),
             'precio'                 => (string) ($item['precio'] ?? ''),
             'servicio_id'            => (int) ($item['servicio_id'] ?? 0),
@@ -1117,6 +1171,352 @@ function yuniorrojas_actualizar_preferencias_cliente(int $user_id, array $data)
     }
 
     return true;
+}
+
+/**
+ * Meta key del attachment de foto de perfil del cliente.
+ */
+function yuniorrojas_cliente_avatar_meta_key(): string
+{
+    return 'jr_avatar_id';
+}
+
+/**
+ * Attachment ID del avatar del cliente (0 si no hay).
+ */
+function yuniorrojas_cliente_avatar_id(int $user_id): int
+{
+    $user_id = absint($user_id);
+    if ($user_id <= 0) {
+        return 0;
+    }
+
+    return absint(get_user_meta($user_id, yuniorrojas_cliente_avatar_meta_key(), true));
+}
+
+/**
+ * URL del avatar del cliente (propio o fallback del tema).
+ */
+function yuniorrojas_cliente_avatar_url(int $user_id, int $size = 192): string
+{
+    $user_id = absint($user_id);
+    $size    = max(48, min(512, absint($size)));
+    $attach  = yuniorrojas_cliente_avatar_id($user_id);
+
+    if ($attach > 0) {
+        $url = wp_get_attachment_image_url($attach, array($size, $size));
+        if (!is_string($url) || $url === '') {
+            $url = (string) wp_get_attachment_url($attach);
+        }
+        if ($url !== '') {
+            return $url;
+        }
+    }
+
+    return (string) (get_template_directory_uri() . '/img/logo monograma.png');
+}
+
+/**
+ * Borra del disco el attachment del avatar si pertenece al usuario.
+ */
+function yuniorrojas_cliente_borrar_avatar_attachment(int $user_id, int $attachment_id): void
+{
+    $user_id       = absint($user_id);
+    $attachment_id = absint($attachment_id);
+    if ($user_id <= 0 || $attachment_id <= 0) {
+        return;
+    }
+
+    if (get_post_type($attachment_id) !== 'attachment') {
+        return;
+    }
+
+    $author = (int) get_post_field('post_author', $attachment_id);
+    $mime   = (string) get_post_mime_type($attachment_id);
+    if ($author !== $user_id || $mime === '' || strpos($mime, 'image/') !== 0) {
+        return;
+    }
+
+    // true = forzar borrado de archivo físico + metadatos.
+    wp_delete_attachment($attachment_id, true);
+}
+
+/**
+ * Asocia un nuevo avatar; elimina el anterior del storage si hay cambio.
+ *
+ * @return array{ok:bool,avatar_id:int,avatar_url:string}|WP_Error
+ */
+function yuniorrojas_cliente_actualizar_avatar(int $user_id, int $attachment_id)
+{
+    $user_id       = absint($user_id);
+    $attachment_id = absint($attachment_id);
+
+    if ($user_id <= 0 || $attachment_id <= 0) {
+        return new WP_Error('avatar', 'Datos de avatar incompletos.', array('status' => 400));
+    }
+
+    if (get_post_type($attachment_id) !== 'attachment') {
+        return new WP_Error('avatar', 'Archivo no válido.', array('status' => 400));
+    }
+
+    $mime = (string) get_post_mime_type($attachment_id);
+    if ($mime === '' || strpos($mime, 'image/') !== 0) {
+        return new WP_Error('avatar', 'El perfil debe ser una imagen (JPG, PNG o WEBP).', array('status' => 400));
+    }
+
+    $prev = yuniorrojas_cliente_avatar_id($user_id);
+
+    // Asegura ownership del nuevo archivo.
+    wp_update_post(array(
+        'ID'          => $attachment_id,
+        'post_author' => $user_id,
+    ));
+
+    update_user_meta($user_id, yuniorrojas_cliente_avatar_meta_key(), (string) $attachment_id);
+
+    if ($prev > 0 && $prev !== $attachment_id) {
+        yuniorrojas_cliente_borrar_avatar_attachment($user_id, $prev);
+    }
+
+    $url = yuniorrojas_cliente_avatar_url($user_id, 192);
+
+    return array(
+        'ok'         => true,
+        'avatar_id'  => $attachment_id,
+        'avatar_url' => $url,
+        'message'    => 'Foto de perfil actualizada.',
+    );
+}
+
+/**
+ * Elimina el avatar actual del usuario y su archivo en storage.
+ *
+ * @return array{ok:bool,avatar_url:string}|WP_Error
+ */
+function yuniorrojas_cliente_eliminar_avatar(int $user_id)
+{
+    $user_id = absint($user_id);
+    if ($user_id <= 0) {
+        return new WP_Error('auth', 'Debes iniciar sesión.', array('status' => 401));
+    }
+
+    $prev = yuniorrojas_cliente_avatar_id($user_id);
+    delete_user_meta($user_id, yuniorrojas_cliente_avatar_meta_key());
+
+    if ($prev > 0) {
+        yuniorrojas_cliente_borrar_avatar_attachment($user_id, $prev);
+    }
+
+    return array(
+        'ok'         => true,
+        'avatar_url' => yuniorrojas_cliente_avatar_url($user_id, 192),
+        'message'    => 'Foto de perfil eliminada.',
+    );
+}
+
+/**
+ * Datos para calendarios / recordatorios / compartir de una cita.
+ *
+ * @param array<string, mixed> $cita
+ * @return array{
+ *   ok:bool,
+ *   title:string,
+ *   details:string,
+ *   location:string,
+ *   start_iso:string,
+ *   end_iso:string,
+ *   start_gcal:string,
+ *   end_gcal:string,
+ *   timezone:string,
+ *   google_url:string,
+ *   outlook_url:string,
+ *   yahoo_url:string,
+ *   share_text:string,
+ *   share_url:string,
+ *   whatsapp_url:string,
+ *   facebook_url:string,
+ *   twitter_url:string,
+ *   email_url:string,
+ *   ics:string
+ * }|null
+ */
+function yuniorrojas_cita_cliente_herramientas(array $cita): ?array
+{
+    $fecha = (string) ($cita['fecha'] ?? '');
+    $hora  = (string) ($cita['hora_raw'] ?? $cita['hora'] ?? '');
+    // Si llega label "11:00 AM - …", priorizar hora_raw; si no, intentar H:i.
+    if (!preg_match('/^\d{1,2}:\d{2}/', $hora)) {
+        $hora = (string) ($cita['hora_raw'] ?? '');
+    }
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha) || !preg_match('/^\d{1,2}:\d{2}/', $hora)) {
+        return null;
+    }
+
+    $hora_parts = explode(':', $hora);
+    $hh         = str_pad((string) absint($hora_parts[0] ?? 0), 2, '0', STR_PAD_LEFT);
+    $mm         = str_pad((string) absint($hora_parts[1] ?? 0), 2, '0', STR_PAD_LEFT);
+    $hora_norm  = $hh . ':' . $mm;
+
+    $tz_string = function_exists('wp_timezone_string') ? wp_timezone_string() : 'America/Lima';
+    if ($tz_string === '') {
+        $tz_string = 'America/Lima';
+    }
+
+    try {
+        $tz    = new DateTimeZone($tz_string);
+        $start = new DateTimeImmutable($fecha . ' ' . $hora_norm . ':00', $tz);
+    } catch (Exception $e) {
+        return null;
+    }
+
+    $duracion = (int) ($cita['duracion'] ?? 0);
+    if ($duracion <= 0) {
+        $duracion = 45;
+    }
+    $hora_fin = (string) ($cita['hora_fin'] ?? '');
+    if (preg_match('/^\d{1,2}:\d{2}/', $hora_fin)) {
+        try {
+            $end = new DateTimeImmutable($fecha . ' ' . substr($hora_fin, 0, 5) . ':00', $tz);
+            if ($end <= $start) {
+                $end = $start->modify('+' . $duracion . ' minutes');
+            }
+        } catch (Exception $e) {
+            $end = $start->modify('+' . $duracion . ' minutes');
+        }
+    } else {
+        $end = $start->modify('+' . $duracion . ' minutes');
+    }
+
+    $servicio = (string) ($cita['servicio'] ?? $cita['servicio_nombre'] ?? 'Cita');
+    $barbero  = (string) ($cita['barbero'] ?? $cita['barbero_nombre'] ?? '');
+    $site     = (string) get_bloginfo('name');
+    $title    = trim($servicio . ($site !== '' ? ' · ' . $site : ''));
+
+    $contacto  = function_exists('yuniorrojas_contacto') ? yuniorrojas_contacto() : array();
+    $location  = (string) ($contacto['direccion'] ?? '');
+    $cuenta_url = function_exists('yuniorrojas_url_cuenta')
+        ? yuniorrojas_url_cuenta()
+        : home_url('/');
+    $citas_url  = add_query_arg('vista', 'citas', $cuenta_url);
+
+    $details_lines = array_filter(array(
+        $servicio !== '' ? 'Servicio: ' . $servicio : '',
+        $barbero !== '' ? 'Barbero: ' . $barbero : '',
+        $site !== '' ? 'Estudio: ' . $site : '',
+        'Gestiona tu cita: ' . $citas_url,
+    ));
+    $details = implode("\n", $details_lines);
+
+    $start_gcal = $start->format('Ymd\THis');
+    $end_gcal   = $end->format('Ymd\THis');
+    $start_iso  = $start->format(DateTimeInterface::ATOM);
+    $end_iso    = $end->format(DateTimeInterface::ATOM);
+
+    $google_url = add_query_arg(
+        array(
+            'action'   => 'TEMPLATE',
+            'text'     => $title,
+            'dates'    => $start_gcal . '/' . $end_gcal,
+            'details'  => $details,
+            'location' => $location,
+            'ctz'      => $tz_string,
+        ),
+        'https://calendar.google.com/calendar/render'
+    );
+
+    $outlook_url = add_query_arg(
+        array(
+            'path'     => '/calendar/action/compose',
+            'rru'      => 'addevent',
+            'subject'  => $title,
+            'startdt'  => $start->format('Y-m-d\TH:i:s'),
+            'enddt'    => $end->format('Y-m-d\TH:i:s'),
+            'body'     => $details,
+            'location' => $location,
+        ),
+        'https://outlook.live.com/calendar/0/deeplink/compose'
+    );
+
+    $yahoo_url = add_query_arg(
+        array(
+            'v'      => '60',
+            'title'  => $title,
+            'st'     => $start_gcal,
+            'et'     => $end_gcal,
+            'desc'   => $details,
+            'in_loc' => $location,
+        ),
+        'https://calendar.yahoo.com/'
+    );
+
+    $fecha_label = $start->format('d/m/Y') . ' · ' . $start->format('H:i');
+    $share_text  = sprintf(
+        'Mi cita: %s el %s%s%s',
+        $servicio !== '' ? $servicio : 'corte',
+        $fecha_label,
+        $barbero !== '' ? ' con ' . $barbero : '',
+        $site !== '' ? ' en ' . $site : ''
+    );
+
+    $uid     = 'jr-cita-' . absint($cita['id'] ?? 0) . '@' . wp_parse_url(home_url('/'), PHP_URL_HOST);
+    $dtstamp = gmdate('Ymd\THis\Z');
+    $ics = "BEGIN:VCALENDAR\r\n"
+        . "VERSION:2.0\r\n"
+        . "PRODID:-//Junior Rojas//Reservas//ES\r\n"
+        . "CALSCALE:GREGORIAN\r\n"
+        . "METHOD:PUBLISH\r\n"
+        . "BEGIN:VEVENT\r\n"
+        . 'UID:' . $uid . "\r\n"
+        . 'DTSTAMP:' . $dtstamp . "\r\n"
+        . 'DTSTART;TZID=' . $tz_string . ':' . $start_gcal . "\r\n"
+        . 'DTEND;TZID=' . $tz_string . ':' . $end_gcal . "\r\n"
+        . 'SUMMARY:' . yuniorrojas_ics_escape($title) . "\r\n"
+        . 'DESCRIPTION:' . yuniorrojas_ics_escape($details) . "\r\n"
+        . ($location !== '' ? 'LOCATION:' . yuniorrojas_ics_escape($location) . "\r\n" : '')
+        . "STATUS:CONFIRMED\r\n"
+        . "BEGIN:VALARM\r\n"
+        . "TRIGGER:-PT60M\r\n"
+        . "ACTION:DISPLAY\r\n"
+        . 'DESCRIPTION:' . yuniorrojas_ics_escape('Recordatorio: ' . $title) . "\r\n"
+        . "END:VALARM\r\n"
+        . "END:VEVENT\r\n"
+        . "END:VCALENDAR\r\n";
+
+    $wa_msg = $share_text . "\n" . $citas_url;
+
+    return array(
+        'ok'           => true,
+        'title'        => $title,
+        'details'      => $details,
+        'location'     => $location,
+        'start_iso'    => $start_iso,
+        'end_iso'      => $end_iso,
+        'start_gcal'   => $start_gcal,
+        'end_gcal'     => $end_gcal,
+        'timezone'     => $tz_string,
+        'google_url'   => $google_url,
+        'outlook_url'  => $outlook_url,
+        'yahoo_url'    => $yahoo_url,
+        'share_text'   => $share_text,
+        'share_url'    => $citas_url,
+        'whatsapp_url' => 'https://wa.me/?text=' . rawurlencode($wa_msg),
+        'facebook_url' => 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode($citas_url) . '&quote=' . rawurlencode($share_text),
+        'twitter_url'  => 'https://twitter.com/intent/tweet?text=' . rawurlencode($share_text) . '&url=' . rawurlencode($citas_url),
+        'email_url'    => 'mailto:?subject=' . rawurlencode($title) . '&body=' . rawurlencode($share_text . "\n\n" . $details),
+        'ics'          => $ics,
+    );
+}
+
+/**
+ * Escape de texto para campos VCALENDAR.
+ */
+function yuniorrojas_ics_escape(string $value): string
+{
+    $value = str_replace("\r\n", "\n", $value);
+    $value = str_replace("\r", "\n", $value);
+    $value = str_replace(array('\\', ';', ',', "\n"), array('\\\\', '\\;', '\\,', '\\n'), $value);
+
+    return $value;
 }
 
 /**
@@ -1284,3 +1684,54 @@ function yuniorrojas_admin_guardar_reserva(int $reserva_id, array $data)
 
     return true;
 }
+
+/**
+ * Una sola vez: pago en estudio no debe figurar como verificado hasta cobrar en local.
+ * Solo toca citas activas (no completadas).
+ */
+function yuniorrojas_migrar_pago_estudio_pendiente(): void
+{
+    if (get_option('jr_migrated_pago_estudio_v1') === '1') {
+        return;
+    }
+
+    $q = new WP_Query(array(
+        'post_type'              => YUNIORROJAS_CPT_RESERVAS,
+        'post_status'            => 'publish',
+        'posts_per_page'         => -1,
+        'fields'                 => 'ids',
+        'no_found_rows'          => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => false,
+        'meta_query'             => array(
+            'relation' => 'AND',
+            array(
+                'relation' => 'OR',
+                array(
+                    'key'   => yuniorrojas_reserva_meta_key('metodo_pago'),
+                    'value' => 'estudio',
+                ),
+                array(
+                    'key'   => yuniorrojas_reserva_meta_key('metodo_pago'),
+                    'value' => 'efectivo',
+                ),
+            ),
+            array(
+                'key'   => yuniorrojas_reserva_meta_key('pago_verificado'),
+                'value' => '1',
+            ),
+            array(
+                'key'     => yuniorrojas_reserva_meta_key('estado'),
+                'value'   => array('completada', 'cancelada', 'no_show'),
+                'compare' => 'NOT IN',
+            ),
+        ),
+    ));
+
+    foreach ($q->posts as $rid) {
+        update_post_meta((int) $rid, yuniorrojas_reserva_meta_key('pago_verificado'), '0');
+    }
+
+    update_option('jr_migrated_pago_estudio_v1', '1', false);
+}
+add_action('init', 'yuniorrojas_migrar_pago_estudio_pendiente', 40);

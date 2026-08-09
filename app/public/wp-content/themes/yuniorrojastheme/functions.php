@@ -39,6 +39,7 @@ $yuniorrojas_includes = array(
     'includes/settings-pagos.php',
     'includes/rest-galeria.php',
     'includes/rest-reservas.php',
+    'includes/servicio-resenas.php',
     'includes/widgets.php',
     'includes/contacto.php',
     'includes/settings-contacto.php',
@@ -172,13 +173,19 @@ function yuniorrojas_scripts_styles(): void
         'restDisponibilidad' => esc_url_raw(rest_url('yuniorrojas/v1/disponibilidad')),
         'restListaEspera'    => esc_url_raw(rest_url('yuniorrojas/v1/lista-espera')),
         'restPreferencias'   => esc_url_raw(rest_url('yuniorrojas/v1/cuenta/preferencias')),
+        'restAvatar'         => esc_url_raw(rest_url('yuniorrojas/v1/cuenta/avatar')),
+        'restResenasBase'    => esc_url_raw(rest_url('yuniorrojas/v1/servicios')),
+        'restResenaLikeBase' => esc_url_raw(rest_url('yuniorrojas/v1/resenas')),
         'restNonce'          => wp_create_nonce('wp_rest'),
+        'isCliente'          => function_exists('yuniorrojas_es_cliente') && yuniorrojas_es_cliente(),
+        'loginUrl'           => esc_url_raw(yuniorrojas_url_login()),
         'homeUrl'            => esc_url_raw(home_url('/')),
         'cuentaUrl'          => esc_url_raw(yuniorrojas_url_cuenta()),
         'reservarUrl'        => esc_url_raw(yuniorrojas_url_reservar()),
         'serviciosUrl'       => esc_url_raw(yuniorrojas_url_servicios()),
         'siteName'           => (string) get_bloginfo('name'),
         'isLoggedIn'         => is_user_logged_in(),
+        'userId'             => is_user_logged_in() ? (int) get_current_user_id() : 0,
         'userEmail'          => is_user_logged_in() ? (string) wp_get_current_user()->user_email : '',
         'mediosPago'         => function_exists('yuniorrojas_medios_pago_checkout_js')
             ? yuniorrojas_medios_pago_checkout_js()
@@ -410,6 +417,50 @@ function yuniorrojas_auth_body_class(array $classes): array
     return $classes;
 }
 add_filter('body_class', 'yuniorrojas_auth_body_class');
+
+/**
+ * Usa la foto de perfil del cliente en get_avatar / get_avatar_url (header, etc.).
+ *
+ * @param array<string, mixed> $args Args de avatar.
+ * @param mixed                $id_or_email User ID, email o objeto.
+ * @return array<string, mixed>
+ */
+function yuniorrojas_pre_get_avatar_data(array $args, $id_or_email): array
+{
+    if (!function_exists('yuniorrojas_cliente_avatar_id') || !function_exists('yuniorrojas_cliente_avatar_url')) {
+        return $args;
+    }
+
+    $user_id = 0;
+    if (is_numeric($id_or_email)) {
+        $user_id = (int) $id_or_email;
+    } elseif ($id_or_email instanceof WP_User) {
+        $user_id = (int) $id_or_email->ID;
+    } elseif (is_object($id_or_email) && isset($id_or_email->user_id)) {
+        $user_id = (int) $id_or_email->user_id;
+    } elseif (is_string($id_or_email) && is_email($id_or_email)) {
+        $user = get_user_by('email', $id_or_email);
+        if ($user instanceof WP_User) {
+            $user_id = (int) $user->ID;
+        }
+    }
+
+    if ($user_id <= 0 || yuniorrojas_cliente_avatar_id($user_id) <= 0) {
+        return $args;
+    }
+
+    $size = isset($args['size']) ? (int) $args['size'] : 96;
+    $url  = yuniorrojas_cliente_avatar_url($user_id, max(48, $size));
+    if ($url === '') {
+        return $args;
+    }
+
+    $args['url']          = $url;
+    $args['found_avatar'] = true;
+
+    return $args;
+}
+add_filter('pre_get_avatar_data', 'yuniorrojas_pre_get_avatar_data', 10, 2);
 
 /**
  * Asegura plantillas auth en páginas iniciar-sesion, registro, recuperar y mi-cuenta.

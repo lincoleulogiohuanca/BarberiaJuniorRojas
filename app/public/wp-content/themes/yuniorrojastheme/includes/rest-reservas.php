@@ -159,6 +159,23 @@ function yuniorrojas_registrar_rest_reservas(): void
         'callback'            => 'yuniorrojas_rest_guardar_preferencias',
     ));
 
+    register_rest_route('yuniorrojas/v1', '/cuenta/avatar', array(
+        array(
+            'methods'             => 'POST',
+            'permission_callback' => static function (): bool {
+                return is_user_logged_in() && function_exists('yuniorrojas_es_cliente') && yuniorrojas_es_cliente();
+            },
+            'callback'            => 'yuniorrojas_rest_subir_avatar',
+        ),
+        array(
+            'methods'             => 'DELETE',
+            'permission_callback' => static function (): bool {
+                return is_user_logged_in() && function_exists('yuniorrojas_es_cliente') && yuniorrojas_es_cliente();
+            },
+            'callback'            => 'yuniorrojas_rest_eliminar_avatar',
+        ),
+    ));
+
     register_rest_route('yuniorrojas/v1', '/disponibilidad', array(
         'methods'             => 'GET',
         'permission_callback' => '__return_true',
@@ -304,6 +321,8 @@ function yuniorrojas_rest_crear_reserva(WP_REST_Request $request)
         $msg = 'Reserva reprogramada correctamente.';
     } elseif ($pagado && in_array($metodo, array('tarjeta', 'culqi'), true)) {
         $msg = 'Pago online (tarjeta / Yape) aprobado. Tu cita está confirmada.';
+    } elseif (in_array($metodo, array('estudio', 'efectivo', ''), true)) {
+        $msg = 'Cita confirmada. El pago se realiza al llegar al estudio.';
     } elseif ($estado === 'pendiente') {
         $msg = 'Reserva registrada. Tu pago está pendiente de verificación del estudio.';
     } else {
@@ -413,6 +432,96 @@ function yuniorrojas_rest_guardar_preferencias(WP_REST_Request $request)
         'ok'      => true,
         'message' => 'Preferencias actualizadas.',
     ), 200);
+}
+
+/**
+ * Sube foto de perfil del cliente (reemplaza y borra la anterior).
+ *
+ * @param WP_REST_Request $request Request.
+ * @return WP_REST_Response|WP_Error
+ */
+function yuniorrojas_rest_subir_avatar(WP_REST_Request $request)
+{
+    $user_id = (int) get_current_user_id();
+    $files   = $request->get_file_params();
+    $file    = isset($files['avatar']) && is_array($files['avatar']) ? $files['avatar'] : null;
+
+    if ($file === null || empty($file['tmp_name']) || !is_uploaded_file((string) $file['tmp_name'])) {
+        return new WP_Error(
+            'avatar',
+            'Selecciona una imagen de perfil (JPG, PNG o WEBP).',
+            array('status' => 400)
+        );
+    }
+
+    $size = isset($file['size']) ? (int) $file['size'] : 0;
+    if ($size > 4 * 1024 * 1024) {
+        return new WP_Error('avatar', 'La imagen no debe superar 4 MB.', array('status' => 400));
+    }
+
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    require_once ABSPATH . 'wp-admin/includes/media.php';
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+
+    $overrides = array(
+        'test_form' => false,
+        'mimes'     => array(
+            'jpg|jpeg|jpe' => 'image/jpeg',
+            'png'          => 'image/png',
+            'webp'         => 'image/webp',
+        ),
+    );
+
+    $upload = wp_handle_upload($file, $overrides);
+    if (isset($upload['error']) || empty($upload['file'])) {
+        $msg = isset($upload['error']) ? (string) $upload['error'] : 'No se pudo subir la imagen.';
+        return new WP_Error('avatar', $msg, array('status' => 400));
+    }
+
+    $attachment = array(
+        'post_mime_type' => $upload['type'] ?? 'image/jpeg',
+        'post_title'     => 'avatar-cliente-' . $user_id,
+        'post_content'   => '',
+        'post_status'    => 'inherit',
+        'post_author'    => $user_id,
+    );
+
+    $attach_id = wp_insert_attachment($attachment, $upload['file']);
+    if (is_wp_error($attach_id) || !$attach_id) {
+        @unlink((string) $upload['file']);
+        return new WP_Error('avatar', 'No se pudo guardar la imagen.', array('status' => 500));
+    }
+
+    $meta = wp_generate_attachment_metadata((int) $attach_id, $upload['file']);
+    if (is_array($meta)) {
+        wp_update_attachment_metadata((int) $attach_id, $meta);
+    }
+
+    $result = yuniorrojas_cliente_actualizar_avatar($user_id, (int) $attach_id);
+    if (is_wp_error($result)) {
+        // Limpia el archivo recién subido si no se asoció.
+        wp_delete_attachment((int) $attach_id, true);
+        return $result;
+    }
+
+    return new WP_REST_Response($result, 200);
+}
+
+/**
+ * Elimina foto de perfil del cliente.
+ *
+ * @param WP_REST_Request $request Request.
+ * @return WP_REST_Response|WP_Error
+ */
+function yuniorrojas_rest_eliminar_avatar(WP_REST_Request $request)
+{
+    unset($request);
+    $result = yuniorrojas_cliente_eliminar_avatar((int) get_current_user_id());
+    if (is_wp_error($result)) {
+        return $result;
+    }
+
+    return new WP_REST_Response($result, 200);
 }
 
 /**

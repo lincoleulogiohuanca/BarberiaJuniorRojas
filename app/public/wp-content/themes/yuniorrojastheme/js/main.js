@@ -3226,14 +3226,146 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Historial cliente: filtros demo
+  // Historial cliente: filtros dark custom + paginación (10 por página)
   const historialRoot = document.querySelector("[data-cliente-historial]");
   if (historialRoot instanceof HTMLElement) {
+    const PAGE_SIZE = 10;
     const anioSelect = historialRoot.querySelector("[data-historial-anio]");
-    const servicioSelect = historialRoot.querySelector("[data-historial-servicio]");
-    const cards = historialRoot.querySelectorAll("[data-historial-card]");
+    const servicioSelect = historialRoot.querySelector(
+      "[data-historial-servicio]"
+    );
+    const cards = Array.from(
+      historialRoot.querySelectorAll("[data-historial-card]")
+    ).filter((card) => card instanceof HTMLElement);
+    const pagination = historialRoot.querySelector("[data-historial-pagination]");
+    const prevBtn = historialRoot.querySelector("[data-historial-prev]");
+    const nextBtn = historialRoot.querySelector("[data-historial-next]");
+    const pageInfo = historialRoot.querySelector("[data-historial-page-info]");
+    const pageNums = historialRoot.querySelector("[data-historial-page-nums]");
+    let currentPage = 1;
 
-    const applyFilters = () => {
+    /**
+     * Select nativo se oculta: UI custom con paleta oscura/dorado.
+     * @param {HTMLSelectElement} selectEl
+     */
+    const enhanceDarkSelect = (selectEl) => {
+      if (selectEl.dataset.enhanced === "1") {
+        return;
+      }
+      selectEl.dataset.enhanced = "1";
+
+      const wrap = selectEl.closest(".cliente-historial-page__filter");
+      if (!(wrap instanceof HTMLElement)) {
+        return;
+      }
+
+      const trigger = document.createElement("button");
+      trigger.type = "button";
+      trigger.className = "cliente-historial-page__select-trigger";
+      trigger.setAttribute("aria-haspopup", "listbox");
+      trigger.setAttribute("aria-expanded", "false");
+
+      const menu = document.createElement("div");
+      menu.className = "cliente-historial-page__select-menu";
+      menu.setAttribute("role", "listbox");
+      menu.hidden = true;
+
+      const syncFromSelect = () => {
+        menu.innerHTML = "";
+        Array.from(selectEl.options).forEach((opt, index) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "cliente-historial-page__select-option";
+          btn.setAttribute("role", "option");
+          btn.setAttribute("data-value", opt.value);
+          btn.textContent = opt.textContent || opt.value;
+          if (opt.selected || selectEl.selectedIndex === index) {
+            btn.classList.add("is-selected");
+            btn.setAttribute("aria-selected", "true");
+          } else {
+            btn.setAttribute("aria-selected", "false");
+          }
+          btn.addEventListener("click", () => {
+            selectEl.value = opt.value;
+            selectEl.dispatchEvent(new Event("change", { bubbles: true }));
+            closeMenu();
+          });
+          menu.appendChild(btn);
+        });
+
+        const selected = selectEl.options[selectEl.selectedIndex];
+        const label = selected ? selected.textContent || selected.value : "";
+        trigger.innerHTML =
+          `<span>${label}</span><i class="ti ti-chevron-down" aria-hidden="true"></i>`;
+      };
+
+      const closeMenu = () => {
+        menu.hidden = true;
+        wrap.classList.remove("is-open");
+        trigger.setAttribute("aria-expanded", "false");
+      };
+
+      const openMenu = () => {
+        historialRoot
+          .querySelectorAll(".cliente-historial-page__filter.is-open")
+          .forEach((other) => {
+            if (other !== wrap) {
+              other.classList.remove("is-open");
+              const otherMenu = other.querySelector(
+                ".cliente-historial-page__select-menu"
+              );
+              const otherTrigger = other.querySelector(
+                ".cliente-historial-page__select-trigger"
+              );
+              if (otherMenu instanceof HTMLElement) {
+                otherMenu.hidden = true;
+              }
+              if (otherTrigger instanceof HTMLElement) {
+                otherTrigger.setAttribute("aria-expanded", "false");
+              }
+            }
+          });
+        menu.hidden = false;
+        wrap.classList.add("is-open");
+        trigger.setAttribute("aria-expanded", "true");
+      };
+
+      trigger.addEventListener("click", () => {
+        if (menu.hidden) {
+          openMenu();
+        } else {
+          closeMenu();
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof Node) || !wrap.contains(target)) {
+          closeMenu();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeMenu();
+        }
+      });
+
+      selectEl.addEventListener("change", syncFromSelect);
+
+      wrap.appendChild(trigger);
+      wrap.appendChild(menu);
+      syncFromSelect();
+    };
+
+    if (anioSelect instanceof HTMLSelectElement) {
+      enhanceDarkSelect(anioSelect);
+    }
+    if (servicioSelect instanceof HTMLSelectElement) {
+      enhanceDarkSelect(servicioSelect);
+    }
+
+    const matchingCards = () => {
       const anio =
         anioSelect instanceof HTMLSelectElement ? anioSelect.value : "*";
       const servicio =
@@ -3241,25 +3373,561 @@ document.addEventListener("DOMContentLoaded", () => {
           ? servicioSelect.value
           : "*";
 
-      cards.forEach((card) => {
-        if (!(card instanceof HTMLElement)) {
-          return;
-        }
+      return cards.filter((card) => {
         const cardAnio = card.getAttribute("data-anio") || "";
         const cardServicio = card.getAttribute("data-servicio") || "";
         const okAnio = anio === "*" || cardAnio === anio;
         const okServicio = servicio === "*" || cardServicio === servicio;
-        card.hidden = !(okAnio && okServicio);
+        return okAnio && okServicio;
       });
     };
 
+    const render = () => {
+      const matched = matchingCards();
+      const totalPages = Math.max(1, Math.ceil(matched.length / PAGE_SIZE));
+      if (currentPage > totalPages) {
+        currentPage = totalPages;
+      }
+      if (currentPage < 1) {
+        currentPage = 1;
+      }
+
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const end = start + PAGE_SIZE;
+      const visibleSet = new Set(matched.slice(start, end));
+
+      cards.forEach((card) => {
+        card.hidden = !visibleSet.has(card);
+      });
+
+      if (pagination instanceof HTMLElement) {
+        pagination.hidden = matched.length <= PAGE_SIZE;
+      }
+
+      if (pageInfo instanceof HTMLElement) {
+        pageInfo.textContent =
+          matched.length === 0
+            ? "Sin resultados"
+            : `Página ${currentPage} de ${totalPages}`;
+      }
+
+      if (prevBtn instanceof HTMLButtonElement) {
+        prevBtn.disabled = currentPage <= 1 || matched.length === 0;
+      }
+      if (nextBtn instanceof HTMLButtonElement) {
+        nextBtn.disabled = currentPage >= totalPages || matched.length === 0;
+      }
+
+      if (pageNums instanceof HTMLElement) {
+        pageNums.innerHTML = "";
+        if (matched.length > 0 && totalPages > 1) {
+          for (let page = 1; page <= totalPages; page += 1) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className =
+              "cliente-historial-page__page-num" +
+              (page === currentPage ? " is-active" : "");
+            btn.textContent = String(page);
+            btn.setAttribute("aria-label", `Ir a página ${page}`);
+            if (page === currentPage) {
+              btn.setAttribute("aria-current", "page");
+            }
+            btn.addEventListener("click", () => {
+              currentPage = page;
+              render();
+              historialRoot.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            });
+            pageNums.appendChild(btn);
+          }
+        }
+      }
+    };
+
+    const onFilterChange = () => {
+      currentPage = 1;
+      render();
+    };
+
     if (anioSelect instanceof HTMLSelectElement) {
-      anioSelect.addEventListener("change", applyFilters);
+      anioSelect.addEventListener("change", onFilterChange);
     }
     if (servicioSelect instanceof HTMLSelectElement) {
-      servicioSelect.addEventListener("change", applyFilters);
+      servicioSelect.addEventListener("change", onFilterChange);
+    }
+    if (prevBtn instanceof HTMLButtonElement) {
+      prevBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+          currentPage -= 1;
+          render();
+          historialRoot.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    }
+    if (nextBtn instanceof HTMLButtonElement) {
+      nextBtn.addEventListener("click", () => {
+        currentPage += 1;
+        render();
+        historialRoot.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
+    render();
+  }
+
+  // Foto de perfil (sidebar + preferencias): sube y borra anterior en el servidor
+  const avatarInputs = document.querySelectorAll("[data-cliente-avatar-input]");
+  if (avatarInputs.length > 0) {
+    const theme = window.yuniorrojasTheme || {};
+    const avatarEndpoint = String(theme.restAvatar || "").replace(/\/$/, "");
+    const nonce = String(theme.restNonce || "");
+    const statusEl = document.querySelector("[data-cliente-avatar-status]");
+    const removeBtn = document.querySelector("[data-cliente-avatar-remove]");
+    const labelEl = document.querySelector("[data-cliente-avatar-label]");
+    const imgEls = document.querySelectorAll(
+      "[data-cliente-avatar-img], .header__account-avatar, .footer__account-avatar"
+    );
+
+    const setStatus = (message, type) => {
+      if (!(statusEl instanceof HTMLElement)) {
+        return;
+      }
+      if (!message) {
+        statusEl.hidden = true;
+        statusEl.textContent = "";
+        statusEl.classList.remove("is-ok", "is-error");
+        return;
+      }
+      statusEl.hidden = false;
+      statusEl.textContent = message;
+      statusEl.classList.toggle("is-ok", type === "ok");
+      statusEl.classList.toggle("is-error", type === "error");
+    };
+
+    const applyAvatarUrl = (url, isFallback) => {
+      const next = String(url || "");
+      if (!next) {
+        return;
+      }
+      imgEls.forEach((img) => {
+        if (img instanceof HTMLImageElement) {
+          img.src = next;
+          img.classList.toggle("is-fallback", Boolean(isFallback));
+        }
+      });
+    };
+
+    const setHasAvatar = (has) => {
+      if (removeBtn instanceof HTMLButtonElement) {
+        removeBtn.hidden = !has;
+      }
+      if (labelEl instanceof HTMLElement) {
+        labelEl.textContent = has ? "Cambiar foto" : "Subir foto";
+      }
+    };
+
+    const uploadAvatar = async (file, sourceInput) => {
+      if (!avatarEndpoint) {
+        setStatus("Endpoint de avatar no disponible.", "error");
+        return;
+      }
+      if (!(file instanceof File)) {
+        return;
+      }
+
+      const maxBytes = 4 * 1024 * 1024;
+      if (file.size > maxBytes) {
+        setStatus("La imagen no debe superar 4 MB.", "error");
+        return;
+      }
+
+      const allowed = ["image/jpeg", "image/png", "image/webp"];
+      if (file.type && !allowed.includes(file.type)) {
+        setStatus("Usa JPG, PNG o WEBP.", "error");
+        return;
+      }
+
+      const wrap =
+        sourceInput instanceof HTMLElement
+          ? sourceInput.closest(".cliente-dash__avatar-wrap")
+          : null;
+      if (wrap instanceof HTMLElement) {
+        wrap.classList.add("is-loading");
+      }
+      setStatus("Subiendo foto…", null);
+
+      try {
+        const formData = new FormData();
+        formData.append("avatar", file);
+
+        const res = await fetch(avatarEndpoint, {
+          method: "POST",
+          headers: {
+            "X-WP-Nonce": nonce,
+          },
+          credentials: "same-origin",
+          body: formData,
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const msg =
+            data?.message ||
+            data?.data?.message ||
+            (typeof data === "object" && data?.code
+              ? "No se pudo subir la foto."
+              : "No se pudo subir la foto.");
+          throw new Error(String(msg));
+        }
+
+        applyAvatarUrl(data?.avatar_url || "", false);
+        setHasAvatar(true);
+        setStatus(data?.message || "Foto de perfil actualizada.", "ok");
+      } catch (err) {
+        const message =
+          err instanceof Error && err.message
+            ? err.message
+            : "No se pudo subir la foto.";
+        setStatus(message, "error");
+      } finally {
+        if (wrap instanceof HTMLElement) {
+          wrap.classList.remove("is-loading");
+        }
+        if (sourceInput instanceof HTMLInputElement) {
+          sourceInput.value = "";
+        }
+      }
+    };
+
+    avatarInputs.forEach((input) => {
+      if (!(input instanceof HTMLInputElement)) {
+        return;
+      }
+      input.addEventListener("change", () => {
+        const file = input.files && input.files[0] ? input.files[0] : null;
+        if (file) {
+          uploadAvatar(file, input);
+        }
+      });
+    });
+
+    if (removeBtn instanceof HTMLButtonElement) {
+      removeBtn.addEventListener("click", async () => {
+        if (!avatarEndpoint) {
+          return;
+        }
+        if (!window.confirm("¿Quitar la foto de perfil?")) {
+          return;
+        }
+        setStatus("Eliminando foto…", null);
+        removeBtn.disabled = true;
+        try {
+          const res = await fetch(avatarEndpoint, {
+            method: "DELETE",
+            headers: {
+              "X-WP-Nonce": nonce,
+            },
+            credentials: "same-origin",
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(
+              String(data?.message || "No se pudo eliminar la foto.")
+            );
+          }
+          applyAvatarUrl(data?.avatar_url || "", true);
+          setHasAvatar(false);
+          setStatus(data?.message || "Foto de perfil eliminada.", "ok");
+        } catch (err) {
+          const message =
+            err instanceof Error && err.message
+              ? err.message
+              : "No se pudo eliminar la foto.";
+          setStatus(message, "error");
+        } finally {
+          removeBtn.disabled = false;
+        }
+      });
     }
   }
+
+  // Citas: módulo calendario / recordatorios / compartir
+  const REMINDERS_KEY = "jr_cita_recordatorios_v1";
+
+  /** @returns {Record<string, {title:string,start:string,offsets:number[],fired:Record<string,number>}>} */
+  const loadReminders = () => {
+    try {
+      const raw = localStorage.getItem(REMINDERS_KEY);
+      if (!raw) {
+        return {};
+      }
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (e) {
+      return {};
+    }
+  };
+
+  /** @param {Record<string, unknown>} data */
+  const saveReminders = (data) => {
+    try {
+      localStorage.setItem(REMINDERS_KEY, JSON.stringify(data));
+    } catch (e) {
+      // ignore quota
+    }
+  };
+
+  const showCitaNotification = (title, body) => {
+    if (!("Notification" in window) || Notification.permission !== "granted") {
+      return;
+    }
+    try {
+      new Notification(title || "Recordatorio de cita", {
+        body: body || "Tu cita se acerca.",
+        icon: "/favicon.ico",
+      });
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  const processDueReminders = () => {
+    const store = loadReminders();
+    const now = Date.now();
+    let changed = false;
+
+    Object.keys(store).forEach((id) => {
+      const entry = store[id];
+      if (!entry || !entry.start || !Array.isArray(entry.offsets)) {
+        return;
+      }
+      const startMs = Date.parse(entry.start);
+      if (!Number.isFinite(startMs)) {
+        return;
+      }
+      if (!entry.fired || typeof entry.fired !== "object") {
+        entry.fired = {};
+      }
+      entry.offsets.forEach((offset) => {
+        const key = String(offset);
+        const fireAt = startMs - Number(offset) * 60000;
+        // Ventana de 2 minutos para disparar si la pestaña está abierta.
+        if (fireAt <= now && fireAt > now - 2 * 60000 && !entry.fired[key]) {
+          showCitaNotification(
+            "Recordatorio de cita",
+            entry.title || "Tienes una cita próxima en el estudio."
+          );
+          entry.fired[key] = now;
+          changed = true;
+        }
+      });
+      // Limpia citas ya pasadas (más de 6 h).
+      if (startMs < now - 6 * 60 * 60000) {
+        delete store[id];
+        changed = true;
+      }
+    });
+
+    if (changed) {
+      saveReminders(store);
+    }
+  };
+
+  processDueReminders();
+  window.setInterval(processDueReminders, 30000);
+
+  document.querySelectorAll("[data-cita-tools]").forEach((root) => {
+    if (!(root instanceof HTMLElement)) {
+      return;
+    }
+
+    const toggle = root.querySelector("[data-cita-tools-toggle]");
+    const panel = root.querySelector("[data-cita-tools-panel]");
+    const reservaId = root.getAttribute("data-reserva-id") || "";
+    const startIso = root.getAttribute("data-start-iso") || "";
+    const title = root.getAttribute("data-title") || "Cita";
+    const shareText = root.getAttribute("data-share-text") || title;
+    const shareUrl = root.getAttribute("data-share-url") || window.location.href;
+    const remStatus = root.querySelector("[data-cita-reminder-status]");
+    const remToggle = root.querySelector("[data-cita-reminder-toggle]");
+    const remToggleLabel = root.querySelector("[data-cita-reminder-toggle-label]");
+    const remToggleIcon = remToggle instanceof HTMLElement
+      ? remToggle.querySelector("i")
+      : null;
+    const shareStatus = root.querySelector("[data-cita-share-status]");
+    const offsetInputs = root.querySelectorAll("[data-cita-reminder-offset]");
+
+    const isReminderActive = () => {
+      const store = loadReminders();
+      const entry = reservaId ? store[reservaId] : null;
+      return !!(entry && Array.isArray(entry.offsets) && entry.offsets.length);
+    };
+
+    const setRemStatus = (msg, type) => {
+      if (!(remStatus instanceof HTMLElement)) {
+        return;
+      }
+      if (!msg) {
+        remStatus.hidden = true;
+        remStatus.textContent = "";
+        remStatus.classList.remove("is-ok", "is-error");
+        return;
+      }
+      remStatus.hidden = false;
+      remStatus.textContent = msg;
+      remStatus.classList.toggle("is-ok", type === "ok");
+      remStatus.classList.toggle("is-error", type === "error");
+    };
+
+    const setShareStatus = (msg, type) => {
+      if (!(shareStatus instanceof HTMLElement)) {
+        return;
+      }
+      if (!msg) {
+        shareStatus.hidden = true;
+        shareStatus.textContent = "";
+        shareStatus.classList.remove("is-ok", "is-error");
+        return;
+      }
+      shareStatus.hidden = false;
+      shareStatus.textContent = msg;
+      shareStatus.classList.toggle("is-ok", type === "ok");
+      shareStatus.classList.toggle("is-error", type === "error");
+    };
+
+    const syncReminderUi = () => {
+      const store = loadReminders();
+      const entry = reservaId ? store[reservaId] : null;
+      const active = !!(entry && Array.isArray(entry.offsets) && entry.offsets.length);
+
+      if (remToggleLabel instanceof HTMLElement) {
+        remToggleLabel.textContent = active ? "Desactivar" : "Activar";
+      }
+      if (remToggleIcon instanceof HTMLElement) {
+        remToggleIcon.className = active
+          ? "ti ti-bell-off"
+          : "ti ti-bell-ringing";
+      }
+      if (remToggle instanceof HTMLButtonElement) {
+        remToggle.classList.toggle("cliente-cita-tools__btn--solid", !active);
+        remToggle.classList.toggle("cliente-cita-tools__btn--danger", active);
+        remToggle.setAttribute(
+          "aria-pressed",
+          active ? "true" : "false"
+        );
+      }
+
+      if (active) {
+        offsetInputs.forEach((input) => {
+          if (!(input instanceof HTMLInputElement)) {
+            return;
+          }
+          input.checked = entry.offsets.map(String).includes(input.value);
+        });
+        setRemStatus(
+          `Recordatorios activos (${entry.offsets.length}).`,
+          "ok"
+        );
+      } else {
+        setRemStatus("", null);
+      }
+    };
+
+    if (toggle instanceof HTMLButtonElement && panel instanceof HTMLElement) {
+      toggle.addEventListener("click", () => {
+        const open = panel.hidden;
+        panel.hidden = !open;
+        root.classList.toggle("is-open", open);
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    }
+
+    if (remToggle instanceof HTMLButtonElement) {
+      remToggle.addEventListener("click", async () => {
+        if (!reservaId || !startIso) {
+          setRemStatus("No se pudo programar esta cita.", "error");
+          return;
+        }
+
+        // Ya activos → desactivar
+        if (isReminderActive()) {
+          const store = loadReminders();
+          delete store[reservaId];
+          saveReminders(store);
+          syncReminderUi();
+          setRemStatus("Recordatorios desactivados.", "ok");
+          return;
+        }
+
+        // Activar
+        const offsets = [];
+        offsetInputs.forEach((input) => {
+          if (input instanceof HTMLInputElement && input.checked) {
+            offsets.push(Number(input.value));
+          }
+        });
+        if (offsets.length === 0) {
+          setRemStatus("Elige al menos un tiempo de recordatorio.", "error");
+          return;
+        }
+
+        if (!("Notification" in window)) {
+          setRemStatus("Este navegador no soporta notificaciones.", "error");
+          return;
+        }
+
+        let permission = Notification.permission;
+        if (permission === "default") {
+          permission = await Notification.requestPermission();
+        }
+        if (permission !== "granted") {
+          setRemStatus(
+            "Activa las notificaciones del navegador para recibir recordatorios.",
+            "error"
+          );
+          return;
+        }
+
+        const store = loadReminders();
+        store[reservaId] = {
+          title,
+          start: startIso,
+          offsets,
+          fired: {},
+        };
+        saveReminders(store);
+        syncReminderUi();
+        setRemStatus("Recordatorios activados en este dispositivo.", "ok");
+        processDueReminders();
+      });
+    }
+
+    const copyBtn = root.querySelector("[data-cita-copy]");
+    if (copyBtn instanceof HTMLButtonElement) {
+      copyBtn.addEventListener("click", async () => {
+        const text = shareUrl || window.location.href;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            ta.remove();
+          }
+          setShareStatus("Enlace copiado.", "ok");
+        } catch (e) {
+          setShareStatus("No se pudo copiar el enlace.", "error");
+        }
+      });
+    }
+
+    syncReminderUi();
+  });
 
   // Preferencias: selección de estilo de referencia
   const prefRoot = document.querySelector("[data-cliente-pref]");
@@ -3292,5 +3960,415 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
     }
+  }
+
+  // Reseñas en ficha de servicio
+  const resenasRoot = document.querySelector("[data-servicio-resenas]");
+  if (resenasRoot instanceof HTMLElement) {
+    const theme = window.yuniorrojasTheme || {};
+    const servicioId = resenasRoot.getAttribute("data-servicio-id") || "";
+    const base = String(theme.restResenasBase || "").replace(/\/$/, "");
+    const likeBase = String(theme.restResenaLikeBase || "").replace(/\/$/, "");
+    const nonce = String(theme.restNonce || "");
+    const isLoggedIn = !!theme.isLoggedIn;
+    const form = resenasRoot.querySelector("[data-resena-form]");
+    const ratingInput = resenasRoot.querySelector("[data-resena-rating]");
+    const textoInput = resenasRoot.querySelector("[data-resena-texto]");
+    const submitBtn = resenasRoot.querySelector("[data-resena-submit]");
+    const statusEl = resenasRoot.querySelector("[data-resena-status]");
+    const starsRoot = resenasRoot.querySelector("[data-resena-stars]");
+    const listEl = resenasRoot.querySelector("[data-resenas-list]");
+
+    const escapeHtml = (value) => {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    };
+
+    const setStatus = (msg, type) => {
+      if (!(statusEl instanceof HTMLElement)) {
+        return;
+      }
+      if (!msg) {
+        statusEl.hidden = true;
+        statusEl.textContent = "";
+        statusEl.classList.remove("is-ok", "is-error");
+        return;
+      }
+      statusEl.hidden = false;
+      statusEl.textContent = msg;
+      statusEl.classList.toggle("is-ok", type === "ok");
+      statusEl.classList.toggle("is-error", type === "error");
+    };
+
+    const paintStars = (value) => {
+      if (!(starsRoot instanceof HTMLElement)) {
+        return;
+      }
+      starsRoot.querySelectorAll("[data-star]").forEach((btn) => {
+        if (!(btn instanceof HTMLElement)) {
+          return;
+        }
+        const n = Number(btn.getAttribute("data-star") || "0");
+        btn.classList.toggle("is-on", n > 0 && n <= value);
+      });
+    };
+
+    if (starsRoot instanceof HTMLElement) {
+      const initial =
+        ratingInput instanceof HTMLInputElement
+          ? Number(ratingInput.value || "5")
+          : 5;
+      paintStars(initial);
+
+      starsRoot.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+        const btn = target.closest("[data-star]");
+        if (!(btn instanceof HTMLElement)) {
+          return;
+        }
+        const value = Number(btn.getAttribute("data-star") || "0");
+        if (value < 1) {
+          return;
+        }
+        if (ratingInput instanceof HTMLInputElement) {
+          ratingInput.value = String(value);
+        }
+        paintStars(value);
+      });
+    }
+
+    const starsHtml = (rating) => {
+      let html = '<span class="servicio-resenas__stars" aria-hidden="true">';
+      for (let i = 1; i <= 5; i += 1) {
+        html +=
+          '<span class="servicio-resenas__star' +
+          (i <= rating ? " is-on" : "") +
+          '"><i class="ti ti-star-filled"></i></span>';
+      }
+      html += "</span>";
+      return html;
+    };
+
+    /** @param {Record<string, unknown>} resena */
+    const likeHtml = (resena) => {
+      const id = String(resena.id || "");
+      const likes = Math.max(0, Number(resena.likes || 0));
+      const liked = !!resena.liked;
+      const puede = !!resena.puede_like;
+      const propia = !!resena.es_propia;
+      const icon = liked || (propia && likes > 0) ? "ti-heart-filled" : "ti-heart";
+      const count =
+        '<span class="servicio-resenas__like-count" data-like-count">' +
+        escapeHtml(String(likes)) +
+        "</span>";
+
+      // Otras reseñas + sesión: botón activo.
+      if (puede && id) {
+        const label = liked ? "Quitar me gusta" : "Me gusta";
+        return (
+          '<button type="button" class="servicio-resenas__like' +
+          (liked ? " is-liked" : "") +
+          '" data-resena-like data-resena-id="' +
+          escapeHtml(id) +
+          '" aria-pressed="' +
+          (liked ? "true" : "false") +
+          '" aria-label="' +
+          label +
+          '" title="' +
+          label +
+          '"><i class="ti ' +
+          icon +
+          '" aria-hidden="true"></i>' +
+          count +
+          "</button>"
+        );
+      }
+
+      // Propia o visitante: icono + contador sin acción.
+      const title = propia
+        ? "Me gusta recibidos"
+        : "Inicia sesión para dar me gusta";
+      const cls =
+        "servicio-resenas__like is-static" +
+        (likes > 0 || liked ? " is-liked" : "");
+      return (
+        '<span class="' +
+        cls +
+        '" title="' +
+        title +
+        '" aria-label="' +
+        title +
+        '"><i class="ti ' +
+        icon +
+        '" aria-hidden="true"></i>' +
+        count +
+        "</span>"
+      );
+    };
+
+    /** @param {Record<string, unknown>} resena */
+    const prependOrUpdateItem = (resena) => {
+      if (!(listEl instanceof HTMLElement) || !resena) {
+        return;
+      }
+      const empty = listEl.querySelector("[data-resenas-empty]");
+      if (empty) {
+        empty.remove();
+      }
+
+      const id = String(resena.id || "");
+      let item = id
+        ? listEl.querySelector(`[data-resena-id="${id}"]`)
+        : null;
+      if (!(item instanceof HTMLElement)) {
+        item = document.createElement("article");
+        item.className = "servicio-resenas__item";
+        if (id) {
+          item.setAttribute("data-resena-id", id);
+        }
+        listEl.prepend(item);
+      }
+
+      // Tras publicar: es tu reseña → icono visible, sin poder darte like.
+      const payload = Object.assign({}, resena, {
+        es_propia: true,
+        puede_like: false,
+        liked: false,
+        likes: Number(resena.likes || 0),
+      });
+
+      item.innerHTML =
+        '<div class="servicio-resenas__item-top">' +
+        `<strong class="servicio-resenas__author">${escapeHtml(
+          String(resena.nombre || "Cliente")
+        )}</strong>` +
+        `<time class="servicio-resenas__date">${escapeHtml(
+          String(resena.fecha || "")
+        )}</time>` +
+        "</div>" +
+        starsHtml(Number(resena.rating || 5)) +
+        `<p class="servicio-resenas__text">${escapeHtml(
+          String(resena.texto || "")
+        )}</p>` +
+        '<div class="servicio-resenas__item-foot">' +
+        likeHtml(payload) +
+        "</div>";
+    };
+
+    const updateSummary = (promedio, total) => {
+      const summary = resenasRoot.querySelector("[data-resenas-summary]");
+      if (!(summary instanceof HTMLElement)) {
+        return;
+      }
+      if (total <= 0) {
+        summary.innerHTML =
+          '<p class="servicio-resenas__empty-summary" data-resenas-empty-summary>Sé el primero en calificar este servicio.</p>';
+        return;
+      }
+      summary.innerHTML =
+        starsHtml(Math.round(Number(promedio) || 0)) +
+        `<span class="servicio-resenas__avg" data-resenas-avg>${Number(
+          promedio
+        ).toFixed(1)}</span>` +
+        `<span class="servicio-resenas__count" data-resenas-count>(${total})</span>`;
+    };
+
+    /** @param {HTMLElement} el */
+    const applyLikeState = (el, liked, likes) => {
+      el.classList.toggle("is-liked", liked);
+      el.setAttribute("aria-pressed", liked ? "true" : "false");
+      const label = liked ? "Quitar me gusta" : "Me gusta";
+      el.setAttribute("aria-label", label);
+      el.setAttribute("title", label);
+      const icon = el.querySelector(".ti");
+      if (icon instanceof HTMLElement) {
+        icon.className = liked ? "ti ti-heart-filled" : "ti ti-heart";
+      }
+      const countEl = el.querySelector("[data-like-count]");
+      if (countEl instanceof HTMLElement) {
+        countEl.textContent = String(Math.max(0, likes));
+      }
+    };
+
+    if (listEl instanceof HTMLElement) {
+      listEl.addEventListener("click", async (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+        const btn = target.closest("[data-resena-like]");
+        if (!(btn instanceof HTMLButtonElement)) {
+          return;
+        }
+        if (!isLoggedIn) {
+          const loginUrl = String(theme.loginUrl || "");
+          if (loginUrl) {
+            window.location.href = loginUrl;
+          }
+          return;
+        }
+        if (!likeBase) {
+          return;
+        }
+        const resenaId = btn.getAttribute("data-resena-id") || "";
+        if (!resenaId) {
+          return;
+        }
+
+        btn.classList.add("is-loading");
+        btn.disabled = true;
+
+        try {
+          const res = await fetch(`${likeBase}/${resenaId}/like`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-WP-Nonce": nonce,
+            },
+            credentials: "same-origin",
+            body: "{}",
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const msg =
+              data?.message ||
+              (res.status === 403
+                ? "No puedes dar like a tu propia reseña."
+                : "No se pudo registrar el me gusta.");
+            throw new Error(String(msg));
+          }
+          applyLikeState(
+            btn,
+            !!data?.liked,
+            Number(data?.likes ?? 0)
+          );
+        } catch (err) {
+          window.alert(
+            err instanceof Error && err.message
+              ? err.message
+              : "No se pudo registrar el me gusta."
+          );
+        } finally {
+          btn.classList.remove("is-loading");
+          btn.disabled = false;
+        }
+      });
+    }
+
+    if (form instanceof HTMLFormElement) {
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!servicioId || !base) {
+          setStatus("No se pudo enviar la reseña.", "error");
+          return;
+        }
+        const rating =
+          ratingInput instanceof HTMLInputElement
+            ? Number(ratingInput.value || "0")
+            : 0;
+        const texto =
+          textoInput instanceof HTMLTextAreaElement
+            ? textoInput.value.trim()
+            : "";
+
+        if (rating < 1 || rating > 5) {
+          setStatus("Elige una calificación de 1 a 5 estrellas.", "error");
+          return;
+        }
+        if (texto.length < 8) {
+          setStatus("Escribe un comentario de al menos 8 caracteres.", "error");
+          return;
+        }
+
+        if (submitBtn instanceof HTMLButtonElement) {
+          submitBtn.disabled = true;
+        }
+        setStatus("Publicando reseña…", null);
+
+        try {
+          const res = await fetch(`${base}/${servicioId}/resenas`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-WP-Nonce": nonce,
+            },
+            credentials: "same-origin",
+            body: JSON.stringify({ rating, texto }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const msg =
+              data?.message || "No se pudo publicar la reseña.";
+            throw new Error(String(msg));
+          }
+
+          if (data?.resena) {
+            prependOrUpdateItem(data.resena);
+          }
+          updateSummary(data?.promedio ?? 0, data?.total ?? 0);
+          setStatus(
+            data?.message || "Reseña publicada. Gracias por tu opinión.",
+            "ok"
+          );
+          if (submitBtn instanceof HTMLButtonElement) {
+            submitBtn.textContent = "Guardar cambios";
+          }
+          const formTitle = form.querySelector(".servicio-resenas__form-title");
+          if (formTitle instanceof HTMLElement) {
+            formTitle.textContent = "Actualiza tu reseña";
+          }
+        } catch (err) {
+          setStatus(
+            err instanceof Error && err.message
+              ? err.message
+              : "No se pudo publicar la reseña.",
+            "error"
+          );
+        } finally {
+          if (submitBtn instanceof HTMLButtonElement) {
+            submitBtn.disabled = false;
+          }
+        }
+      });
+    }
+  }
+
+  // Scroll to top (páginas públicas; no se renderiza en panel cliente)
+  const scrollTopBtn = document.querySelector("[data-scroll-top]");
+  if (scrollTopBtn instanceof HTMLButtonElement) {
+    const scrollThreshold = 320;
+    let ticking = false;
+
+    const updateScrollTopVisibility = () => {
+      const visible = window.scrollY > scrollThreshold;
+      scrollTopBtn.classList.toggle("is-visible", visible);
+      if (visible) {
+        scrollTopBtn.removeAttribute("hidden");
+      } else {
+        scrollTopBtn.setAttribute("hidden", "");
+      }
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (ticking) {
+        return;
+      }
+      ticking = true;
+      window.requestAnimationFrame(updateScrollTopVisibility);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    updateScrollTopVisibility();
+
+    scrollTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
   }
 });

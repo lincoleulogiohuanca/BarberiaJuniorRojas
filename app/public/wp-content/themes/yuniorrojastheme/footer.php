@@ -63,7 +63,9 @@
                         $footer_name = (string) $footer_user->user_login;
                     }
                     $footer_short  = explode(' ', $footer_name)[0] ?? $footer_name;
-                    $footer_avatar = get_avatar_url((int) $footer_user->ID, array('size' => 64));
+                    $footer_avatar = function_exists('yuniorrojas_cliente_avatar_url')
+                        ? yuniorrojas_cliente_avatar_url((int) $footer_user->ID, 96)
+                        : (string) get_avatar_url((int) $footer_user->ID, array('size' => 64));
                     $cuenta_url    = yuniorrojas_url_cuenta();
                     $logout_url    = wp_logout_url(home_url('/'));
                     ?>
@@ -77,6 +79,7 @@
                             aria-controls="footer-account-menu">
                             <img
                                 class="footer__account-avatar"
+                                data-cliente-avatar-img
                                 src="<?php echo esc_url($footer_avatar ?: get_template_directory_uri() . '/img/logo monograma.png'); ?>"
                                 alt=""
                                 width="36"
@@ -144,6 +147,13 @@
         </div>
     </div>
 </footer>
+
+<?php
+// Scroll top en páginas públicas; no en panel cliente (mi-cuenta).
+if (!is_page('mi-cuenta') && !is_page_template('page-mi-cuenta.php')) {
+    get_template_part('template-parts/scroll', 'to-top');
+}
+?>
 
 <?php wp_footer(); ?>
 

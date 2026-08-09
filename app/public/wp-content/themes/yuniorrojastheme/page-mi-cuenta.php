@@ -25,7 +25,12 @@ $nombre        = trim((string) $usuario->display_name);
 $nombre_corto  = $nombre !== '' ? $nombre : (string) $usuario->user_login;
 $primer_nombre = explode(' ', $nombre_corto)[0] ?? $nombre_corto;
 $nivel_label   = (string) ($cuenta['nivel']['label'] ?? 'Cliente Classic');
-$avatar        = get_avatar_url($user_id, array('size' => 96));
+$avatar        = function_exists('yuniorrojas_cliente_avatar_url')
+    ? yuniorrojas_cliente_avatar_url($user_id, 192)
+    : (string) get_avatar_url($user_id, array('size' => 96));
+$tiene_avatar  = function_exists('yuniorrojas_cliente_avatar_id')
+    ? yuniorrojas_cliente_avatar_id($user_id) > 0
+    : false;
 $reservar_url  = yuniorrojas_url_reservar();
 $logout_url    = wp_logout_url(yuniorrojas_url_servicios());
 $logo_url      = yuniorrojas_logo_url();
@@ -102,6 +107,9 @@ $render_cita = static function (array $cita) use ($reservar_url): void {
     if ($metodo_label === '' && function_exists('yuniorrojas_reserva_metodo_pago_label')) {
         $metodo_label = yuniorrojas_reserva_metodo_pago_label($metodo);
     }
+    $tools = function_exists('yuniorrojas_cita_cliente_herramientas')
+        ? yuniorrojas_cita_cliente_herramientas($cita)
+        : null;
 
     $reprog_args = array('paso' => 'cita');
     if ($servicio_id > 0) {
@@ -135,9 +143,20 @@ $render_cita = static function (array $cita) use ($reservar_url): void {
                     <li>
                         <i class="ti ti-wallet" aria-hidden="true"></i>
                         <?php echo esc_html($metodo_label); ?>
-                        <?php if (!empty($cita['pago_verificado'])) : ?>
-                            <span class="cliente-cita__pago-ok">· Pago verificado</span>
+                        <?php
+                        $pago_label = function_exists('yuniorrojas_reserva_pago_label_cliente')
+                            ? yuniorrojas_reserva_pago_label_cliente($cita)
+                            : '';
+                        $pago_ok = !empty($cita['pago_verificado']);
+                        ?>
+                        <?php if ($pago_label !== '') : ?>
+                            <span class="<?php echo $pago_ok ? 'cliente-cita__pago-ok' : 'cliente-cita__pago-pendiente'; ?>">
+                                · <?php echo esc_html($pago_label); ?>
+                            </span>
                         <?php elseif ($codigo_op !== '') : ?>
+                            <span class="cliente-cita__pago-codigo">· Op. <?php echo esc_html($codigo_op); ?></span>
+                        <?php endif; ?>
+                        <?php if ($codigo_op !== '' && $pago_label !== '') : ?>
                             <span class="cliente-cita__pago-codigo">· Op. <?php echo esc_html($codigo_op); ?></span>
                         <?php endif; ?>
                     </li>
@@ -205,6 +224,7 @@ $render_cita = static function (array $cita) use ($reservar_url): void {
                     </a>
                 </div>
             <?php endif; ?>
+
         </div>
         <div class="cliente-cita__actions">
             <?php if (!empty($cita['puede_reprogramar']) || !isset($cita['puede_reprogramar'])) : ?>
@@ -227,6 +247,96 @@ $render_cita = static function (array $cita) use ($reservar_url): void {
                 </button>
             <?php endif; ?>
         </div>
+
+        <?php if (is_array($tools) && !empty($tools['ok'])) : ?>
+            <div
+                class="cliente-cita-tools"
+                data-cita-tools
+                data-reserva-id="<?php echo esc_attr((string) $id); ?>"
+                data-start-iso="<?php echo esc_attr((string) $tools['start_iso']); ?>"
+                data-title="<?php echo esc_attr((string) $tools['title']); ?>"
+                data-share-text="<?php echo esc_attr((string) $tools['share_text']); ?>"
+                data-share-url="<?php echo esc_url((string) $tools['share_url']); ?>"
+            >
+                <button type="button" class="cliente-cita-tools__toggle" data-cita-tools-toggle aria-expanded="false">
+                    <i class="ti ti-apps" aria-hidden="true"></i>
+                    <span class="cliente-cita-tools__toggle-label">
+                        <?php esc_html_e('Calendario, recordatorios y compartir', YUNIORROJAS_TEXT_DOMAIN); ?>
+                    </span>
+                    <i class="ti ti-chevron-down cliente-cita-tools__chevron" aria-hidden="true"></i>
+                </button>
+
+                <div class="cliente-cita-tools__panel" data-cita-tools-panel hidden>
+                    <div class="cliente-cita-tools__grid">
+                        <section class="cliente-cita-tools__block cliente-cita-tools__block--cal" aria-labelledby="cita-cal-<?php echo esc_attr((string) $id); ?>">
+                            <h4 id="cita-cal-<?php echo esc_attr((string) $id); ?>" class="cliente-cita-tools__title">
+                                <i class="ti ti-calendar-plus" aria-hidden="true"></i>
+                                <?php esc_html_e('Añadir al calendario', YUNIORROJAS_TEXT_DOMAIN); ?>
+                            </h4>
+                            <div class="cliente-cita-tools__actions">
+                                <a class="cliente-cita-tools__action" href="<?php echo esc_url((string) $tools['google_url']); ?>" target="_blank" rel="noopener noreferrer">
+                                    <i class="ti ti-brand-google" aria-hidden="true"></i>
+                                    <span><?php esc_html_e('Calendario de Google', YUNIORROJAS_TEXT_DOMAIN); ?></span>
+                                </a>
+                            </div>
+                        </section>
+
+                        <section class="cliente-cita-tools__block cliente-cita-tools__block--rem" aria-labelledby="cita-rem-<?php echo esc_attr((string) $id); ?>">
+                            <h4 id="cita-rem-<?php echo esc_attr((string) $id); ?>" class="cliente-cita-tools__title">
+                                <i class="ti ti-bell" aria-hidden="true"></i>
+                                <?php esc_html_e('Recordatorios', YUNIORROJAS_TEXT_DOMAIN); ?>
+                            </h4>
+                            <p class="cliente-cita-tools__hint">
+                                <?php esc_html_e('Alertas en este dispositivo (notificación del navegador). Mantén el navegador con permisos activos.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                            </p>
+                            <div class="cliente-cita-tools__checks">
+                                <label class="cliente-cita-tools__check">
+                                    <input type="checkbox" value="1440" data-cita-reminder-offset checked>
+                                    <?php esc_html_e('1 día antes', YUNIORROJAS_TEXT_DOMAIN); ?>
+                                </label>
+                                <label class="cliente-cita-tools__check">
+                                    <input type="checkbox" value="120" data-cita-reminder-offset checked>
+                                    <?php esc_html_e('2 horas antes', YUNIORROJAS_TEXT_DOMAIN); ?>
+                                </label>
+                                <label class="cliente-cita-tools__check">
+                                    <input type="checkbox" value="60" data-cita-reminder-offset checked>
+                                    <?php esc_html_e('1 hora antes', YUNIORROJAS_TEXT_DOMAIN); ?>
+                                </label>
+                                <label class="cliente-cita-tools__check">
+                                    <input type="checkbox" value="30" data-cita-reminder-offset>
+                                    <?php esc_html_e('30 minutos antes', YUNIORROJAS_TEXT_DOMAIN); ?>
+                                </label>
+                            </div>
+                            <div class="cliente-cita-tools__rem-actions">
+                                <button type="button" class="cliente-cita-tools__btn cliente-cita-tools__btn--solid" data-cita-reminder-toggle>
+                                    <i class="ti ti-bell-ringing" aria-hidden="true"></i>
+                                    <span data-cita-reminder-toggle-label><?php esc_html_e('Activar', YUNIORROJAS_TEXT_DOMAIN); ?></span>
+                                </button>
+                            </div>
+                            <p class="cliente-cita-tools__status" data-cita-reminder-status hidden></p>
+                        </section>
+
+                        <section class="cliente-cita-tools__block cliente-cita-tools__block--share" aria-labelledby="cita-share-<?php echo esc_attr((string) $id); ?>">
+                            <h4 id="cita-share-<?php echo esc_attr((string) $id); ?>" class="cliente-cita-tools__title">
+                                <i class="ti ti-share" aria-hidden="true"></i>
+                                <?php esc_html_e('Compartir', YUNIORROJAS_TEXT_DOMAIN); ?>
+                            </h4>
+                            <div class="cliente-cita-tools__actions">
+                                <a class="cliente-cita-tools__action" href="<?php echo esc_url((string) $tools['whatsapp_url']); ?>" target="_blank" rel="noopener noreferrer">
+                                    <i class="ti ti-brand-whatsapp" aria-hidden="true"></i>
+                                    <span>WhatsApp</span>
+                                </a>
+                                <button type="button" class="cliente-cita-tools__action" data-cita-copy>
+                                    <i class="ti ti-link" aria-hidden="true"></i>
+                                    <span><?php esc_html_e('Copiar enlace', YUNIORROJAS_TEXT_DOMAIN); ?></span>
+                                </button>
+                            </div>
+                            <p class="cliente-cita-tools__status" data-cita-share-status hidden></p>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
     </article>
     <?php
 };
@@ -254,13 +364,26 @@ get_header();
             </a>
 
             <div class="cliente-dash__profile">
-                <img
-                    class="cliente-dash__avatar"
-                    src="<?php echo esc_url($avatar ?: get_template_directory_uri() . '/img/logo monograma.png'); ?>"
-                    alt="<?php echo esc_attr($nombre_corto); ?>"
-                    width="48"
-                    height="48"
-                >
+                <label class="cliente-dash__avatar-wrap" title="<?php esc_attr_e('Cambiar foto de perfil', YUNIORROJAS_TEXT_DOMAIN); ?>">
+                    <img
+                        class="cliente-dash__avatar<?php echo $tiene_avatar ? '' : ' is-fallback'; ?>"
+                        data-cliente-avatar-img
+                        src="<?php echo esc_url($avatar ?: get_template_directory_uri() . '/img/logo monograma.png'); ?>"
+                        alt="<?php echo esc_attr($nombre_corto); ?>"
+                        width="48"
+                        height="48"
+                    >
+                    <span class="cliente-dash__avatar-edit" aria-hidden="true">
+                        <i class="ti ti-camera"></i>
+                    </span>
+                    <input
+                        type="file"
+                        class="cliente-dash__avatar-input"
+                        accept="image/jpeg,image/png,image/webp"
+                        data-cliente-avatar-input
+                        aria-label="<?php esc_attr_e('Subir foto de perfil', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                    >
+                </label>
                 <div class="cliente-dash__profile-text">
                     <strong><?php echo esc_html($nombre_corto); ?></strong>
                     <span><?php echo esc_html($nivel_label); ?></span>
@@ -469,7 +592,7 @@ get_header();
                 <?php if (empty($cuenta['historial'])) : ?>
                     <p class="cliente-dash__empty-note">Todavía no hay visitas registradas en tu historial.</p>
                 <?php else : ?>
-                    <div class="cliente-historial cliente-historial--page">
+                    <div class="cliente-historial cliente-historial--page" data-historial-grid>
                         <?php foreach ($cuenta['historial'] as $item) : ?>
                             <?php
                             $cta_class = (($item['cta'] ?? '') === 'outline')
@@ -516,6 +639,25 @@ get_header();
                             </article>
                         <?php endforeach; ?>
                     </div>
+                    <nav
+                        class="cliente-historial-page__pagination"
+                        data-historial-pagination
+                        aria-label="<?php esc_attr_e('Paginación del historial', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                        hidden
+                    >
+                        <button type="button" class="cliente-historial-page__page-btn" data-historial-prev disabled>
+                            <i class="ti ti-chevron-left" aria-hidden="true"></i>
+                            <?php esc_html_e('Anterior', YUNIORROJAS_TEXT_DOMAIN); ?>
+                        </button>
+                        <p class="cliente-historial-page__page-info" data-historial-page-info>
+                            <?php esc_html_e('Página 1', YUNIORROJAS_TEXT_DOMAIN); ?>
+                        </p>
+                        <div class="cliente-historial-page__page-nums" data-historial-page-nums></div>
+                        <button type="button" class="cliente-historial-page__page-btn" data-historial-next disabled>
+                            <?php esc_html_e('Siguiente', YUNIORROJAS_TEXT_DOMAIN); ?>
+                            <i class="ti ti-chevron-right" aria-hidden="true"></i>
+                        </button>
+                    </nav>
                 <?php endif; ?>
             </section>
 
@@ -552,6 +694,54 @@ get_header();
                         <form id="cliente-pref-form" class="cliente-pref-form" method="post" action="" novalidate data-pref-form>
                             <?php wp_nonce_field('jr_guardar_preferencias', 'jr_pref_nonce'); ?>
                             <input type="hidden" name="estilo_id" value="<?php echo esc_attr($estilo_sel); ?>" data-pref-estilo-input>
+
+                            <section class="cliente-pref-block" aria-labelledby="pref-avatar-title">
+                                <h2 id="pref-avatar-title" class="cliente-pref-block__title">
+                                    <?php esc_html_e('Foto de perfil', YUNIORROJAS_TEXT_DOMAIN); ?>
+                                </h2>
+                                <p class="cliente-pref-block__lead">
+                                    <?php esc_html_e('Sube una imagen cuadrada. Si cambias la foto, la anterior se elimina del servidor.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                                </p>
+
+                                <div class="cliente-pref-avatar" data-cliente-avatar-panel>
+                                    <div class="cliente-pref-avatar__preview-wrap">
+                                        <img
+                                            class="cliente-pref-avatar__preview<?php echo $tiene_avatar ? '' : ' is-fallback'; ?>"
+                                            data-cliente-avatar-img
+                                            src="<?php echo esc_url($avatar ?: get_template_directory_uri() . '/img/logo monograma.png'); ?>"
+                                            alt="<?php echo esc_attr($nombre_corto); ?>"
+                                            width="120"
+                                            height="120"
+                                        >
+                                    </div>
+                                    <div class="cliente-pref-avatar__actions">
+                                        <label class="cliente-pref-avatar__upload">
+                                            <i class="ti ti-upload" aria-hidden="true"></i>
+                                            <span data-cliente-avatar-label>
+                                                <?php echo $tiene_avatar
+                                                    ? esc_html__('Cambiar foto', YUNIORROJAS_TEXT_DOMAIN)
+                                                    : esc_html__('Subir foto', YUNIORROJAS_TEXT_DOMAIN); ?>
+                                            </span>
+                                            <input
+                                                type="file"
+                                                accept="image/jpeg,image/png,image/webp"
+                                                data-cliente-avatar-input
+                                                hidden
+                                            >
+                                        </label>
+                                        <button
+                                            type="button"
+                                            class="cliente-pref-avatar__remove"
+                                            data-cliente-avatar-remove
+                                            <?php echo $tiene_avatar ? '' : ' hidden'; ?>
+                                        >
+                                            <i class="ti ti-trash" aria-hidden="true"></i>
+                                            <?php esc_html_e('Quitar foto', YUNIORROJAS_TEXT_DOMAIN); ?>
+                                        </button>
+                                        <p class="cliente-pref-avatar__status" data-cliente-avatar-status hidden></p>
+                                    </div>
+                                </div>
+                            </section>
 
                             <section class="cliente-pref-block" aria-labelledby="pref-personal-title">
                                 <h2 id="pref-personal-title" class="cliente-pref-block__title">Información personal</h2>

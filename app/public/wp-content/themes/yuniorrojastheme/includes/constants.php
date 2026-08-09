@@ -37,6 +37,13 @@ if (!defined('YUNIORROJAS_CPT_MEDIOS_PAGO')) {
 }
 
 /**
+ * CPT Reseñas de servicios (clientes en ficha de servicio).
+ */
+if (!defined('YUNIORROJAS_CPT_RESENAS')) {
+    define('YUNIORROJAS_CPT_RESENAS', 'jr_resena');
+}
+
+/**
  * Alias antiguos / intentos de rename (solo migración).
  */
 if (!defined('YUNIORROJAS_CPT_SERVICIOS_ALIASES')) {

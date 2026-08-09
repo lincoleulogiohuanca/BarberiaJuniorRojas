@@ -67,7 +67,9 @@
                                     $header_name = (string) $header_user->user_login;
                                 }
                                 $header_short  = explode(' ', $header_name)[0] ?? $header_name;
-                                $header_avatar = get_avatar_url((int) $header_user->ID, array('size' => 64));
+                                $header_avatar = function_exists('yuniorrojas_cliente_avatar_url')
+                                    ? yuniorrojas_cliente_avatar_url((int) $header_user->ID, 96)
+                                    : (string) get_avatar_url((int) $header_user->ID, array('size' => 64));
                                 $cuenta_url    = yuniorrojas_url_cuenta();
                                 $logout_url    = wp_logout_url(home_url('/'));
                                 ?>
@@ -81,6 +83,7 @@
                                         aria-controls="header-account-menu">
                                         <img
                                             class="header__account-avatar"
+                                            data-cliente-avatar-img
                                             src="<?php echo esc_url($header_avatar ?: get_template_directory_uri() . '/img/logo monograma.png'); ?>"
                                             alt=""
                                             width="32"
