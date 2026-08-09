@@ -1,0 +1,535 @@
+.yuniorrojas-procesos-help {
+  margin: 0 0 12px !important;
+}
+
+.yuniorrojas-procesos-count {
+  margin: 0 0 12px !important;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.yuniorrojas-procesos-empty {
+  margin: 0 0 12px !important;
+  padding: 16px;
+  border: 1px dashed #c3c4c7;
+  border-radius: 6px;
+  background: #f6f7f7;
+  color: #646970;
+}
+
+#yuniorrojas-procesos {
+  margin-bottom: 12px;
+}
+
+.yuniorrojas-proceso {
+  margin-bottom: 12px;
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.yuniorrojas-proceso-placeholder {
+  margin-bottom: 12px;
+  border: 1px dashed #2271b1;
+  border-radius: 6px;
+  background: #f0f6fc;
+  height: 80px;
+}
+
+.yuniorrojas-proceso__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  background: #f6f7f7;
+  border-bottom: 1px solid #dcdcde;
+}
+
+.yuniorrojas-proceso__handle {
+  cursor: grab;
+  color: #787c82;
+  user-select: none;
+  letter-spacing: -2px;
+  line-height: 1;
+  font-size: 14px;
+}
+
+.yuniorrojas-proceso__handle:active {
+  cursor: grabbing;
+}
+
+.yuniorrojas-proceso__numero {
+  flex: 1;
+  font-size: 13px;
+  color: #1d2327;
+}
+
+.yuniorrojas-proceso__body {
+  padding: 15px;
+}
+
+.yuniorrojas-proceso__body p {
+  margin: 0 0 18px;
+}
+
+.yuniorrojas-proceso__body p:last-child {
+  margin-bottom: 0;
+}
+
+.yuniorrojas-proceso__body label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.yuniorrojas-eliminar-proceso {
+  color: #b32d2e !important;
+}
+
+.yuniorrojas-procesos-actions {
+  margin: 0 !important;
+}
+
+#yuniorrojas-galeria-preview,
+.yuniorrojas-galeria-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.yuniorrojas-especialidades-preview {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.yuniorrojas-especialidad {
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.yuniorrojas-especialidad__media {
+  position: relative;
+}
+
+.yuniorrojas-especialidad__media img {
+  display: block;
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.yuniorrojas-especialidad__titulo {
+  margin: 0 !important;
+  border: 0 !important;
+  border-top: 1px solid #dcdcde !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.yuniorrojas-eliminar-especialidad {
+  position: absolute !important;
+  top: 8px;
+  right: 8px;
+}
+
+.yuniorrojas-imagen {
+  position: relative;
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f6f7f7;
+}
+
+.yuniorrojas-imagen img {
+  display: block;
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.yuniorrojas-eliminar-imagen {
+  position: absolute !important;
+  top: 8px;
+  right: 8px;
+}
+
+.yuniorrojas-imagen-perfil__preview {
+  margin: 10px 0;
+  min-height: 0;
+}
+
+.yuniorrojas-imagen-perfil__preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #dcdcde;
+  background: #f6f7f7;
+}
+
+.yuniorrojas-imagen-perfil__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 !important;
+}
+
+/* Contacto JR — horarios (mismo patrón que procesos) */
+.yuniorrojas-contacto-settings .yuniorrojas-horarios-help {
+  margin: 0 0 12px !important;
+}
+
+.yuniorrojas-horarios-count {
+  margin: 0 0 12px !important;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.yuniorrojas-horarios-empty {
+  margin: 0 0 12px !important;
+  padding: 16px;
+  border: 1px dashed #c3c4c7;
+  border-radius: 6px;
+  background: #f6f7f7;
+  color: #646970;
+}
+
+#yuniorrojas-horarios {
+  max-width: 720px;
+  margin-bottom: 12px;
+}
+
+.yuniorrojas-horario {
+  margin-bottom: 12px;
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.yuniorrojas-horario-placeholder {
+  margin-bottom: 12px;
+  border: 1px dashed #2271b1;
+  border-radius: 6px;
+  background: #f0f6fc;
+  height: 80px;
+}
+
+.yuniorrojas-horario__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  background: #f6f7f7;
+  border-bottom: 1px solid #dcdcde;
+}
+
+.yuniorrojas-horario__handle {
+  cursor: grab;
+  color: #787c82;
+  user-select: none;
+  letter-spacing: -2px;
+  line-height: 1;
+  font-size: 14px;
+}
+
+.yuniorrojas-horario__handle:active {
+  cursor: grabbing;
+}
+
+.yuniorrojas-horario__numero {
+  flex: 1;
+  font-size: 13px;
+  color: #1d2327;
+}
+
+.yuniorrojas-horario__body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 15px;
+}
+
+.yuniorrojas-horario__body p {
+  margin: 0;
+}
+
+.yuniorrojas-horario__body label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.yuniorrojas-eliminar-horario {
+  color: #b32d2e !important;
+}
+
+.yuniorrojas-horarios-actions {
+  margin: 0 0 16px !important;
+}
+
+@media (max-width: 782px) {
+  .yuniorrojas-horario__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Contacto JR — redes sociales footer */
+.yuniorrojas-contacto-settings .yuniorrojas-redes-help {
+  margin: 0 0 12px !important;
+}
+
+.yuniorrojas-redes-count {
+  margin: 0 0 12px !important;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.yuniorrojas-redes-empty {
+  margin: 0 0 12px !important;
+  padding: 16px;
+  border: 1px dashed #c3c4c7;
+  border-radius: 6px;
+  background: #f6f7f7;
+  color: #646970;
+}
+
+#yuniorrojas-redes {
+  max-width: 720px;
+  margin-bottom: 12px;
+}
+
+.yuniorrojas-red {
+  margin-bottom: 12px;
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.yuniorrojas-red-placeholder {
+  margin-bottom: 12px;
+  border: 1px dashed #2271b1;
+  border-radius: 6px;
+  background: #f0f6fc;
+  height: 80px;
+}
+
+.yuniorrojas-red__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  background: #f6f7f7;
+  border-bottom: 1px solid #dcdcde;
+}
+
+.yuniorrojas-red__handle {
+  cursor: grab;
+  color: #787c82;
+  user-select: none;
+  letter-spacing: -2px;
+  line-height: 1;
+  font-size: 14px;
+}
+
+.yuniorrojas-red__handle:active {
+  cursor: grabbing;
+}
+
+.yuniorrojas-red__numero {
+  flex: 1;
+  font-size: 13px;
+  color: #1d2327;
+}
+
+.yuniorrojas-red__body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 15px;
+}
+
+.yuniorrojas-red__body .yuniorrojas-red__url {
+  grid-column: 1 / -1;
+}
+
+.yuniorrojas-red__body p {
+  margin: 0;
+}
+
+.yuniorrojas-red__body label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.yuniorrojas-eliminar-red {
+  color: #b32d2e !important;
+}
+
+.yuniorrojas-redes-actions {
+  margin: 0 0 16px !important;
+}
+
+@media (max-width: 782px) {
+  .yuniorrojas-red__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Horario barbero */
+.yuniorrojas-horario-barbero__help {
+  margin: 0 0 14px !important;
+}
+
+.yuniorrojas-horario-barbero__intervalo {
+  margin: 0 0 16px !important;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+
+.yuniorrojas-horario-barbero__intervalo select {
+  min-width: 180px;
+}
+
+.yuniorrojas-horario-barbero__tabla {
+  max-width: 720px;
+}
+
+.yuniorrojas-horario-barbero__tabla th,
+.yuniorrojas-horario-barbero__tabla td {
+  vertical-align: middle;
+}
+
+.yuniorrojas-horario-barbero__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.yuniorrojas-horario-barbero__tabla input[type="time"] {
+  max-width: 140px;
+}
+
+.yuniorrojas-horario-barbero__row.is-off input[type="time"] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* —— Reservas admin —— */
+body.post-type-jr_reservas #postdivrich,
+body.post-type-jr_reservas #post-body-content .wp-editor-wrap {
+  display: none !important;
+}
+
+body.post-type-jr_reservas #titlediv #title {
+  pointer-events: none;
+  background: #f0f0f1;
+  color: #2c3338;
+}
+
+body.post-type-jr_reservas #titlediv #title-prompt-text {
+  display: none !important;
+}
+
+body.post-type-jr_reservas .misc-pub-visibility,
+body.post-type-jr_reservas .misc-pub-section.misc-pub-post-status + .misc-pub-visibility {
+  display: none;
+}
+
+body.post-type-jr_reservas #visibility.misc-pub-section,
+body.post-type-jr_reservas .misc-pub-visibility {
+  display: none !important;
+}
+
+.jr-reserva-admin__grid {
+  display: grid;
+  gap: 18px;
+}
+
+.jr-reserva-admin__block {
+  margin: 0;
+  padding: 14px 16px 8px;
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.jr-reserva-admin__block h3 {
+  margin: 0 0 12px;
+  padding: 0 0 8px;
+  border-bottom: 1px solid #f0f0f1;
+  font-size: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.jr-reserva-admin__badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #e6f6ea;
+  color: #007017;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.jr-reserva-admin__badge--manual {
+  background: #f0f6fc;
+  color: #135e96;
+}
+
+.jr-reserva-admin input[readonly],
+.jr-reserva-admin textarea[readonly] {
+  background: #f0f0f1;
+  color: #2c3338;
+}
+
+.jr-reserva-admin__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.jr-reserva-admin__block p {
+  margin: 0 0 12px;
+}
+
+.jr-reserva-admin__block label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.jr-reserva-admin__meta {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jr-reserva-admin__meta li {
+  margin: 0 0 10px;
+  line-height: 1.45;
+}
+
+.jr-reserva-admin__block--sistema {
+  background: #f6f7f7;
+}
+
+.jr-reserva-cancelar-btn {
+  color: #b32d2e !important;
+  border-color: #b32d2e !important;
+}
+
+@media (max-width: 782px) {
+  .jr-reserva-admin__row {
+    grid-template-columns: 1fr;
+  }
+}
+

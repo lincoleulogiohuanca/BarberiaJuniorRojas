@@ -1,0 +1,70 @@
+# =============================================================================
+# Barbería Junior Rojas — WordPress Local
+# Solo versionamos código propio (tema + plugin custom).
+# NO versionamos: core WP, plugins de terceros, uploads, BD, claves, logs Local.
+# =============================================================================
+
+# --- Por defecto ignoramos todo el sitio Local ---
+/*
+
+# --- Excepciones: meta del repositorio ---
+!.gitignore
+!.gitattributes
+!README.md
+!DEPLOY.md
+
+# --- Código propio bajo app/public/wp-content ---
+!app/
+app/*
+!app/public/
+app/public/*
+!app/public/wp-content/
+app/public/wp-content/*
+
+# Tema personalizado
+!app/public/wp-content/themes/
+app/public/wp-content/themes/*
+!app/public/wp-content/themes/yuniorrojastheme/
+!app/public/wp-content/themes/yuniorrojastheme/**
+
+# Plugin custom post types
+!app/public/wp-content/plugins/
+app/public/wp-content/plugins/*
+!app/public/wp-content/plugins/juniorrojas-post-types/
+!app/public/wp-content/plugins/juniorrojas-post-types/**
+
+# --- Seguridad / entorno (por si se reabre la regla) ---
+**/wp-config.php
+**/wp-config-local.php
+**/.env
+**/.env.*
+!**/.env.example
+
+# Media y caché de WordPress
+**/wp-content/uploads/
+**/wp-content/cache/
+**/wp-content/upgrade/
+**/wp-content/backup*/
+**/wp-content/ai1wm-backups/
+**/wp-content/debug.log
+
+# Local by Flywheel / Local WP
+/conf/
+/logs/
+/app/sql/
+*.sql
+*.sql.gz
+*.tar.gz
+*.zip
+
+# IDE / SO
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+node_modules/
+vendor/
+*.map

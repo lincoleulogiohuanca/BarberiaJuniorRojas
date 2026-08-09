@@ -1,0 +1,153 @@
+.jr-ingresos__intro {
+  margin: 0 0 16px;
+  color: #646970;
+}
+
+.jr-ingresos__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 14px;
+  align-items: flex-end;
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  border-radius: 4px;
+}
+
+.jr-ingresos__filters label {
+  display: grid;
+  gap: 4px;
+  min-width: 140px;
+}
+
+.jr-ingresos__filters label span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.jr-ingresos__filters input[type="date"],
+.jr-ingresos__filters select {
+  min-width: 150px;
+}
+
+.jr-ingresos__kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.jr-ingresos__kpi {
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  border-radius: 4px;
+}
+
+.jr-ingresos__kpi-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #646970;
+}
+
+.jr-ingresos__kpi-value {
+  font-size: 24px;
+  line-height: 1.2;
+  color: #1d2327;
+}
+
+.jr-ingresos__kpi--metodos ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jr-ingresos__kpi--metodos li {
+  margin: 0 0 6px;
+  font-size: 13px;
+}
+
+.jr-ingresos__charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.jr-ingresos__chart-card {
+  padding: 12px 14px 12px;
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  border-radius: 4px;
+}
+
+.jr-ingresos__chart-card--wide {
+  grid-column: 1 / -1;
+}
+
+.jr-ingresos__chart-card h2 {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+
+.jr-ingresos__chart-box {
+  position: relative;
+  height: 170px;
+}
+
+.jr-ingresos__chart-box--serie {
+  height: 160px;
+}
+
+.jr-ingresos__chart-box--donut {
+  height: 180px;
+}
+
+.jr-ingresos__chart-box--servicios {
+  height: 140px;
+}
+
+.jr-ingresos__chart-box canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.jr-ingresos__table-wrap {
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  border-radius: 4px;
+  padding: 14px 16px 8px;
+}
+
+.jr-ingresos__table-wrap h2 {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.jr-ingresos__table {
+  border: 0 !important;
+}
+
+@media (max-width: 1100px) {
+  .jr-ingresos__kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 782px) {
+  .jr-ingresos__kpis,
+  .jr-ingresos__charts {
+    grid-template-columns: 1fr;
+  }
+
+  .jr-ingresos__chart-card--wide {
+    grid-column: auto;
+  }
+}
