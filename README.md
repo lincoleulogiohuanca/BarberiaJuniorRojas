@@ -6,10 +6,11 @@ Sitio de reservas y pagos (Culqi / medios manuales) para **Barbería Junior Roja
 
 | Incluido en Git | No incluido (no va a GitHub) |
 |-----------------|------------------------------|
-| Tema `yuniorrojastheme` | Core de WordPress (`wp-admin`, `wp-includes`, …) |
+| Tema `yuniorrojastheme` | Core de WordPress |
 | Plugin `juniorrojas-core` | Plugins de terceros (ACF, etc.) |
-| Plugin `juniorrojas-post-types` (legacy) | `wp-config.php` y secretos Culqi |
-| Docs de deploy | Base de datos, uploads, carpeta Local |
+| Plugin `juniorrojas-post-types` (legacy) | `wp-config.php` y secretos Culqi/SMTP |
+| Docs (`README`, `DEPLOY`, `CHANGELOG`, `SECURITY`) | Base de datos, uploads, carpeta Local |
+| `.github/` (CI, deploy, templates) | |
 
 ## Estructura relevante
 
@@ -44,12 +45,15 @@ app/public/wp-content/
 - Tras activar Core: *Herramientas → JR DB Backfill* si hay reservas previas
 
 Detalle de deploy en [DEPLOY.md](./DEPLOY.md).  
-Configuración de GitHub (protección, environments, issues): [`.github/GITHUB_SETUP.md`](./.github/GITHUB_SETUP.md).
+Changelog: [CHANGELOG.md](./CHANGELOG.md) · Seguridad: [SECURITY.md](./SECURITY.md)  
+GitHub ops: [`.github/GITHUB_SETUP.md`](./.github/GITHUB_SETUP.md).
 
 ## Issues y PRs
 
 - **Bug / Feature / Go-live** → plantillas en *New issue*
-- **Pull requests** → plantilla con checklist de CI y deploy
+- **Pull requests** → checklist Culqi, reservas, SMTP, backfill, CI
+- **CODEOWNERS** → `@lincoleulogiohuanca` en tema/plugin
+- **Board** → Project kanban (Backlog / En curso / Hecho)
 
 ## Desarrollo local
 

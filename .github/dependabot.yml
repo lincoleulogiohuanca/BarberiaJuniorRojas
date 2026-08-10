@@ -1,0 +1,19 @@
+# Dependabot — mantiene GitHub Actions y avisa de updates
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Lima"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "deploy"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    # PRs de Dependabot van a developer para no tocar main a ciegas
+    target-branch: "developer"
