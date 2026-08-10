@@ -10,6 +10,62 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+/**
+ * Icono tijeras (SVG): dashicons-scissors no existe en WordPress core.
+ */
+function yuniorrojas_menu_icon_tijeras(): string
+{
+    // Relleno negro: el admin de WP aplica la opacidad del menú.
+    $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true">'
+        . '<path fill="black" d="M7.2 3.5a2.7 2.7 0 1 0 1.05 5.2L9.5 10l-1.25 1.3A2.7 2.7 0 1 0 7.2 16.5 2.7 2.7 0 0 0 8.4 11.4L9.7 10l6.1-6.3a1 1 0 0 0-1.42-1.4L9.7 7.1 8.25 5.6A2.7 2.7 0 0 0 7.2 3.5zm0 1.4a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6zm0 9a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6zM12.2 9.8l1.4 1.4 3.2-3.2a1 1 0 0 0-1.4-1.4l-3.2 3.2z"/>'
+        . '</svg>';
+
+    return 'data:image/svg+xml;base64,' . base64_encode($svg);
+}
+
+/**
+ * Iconos de menú canónicos (dashicons válidos o SVG data-URI).
+ *
+ * @return array<string, string> post_type => icon
+ */
+function yuniorrojas_cpt_menu_icons_map(): array
+{
+    $icons = array(
+        YUNIORROJAS_CPT_SERVICIOS => yuniorrojas_menu_icon_tijeras(),
+        'barberos'                => 'dashicons-groups',
+        'testimoniales'           => 'dashicons-format-quote',
+        'galeria'                 => 'dashicons-format-gallery',
+        YUNIORROJAS_CPT_RESERVAS  => 'dashicons-book',
+        YUNIORROJAS_CPT_RESENAS   => 'dashicons-star-filled',
+    );
+
+    if (defined('YUNIORROJAS_CPT_PRODUCTOS')) {
+        $icons[YUNIORROJAS_CPT_PRODUCTOS] = 'dashicons-cart';
+    }
+    if (defined('YUNIORROJAS_CPT_BLOQUEOS')) {
+        $icons[YUNIORROJAS_CPT_BLOQUEOS] = 'dashicons-lock';
+    }
+    if (defined('YUNIORROJAS_CPT_ESPERA')) {
+        $icons[YUNIORROJAS_CPT_ESPERA] = 'dashicons-clock';
+    }
+
+    return $icons;
+}
+
+/**
+ * Fuerza iconos correctos aunque ACF/plugin hayan registrado el CPT con uno inválido.
+ */
+function yuniorrojas_forzar_iconos_cpt(array $args, string $post_type): array
+{
+    $icons = yuniorrojas_cpt_menu_icons_map();
+    if (isset($icons[$post_type])) {
+        $args['menu_icon'] = $icons[$post_type];
+    }
+
+    return $args;
+}
+add_filter('register_post_type_args', 'yuniorrojas_forzar_iconos_cpt', 99, 2);
+
 function yuniorrojas_registrar_cpts(): void
 {
     if (!post_type_exists(YUNIORROJAS_CPT_SERVICIOS)) {
@@ -23,7 +79,7 @@ function yuniorrojas_registrar_cpts(): void
             'public'       => true,
             'has_archive'  => true,
             'rewrite'      => array('slug' => 'servicios-jr'),
-            'menu_icon'    => 'dashicons-scissors',
+            'menu_icon'    => yuniorrojas_menu_icon_tijeras(),
             'supports'     => array('title', 'editor', 'thumbnail', 'excerpt', 'page-attributes'),
             'show_in_rest' => true,
         ));
@@ -152,7 +208,7 @@ function yuniorrojas_registrar_cpts(): void
             'publicly_queryable'  => false,
             'has_archive'         => false,
             'rewrite'             => false,
-            'menu_icon'           => 'dashicons-calendar-alt',
+            'menu_icon'           => 'dashicons-book',
             'supports'            => array('title'),
             'capability_type'     => 'post',
             'map_meta_cap'        => true,

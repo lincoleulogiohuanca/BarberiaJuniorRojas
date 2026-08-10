@@ -527,9 +527,88 @@ body.post-type-jr_reservas .misc-pub-visibility {
   border-color: #b32d2e !important;
 }
 
+/* Acciones listado (light + base) */
+.jr-acciones-rapidas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.jr-acciones-rapidas .button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 30px;
+  height: 30px;
+  line-height: 1 !important;
+  padding: 0 12px !important;
+  font-size: 12px;
+  font-weight: 600;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+/* Badge estado en listado de reservas */
+.jr-reserva-estado {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.35;
+  border: 1px solid transparent;
+}
+
+.jr-reserva-estado--confirmada {
+  background: #e6f6ea;
+  color: #007017;
+  border-color: #68de7c;
+}
+
+.jr-reserva-estado--pendiente {
+  background: #fcf0c8;
+  color: #996800;
+  border-color: #dba617;
+}
+
+.jr-reserva-estado--completada {
+  background: #f0f0f1;
+  color: #2c3338;
+  border-color: #c3c4c7;
+}
+
+.jr-reserva-estado--cancelada,
+.jr-reserva-estado--no_show {
+  background: #fcf0f1;
+  color: #b32d2e;
+  border-color: #f1aeb5;
+}
+
 @media (max-width: 782px) {
   .jr-reserva-admin__row {
     grid-template-columns: 1fr;
   }
+}
+
+/* —— Productos: metabox Precio (sidebar) —— */
+#jr_producto_precio .jr-producto-field {
+  margin: 0 0 12px;
+}
+
+#jr_producto_precio .jr-producto-field:last-child {
+  margin-bottom: 0;
+}
+
+#jr_producto_precio .jr-producto-field label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+#jr_producto_precio .jr-producto-field input.widefat {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 

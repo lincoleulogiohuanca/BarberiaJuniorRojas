@@ -47,8 +47,14 @@ function yuniorrojas_productos_metaboxes(): void
             wp_nonce_field('jr_producto_save', 'jr_producto_nonce');
             $precio = (string) get_post_meta($post->ID, '_jr_producto_precio', true);
             $sku    = (string) get_post_meta($post->ID, '_jr_producto_sku', true);
-            echo '<p><label>S/. <input type="text" name="jr_producto_precio" value="' . esc_attr($precio) . '" class="regular-text"></label></p>';
-            echo '<p><label>SKU <input type="text" name="jr_producto_sku" value="' . esc_attr($sku) . '" class="regular-text"></label></p>';
+            echo '<p class="jr-producto-field">';
+            echo '<label for="jr_producto_precio_input">' . esc_html__('Precio (S/.)', YUNIORROJAS_TEXT_DOMAIN) . '</label>';
+            echo '<input type="text" class="widefat" id="jr_producto_precio_input" name="jr_producto_precio" value="' . esc_attr($precio) . '" inputmode="decimal" autocomplete="off">';
+            echo '</p>';
+            echo '<p class="jr-producto-field">';
+            echo '<label for="jr_producto_sku_input">' . esc_html__('SKU', YUNIORROJAS_TEXT_DOMAIN) . '</label>';
+            echo '<input type="text" class="widefat" id="jr_producto_sku_input" name="jr_producto_sku" value="' . esc_attr($sku) . '" autocomplete="off">';
+            echo '</p>';
         },
         YUNIORROJAS_CPT_PRODUCTOS,
         'side',

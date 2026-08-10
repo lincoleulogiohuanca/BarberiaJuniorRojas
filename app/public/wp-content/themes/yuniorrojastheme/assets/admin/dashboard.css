@@ -1,0 +1,265 @@
+/* Escritorio operación Barbería Junior Rojas */
+
+#yuniorrojas_ops_dashboard .inside {
+  margin: 0;
+  padding: 0;
+}
+
+.jr-dash {
+  --jr-ink: #1d2327;
+  --jr-muted: #646970;
+  --jr-line: #dcdcde;
+  --jr-bg: #ffffff;
+  --jr-surface: #f6f7f7;
+  --jr-ok: #00a32a;
+  --jr-warn: #996800;
+  --jr-warn-bg: #fcf0c8;
+  --jr-ok-bg: #edfaef;
+  --jr-accent: #1d2327;
+  padding: 4px 4px 12px;
+  color: var(--jr-ink);
+}
+
+.jr-dash__intro {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--jr-muted);
+}
+
+.jr-dash__health {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--jr-line);
+  border-left: 3px solid var(--jr-accent);
+  background: var(--jr-surface, #f6f7f7);
+  border-radius: 2px;
+}
+
+.jr-dash__health p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.jr-dash__banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 2px;
+  border: 1px solid var(--jr-line);
+  font-size: 13px;
+}
+
+.jr-dash__banner span {
+  flex: 1 1 200px;
+  color: var(--jr-muted);
+}
+
+.jr-dash__banner--is-warn {
+  background: var(--jr-warn-bg);
+  border-color: #dba617;
+}
+
+.jr-dash__banner--is-ok {
+  background: var(--jr-ok-bg);
+  border-color: #68de7c;
+}
+
+.jr-dash__shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+
+.jr-dash__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border: 1px solid var(--jr-line);
+  border-radius: 2px;
+  background: var(--jr-bg);
+  color: var(--jr-ink);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.jr-dash__chip:hover,
+.jr-dash__chip:focus {
+  border-color: #2271b1;
+  color: #2271b1;
+  box-shadow: none;
+}
+
+.jr-dash__chip.is-alert {
+  border-color: #dba617;
+  background: var(--jr-warn-bg);
+  color: var(--jr-warn);
+}
+
+.jr-dash__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media screen and (max-width: 960px) {
+  .jr-dash__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.jr-dash__panel {
+  border: 1px solid var(--jr-line);
+  border-radius: 2px;
+  background: var(--jr-bg);
+  padding: 12px 14px 14px;
+  min-width: 0;
+}
+
+.jr-dash__panel-head {
+  margin: 0 0 12px;
+}
+
+.jr-dash__panel-head h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.jr-dash__counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  margin: 0;
+  align-items: center;
+}
+
+.jr-dash__pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.jr-dash__pill--ok {
+  background: var(--jr-ok-bg);
+  color: var(--jr-ok);
+}
+
+.jr-dash__pill--warn {
+  background: var(--jr-warn-bg);
+  color: var(--jr-warn);
+}
+
+.jr-dash__muted {
+  color: var(--jr-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.jr-dash__empty {
+  margin: 0;
+  padding: 16px;
+  text-align: center;
+  color: var(--jr-muted);
+  background: var(--jr-bg);
+  border: 1px dashed var(--jr-line);
+  font-size: 13px;
+}
+
+.jr-dash__empty--ok {
+  border-style: solid;
+  background: var(--jr-ok-bg);
+  color: var(--jr-ok);
+}
+
+.jr-dash__table {
+  border: 1px solid var(--jr-line) !important;
+  margin: 0 !important;
+  color: var(--jr-ink);
+}
+
+.jr-dash__table th,
+.jr-dash__table td {
+  padding: 8px 10px !important;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.jr-dash__estado {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.jr-dash__estado--confirmada {
+  color: var(--jr-ok);
+}
+
+.jr-dash__estado--pendiente {
+  color: var(--jr-warn);
+}
+
+.jr-dash__estado--completada {
+  color: var(--jr-muted);
+}
+
+.jr-dash__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jr-dash__list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--jr-line);
+}
+
+.jr-dash__list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.jr-dash__list li:first-child {
+  padding-top: 0;
+}
+
+.jr-dash__list strong {
+  display: block;
+  font-size: 13px;
+}
+
+.jr-dash__list .jr-dash__muted {
+  display: block;
+  margin-top: 2px;
+}
+
+.jr-dash__more {
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
+/* Escritorio limpio: el widget de operación ocupa el ancho útil. */
+body.index-php #dashboard-widgets .postbox-container {
+  width: 100% !important;
+}
+
+body.index-php #postbox-container-1 {
+  width: 100% !important;
+}
+
+body.index-php #postbox-container-2,
+body.index-php #postbox-container-3,
+body.index-php #postbox-container-4 {
+  display: none;
+}

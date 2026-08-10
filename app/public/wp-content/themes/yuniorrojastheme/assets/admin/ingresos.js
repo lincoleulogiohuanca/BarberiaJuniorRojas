@@ -1,6 +1,10 @@
 (function () {
   "use strict";
 
+  function isDarkAdmin() {
+    return document.body && document.body.classList.contains("jr-admin-theme-dark");
+  }
+
   function emptyChartMessage(canvas, text) {
     if (!(canvas instanceof HTMLCanvasElement)) {
       return;
@@ -13,7 +17,7 @@
     const p = document.createElement("p");
     p.setAttribute("data-jr-empty", "");
     p.style.margin = "12px 0";
-    p.style.color = "#646970";
+    p.style.color = isDarkAdmin() ? "#9aa3af" : "#646970";
     p.textContent = text || "Sin datos para este filtro.";
     parent.appendChild(p);
   }
@@ -24,36 +28,86 @@
     });
   }
 
-  const baseOptions = {
+  function chartTheme() {
+    var dark = isDarkAdmin();
+    return {
+      gold: "#d4b45a",
+      goldSoft: "#e4c872",
+      bar: dark ? "#d4b45a" : "#c8a24a",
+      barAlt: dark ? "#e4c872" : "#1c1b1b",
+      palette: dark
+        ? ["#d4b45a", "#7ec0ff", "#4ade96", "#f0c14d", "#c084fc", "#fb923c", "#94a3b8"]
+        : ["#c8a24a", "#2a2a2a", "#8f6f2e", "#4a4a4a", "#eac166", "#6b5a3a"],
+      tick: dark ? "#9aa3af" : "#646970",
+      grid: dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+      legend: dark ? "#c9ced6" : "#1d2327",
+      fill: dark ? "rgba(212, 180, 90, 0.18)" : "rgba(200, 162, 74, 0.15)",
+    };
+  }
+
+  function scaleOpts(theme, horizontal) {
+    var axes = horizontal ? ["x"] : ["y"];
+    var base = {
+      beginAtZero: true,
+      ticks: {
+        maxTicksLimit: 5,
+        color: theme.tick,
+        callback: function (value) {
+          return "S/. " + value;
+        },
+      },
+      grid: {
+        color: theme.grid,
+        drawBorder: false,
+      },
+    };
+    var out = {};
+    axes.forEach(function (axis) {
+      out[axis] = base;
+    });
+    // La otra categoría (labels)
+    var cat = horizontal ? "y" : "x";
+    out[cat] = {
+      ticks: {
+        color: theme.tick,
+        maxRotation: 0,
+        autoSkip: true,
+        maxTicksLimit: 10,
+      },
+      grid: {
+        color: theme.grid,
+        drawBorder: false,
+      },
+    };
+    return out;
+  }
+
+  var baseOptions = {
     responsive: true,
     maintainAspectRatio: false,
     animation: { duration: 280 },
   };
 
   function init() {
-    const root = document.querySelector("[data-jr-ingresos-charts]");
+    var root = document.querySelector("[data-jr-ingresos-charts]");
     if (!(root instanceof HTMLElement) || typeof Chart === "undefined") {
       return;
     }
 
-    const payload =
+    var theme = chartTheme();
+    var payload =
       window.yuniorrojasIngresos && typeof window.yuniorrojasIngresos === "object"
         ? window.yuniorrojasIngresos
         : {};
-    const emptyText =
+    var emptyText =
       (payload.i18n && payload.i18n.vacio) || "Sin datos para este filtro.";
 
-    const gold = "#c8a24a";
-    const goldSoft = "#eac166";
-    const dark = "#1c1b1b";
-    const greys = ["#c8a24a", "#2a2a2a", "#8f6f2e", "#4a4a4a", "#eac166", "#6b5a3a"];
+    var serie = payload.serie || {};
+    var metodos = payload.metodos || {};
+    var barberos = payload.barberos || {};
+    var servicios = payload.servicios || {};
 
-    const serie = payload.serie || {};
-    const metodos = payload.metodos || {};
-    const barberos = payload.barberos || {};
-    const servicios = payload.servicios || {};
-
-    const serieCanvas = document.getElementById("jr-ingresos-serie");
+    var serieCanvas = document.getElementById("jr-ingresos-serie");
     if (serieCanvas instanceof HTMLCanvasElement) {
       if (!hasValues(serie.values)) {
         emptyChartMessage(serieCanvas, emptyText);
@@ -66,35 +120,24 @@
               {
                 label: (payload.i18n && payload.i18n.ingresos) || "Ingresos",
                 data: serie.values || [],
-                borderColor: gold,
-                backgroundColor: "rgba(200, 162, 74, 0.15)",
+                borderColor: theme.gold,
+                backgroundColor: theme.fill,
                 fill: true,
                 tension: 0.3,
                 pointRadius: 2,
-                pointBackgroundColor: goldSoft,
+                pointBackgroundColor: theme.goldSoft,
               },
             ],
           },
           options: Object.assign({}, baseOptions, {
             plugins: { legend: { display: false } },
-            scales: {
-              x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
-              y: {
-                beginAtZero: true,
-                ticks: {
-                  maxTicksLimit: 5,
-                  callback: function (value) {
-                    return "S/. " + value;
-                  },
-                },
-              },
-            },
+            scales: scaleOpts(theme, false),
           }),
         });
       }
     }
 
-    const metodosCanvas = document.getElementById("jr-ingresos-metodos");
+    var metodosCanvas = document.getElementById("jr-ingresos-metodos");
     if (metodosCanvas instanceof HTMLCanvasElement) {
       if (!hasValues(metodos.values)) {
         emptyChartMessage(metodosCanvas, emptyText);
@@ -106,8 +149,9 @@
             datasets: [
               {
                 data: metodos.values || [],
-                backgroundColor: greys.slice(0, (metodos.values || []).length),
-                borderWidth: 0,
+                backgroundColor: theme.palette.slice(0, (metodos.values || []).length),
+                borderWidth: isDarkAdmin() ? 2 : 0,
+                borderColor: isDarkAdmin() ? "#1c2129" : "#fff",
               },
             ],
           },
@@ -116,7 +160,12 @@
             plugins: {
               legend: {
                 position: "right",
-                labels: { boxWidth: 12, padding: 10, font: { size: 11 } },
+                labels: {
+                  boxWidth: 12,
+                  padding: 10,
+                  font: { size: 11 },
+                  color: theme.legend,
+                },
               },
             },
           }),
@@ -124,7 +173,7 @@
       }
     }
 
-    const barberosCanvas = document.getElementById("jr-ingresos-barberos");
+    var barberosCanvas = document.getElementById("jr-ingresos-barberos");
     if (barberosCanvas instanceof HTMLCanvasElement) {
       if (!hasValues(barberos.values)) {
         emptyChartMessage(barberosCanvas, emptyText);
@@ -137,33 +186,29 @@
               {
                 label: (payload.i18n && payload.i18n.barberos) || "Barberos",
                 data: barberos.values || [],
-                backgroundColor: gold,
+                backgroundColor: theme.bar,
               },
             ],
           },
           options: Object.assign({}, baseOptions, {
             plugins: { legend: { display: false } },
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: {
-                  maxTicksLimit: 5,
-                  callback: function (value) {
-                    return "S/. " + value;
-                  },
-                },
-              },
-            },
+            scales: scaleOpts(theme, false),
           }),
         });
       }
     }
 
-    const serviciosCanvas = document.getElementById("jr-ingresos-servicios");
+    var serviciosCanvas = document.getElementById("jr-ingresos-servicios");
     if (serviciosCanvas instanceof HTMLCanvasElement) {
       if (!hasValues(servicios.values)) {
         emptyChartMessage(serviciosCanvas, emptyText);
       } else {
+        var n = (servicios.values || []).length;
+        var barColors = [];
+        var i;
+        for (i = 0; i < n; i++) {
+          barColors.push(theme.palette[i % theme.palette.length]);
+        }
         new Chart(serviciosCanvas, {
           type: "bar",
           data: {
@@ -172,24 +217,14 @@
               {
                 label: (payload.i18n && payload.i18n.servicios) || "Servicios",
                 data: servicios.values || [],
-                backgroundColor: dark,
+                backgroundColor: isDarkAdmin() ? barColors : theme.barAlt,
               },
             ],
           },
           options: Object.assign({}, baseOptions, {
             indexAxis: "y",
             plugins: { legend: { display: false } },
-            scales: {
-              x: {
-                beginAtZero: true,
-                ticks: {
-                  maxTicksLimit: 5,
-                  callback: function (value) {
-                    return "S/. " + value;
-                  },
-                },
-              },
-            },
+            scales: scaleOpts(theme, true),
           }),
         });
       }

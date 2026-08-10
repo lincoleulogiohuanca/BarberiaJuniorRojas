@@ -27,6 +27,8 @@ $yuniorrojas_includes = array(
     'includes/admin-notificaciones.php',
     'includes/admin-acciones.php',
     'includes/admin-agenda.php',
+    'includes/admin-dashboard.php',
+    'includes/admin-theme.php',
     'includes/admin-pagos.php',
     'includes/admin-clientes.php',
     'includes/admin-bloqueos.php',
@@ -364,27 +366,28 @@ function yuniorrojas_script_sri(string $tag, string $handle, string $src): strin
 add_filter('script_loader_tag', 'yuniorrojas_script_sri', 10, 3);
 
 /**
- * Assets admin: Servicios (proceso/galería), Barberos y página Contacto JR.
+ * Assets admin: listados/edición de CPTs JR y Contacto.
  */
 function yuniorrojas_admin_assets(string $hook): void
 {
     $es_contacto = ($hook === 'toplevel_page_yuniorrojas-contacto');
-    $es_cpt      = in_array($hook, array('post.php', 'post-new.php'), true);
+    $es_edit     = in_array($hook, array('post.php', 'post-new.php'), true);
+    $es_list     = ($hook === 'edit.php');
 
-    if (!$es_contacto && !$es_cpt) {
+    if (!$es_contacto && !$es_edit && !$es_list) {
         return;
     }
 
-    if ($es_cpt) {
+    $tipo = '';
+    if ($es_edit || $es_list) {
         $screen = function_exists('get_current_screen') ? get_current_screen() : null;
-        $tipo   = $screen && !empty($screen->post_type) ? $screen->post_type : '';
+        $tipo   = $screen && !empty($screen->post_type) ? (string) $screen->post_type : '';
 
         if ($tipo === '' && isset($_GET['post_type'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $tipo = sanitize_key(wp_unslash($_GET['post_type'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $tipo = sanitize_key(wp_unslash((string) $_GET['post_type'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         }
 
-        // En post.php solo viene ?post=ID (sin post_type).
-        if ($tipo === '' && isset($_GET['post'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if ($tipo === '' && $es_edit && isset($_GET['post'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             $tipo = (string) get_post_type(absint($_GET['post'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         }
 
@@ -393,6 +396,7 @@ function yuniorrojas_admin_assets(string $hook): void
             'barberos',
             YUNIORROJAS_CPT_RESERVAS,
             YUNIORROJAS_CPT_MEDIOS_PAGO,
+            defined('YUNIORROJAS_CPT_PRODUCTOS') ? YUNIORROJAS_CPT_PRODUCTOS : 'jr_productos',
         );
         if (!in_array($tipo, $permitidos, true)) {
             return;
@@ -404,11 +408,17 @@ function yuniorrojas_admin_assets(string $hook): void
     $css_path   = $theme_path . '/assets/admin/admin.css';
     $js_path    = $theme_path . '/assets/admin/admin.js';
 
-    if ($es_cpt) {
+    if ($es_edit) {
         wp_enqueue_media();
+        wp_enqueue_script('jquery-ui-sortable');
+        wp_enqueue_script(
+            'yuniorrojas-admin',
+            $theme_uri . '/assets/admin/admin.js',
+            array('jquery', 'jquery-ui-sortable'),
+            file_exists($js_path) ? (string) filemtime($js_path) : '1.0.0',
+            true
+        );
     }
-
-    wp_enqueue_script('jquery-ui-sortable');
 
     wp_enqueue_style(
         'yuniorrojas-admin',
@@ -417,13 +427,15 @@ function yuniorrojas_admin_assets(string $hook): void
         file_exists($css_path) ? (string) filemtime($css_path) : '1.0.0'
     );
 
-    wp_enqueue_script(
-        'yuniorrojas-admin',
-        $theme_uri . '/assets/admin/admin.js',
-        array('jquery', 'jquery-ui-sortable'),
-        file_exists($js_path) ? (string) filemtime($js_path) : '1.0.0',
-        true
-    );
+    if (function_exists('yuniorrojas_admin_theme_is_dark') && yuniorrojas_admin_theme_is_dark()) {
+        $dark_path = $theme_path . '/assets/admin/admin-theme-dark.css';
+        wp_enqueue_style(
+            'yuniorrojas-admin-theme-dark',
+            $theme_uri . '/assets/admin/admin-theme-dark.css',
+            array('yuniorrojas-admin'),
+            file_exists($dark_path) ? (string) filemtime($dark_path) : '1.0.0'
+        );
+    }
 }
 add_action('admin_enqueue_scripts', 'yuniorrojas_admin_assets');
 

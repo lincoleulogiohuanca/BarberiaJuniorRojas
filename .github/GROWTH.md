@@ -26,53 +26,61 @@ Preferimos **`docs/` versionada** a la Wiki de GitHub (la Wiki no pasa por PR/re
 
 ### GitHub Pages
 
-Workflow: **Docs Pages** (`.github/workflows/docs-pages.yml`).
+- **Source:** GitHub Actions (habilitado en el repo público).
+- Workflow: **Docs Pages** (`.github/workflows/docs-pages.yml`).
+- URL esperada: https://lincoleulogiohuanca.github.io/BarberiaJuniorRojas/
 
-1. Settings → Pages → Source: **GitHub Actions**  
-2. Tras el primer run en `main`:  
-   `https://lincoleulogiohuanca.github.io/BarberiaJuniorRojas/`  
-
-**Nota plan free + repo privado:** Pages puede no publicarse hasta hacer el repo **público** o subir de plan. El contenido de `docs/` sigue disponible en el repo.
+Si el sitio no aparece aún: Actions → **Docs Pages** → *Run workflow*.  
+Si el job falla al **asignar runner** (`startup_failure` / 0 steps), es un fallo de la plataforma GitHub; reintenta más tarde. El manual sigue en `docs/` del repo.
 
 ## Milestones
 
-| Milestone | Uso |
-|-----------|-----|
-| **v1.1.0** | Mejoras menores post-lanzamiento (SMTP/FTP, UX, bugs) |
-| **v1.2.0** | Features del siguiente ciclo (antes de un 2.0) |
+| Milestone | Uso | Estado |
+|-----------|-----|--------|
+| **v1.1.0** | Admin dark mode, Agenda UX, docs Pages | **Release** — ver [CHANGELOG 1.1.0](../CHANGELOG.md#110--2026-08-10) |
+| **v1.2.0** | Features del siguiente ciclo (antes de un 2.0) | Abierto |
 
 Asigna issues a un milestone: Issue → Milestone → v1.1.0 / v1.2.0.
 
+### Issues / labels sugeridos post-1.1.0
+
+| Label | Uso |
+|-------|-----|
+| `enhancement` | Mejoras UX admin (más pantallas dark) |
+| `bug` | Contraste / overlays de plugins en dark |
+| `frontend` | Tema público (no confundir con admin dark) |
+| `deploy` | FTP / staging tras release |
+
 ## Release assets (ZIP)
 
-Workflow **Release assets**:
+Workflow **Release assets** (al publicar un Release o *Run workflow* con tag).
 
-- Al **publicar** un Release, o  
-- Manual: Actions → Release assets → Run workflow (tag)
+Adjuntos esperados por release:
 
-Adjuntos típicos:
+- `yuniorrojastheme.zip`
+- `juniorrojas-core.zip`
 
-- `yuniorrojastheme.zip`  
-- `juniorrojas-core.zip`  
+| Tag | Notas |
+|-----|--------|
+| **v1.0.0** | Primera pública — [release](https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases/tag/v1.0.0) |
+| **v1.1.0** | Admin dark + Agenda — [release](https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases/tag/v1.1.0) |
 
-Para `v1.0.0` ya publicado: corre el workflow con tag `v1.0.0` (o re-publica assets con *Run workflow*).
+(si Actions falla al subir, se pueden adjuntar a mano: Release → Edit → Attach binaries).
 
 ## Status checks + required reviews (equipo > 1)
 
-Cuando haya **otro revisor** y el plan lo permita (Pro o público):
+**Hoy (solo / 1 persona):** protection en `main` sin forzar 1 aprobación ni status check (evita bloquear merges si CI no arranca). Sí: sin force-push, sin borrar la rama, resolución de conversaciones.
 
-Settings → Branches → `main`:
+**Cuando haya otro revisor y CI estable**, subir la protection:
 
 | Regla | Valor |
 |-------|--------|
 | Require a pull request before merging | Sí |
 | Require approvals | **1** (o más) |
-| Require review from Code Owners | Sí (usa `.github/CODEOWNERS`) |
+| Require review from Code Owners | Sí (`.github/CODEOWNERS`) |
 | Require status checks | `Theme smoke / php-lint` |
 | Require conversation resolution | Sí |
 | Allow force pushes | No |
-
-Mientras el repo sea **privado free**, la API de branch protection devuelve 403: el flujo recomendado es PR + no pushear a `main` a mano.
 
 ## Wiki
 

@@ -15,8 +15,32 @@ Cambios en `developer` / `main` aún no etiquetados.
 
 ### Planned / en curso
 - Secrets FTP en environments de GitHub para deploy real
-- Branch protection cuando el plan lo permita (Pro o repo público)
-- Manual admin en `docs/` + Pages; assets ZIP en Releases; milestones v1.1 / v1.2
+- Branch protection con approvals cuando el equipo > 1
+- Ajustes finos de pantallas admin de plugins de terceros
+
+---
+
+## [1.1.0] — 2026-08-10
+
+**Admin dark mode + Agenda UX.**  
+Release: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases/tag/v1.1.0
+
+### Added
+- Tema claro/oscuro del **panel admin** (preferencia por usuario + interruptor en la admin bar)
+- Hoja `admin-theme-dark.css` + `admin-theme.js` / `admin-theme.php`
+- Escritorio operativo JR (`admin-dashboard.php` + `dashboard.css`)
+- Paleta de citas en Agenda adaptada a dark (dorado JR + joyas, sin rosa)
+
+### Changed
+- Agenda: botones rectangulares estilo WordPress (sin pills)
+- Agenda dark: columna “hoy” dorada, cards con más contraste, botón **+ Nueva cita** legible
+- Menú lateral dark: separadores sin línea visible pero con el mismo aire que en light
+- Admin bar: **Ctrl+K** y toggle **Claro/Oscuro** centrados en su `.ab-item`
+- Docs/GitHub: Pages, milestones y estado de protection actualizados (repo público)
+
+### Fixed
+- Texto invisible en botón dorado (regla de enlaces `.wrap a` pintaba dorado sobre dorado)
+- CodeMirror / editor de temas-plugins y listado de Plugins en dark
 
 ---
 
@@ -60,5 +84,6 @@ git push origin v1.0.1
 # Release notes desde CHANGELOG
 ```
 
-[Unreleased]: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases/tag/v1.1.0
 [1.0.0]: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases/tag/v1.0.0

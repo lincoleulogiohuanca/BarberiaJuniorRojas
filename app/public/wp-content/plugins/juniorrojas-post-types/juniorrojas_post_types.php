@@ -43,7 +43,10 @@ function juniorrojas_servicios_post_type(): void
             'show_ui'             => true,
             'show_in_menu'        => true,
             'menu_position'       => 6,
-            'menu_icon'           => 'dashicons-scissors',
+            // Preferir SVG de tijeras del tema si está cargado (dashicons-scissors no existe en WP).
+            'menu_icon'           => function_exists('yuniorrojas_menu_icon_tijeras')
+                ? yuniorrojas_menu_icon_tijeras()
+                : 'dashicons-admin-customizer',
             'has_archive'         => true,
             'publicly_queryable'  => true,
             'capability_type'     => 'page',

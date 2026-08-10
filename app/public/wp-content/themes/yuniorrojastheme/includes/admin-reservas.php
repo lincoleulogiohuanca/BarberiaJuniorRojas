@@ -266,17 +266,10 @@ function yuniorrojas_admin_reservas_columna(string $column, int $post_id): void
         case 'jr_estado':
             $estado = (string) ($reserva['estado'] ?? 'confirmada');
             $label  = yuniorrojas_reserva_estado_label($estado);
-            $color  = '#2271b1';
-            if ($estado === 'confirmada' || $estado === 'pendiente') {
-                $color = '#00a32a';
-            } elseif ($estado === 'cancelada' || $estado === 'no_show') {
-                $color = '#d63638';
-            } elseif ($estado === 'completada') {
-                $color = '#646970';
-            }
+            $slug   = sanitize_html_class($estado !== '' ? $estado : 'confirmada');
             printf(
-                '<span class="jr-reserva-estado" style="display:inline-block;padding:2px 8px;border-radius:999px;background:%1$s1a;color:%1$s;font-weight:600;font-size:12px;">%2$s</span>',
-                esc_attr($color),
+                '<span class="jr-reserva-estado jr-reserva-estado--%1$s">%2$s</span>',
+                esc_attr($slug),
                 esc_html($label)
             );
             break;
