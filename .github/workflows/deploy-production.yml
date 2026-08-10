@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || vars.DEPLOY_ON_PUSH_MAIN == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
@@ -43,7 +43,7 @@ jobs:
       name: production
       url: ${{ vars.SITE_URL }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Verificar secretos FTP production
         env:
