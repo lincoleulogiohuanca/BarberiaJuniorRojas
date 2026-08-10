@@ -16,6 +16,7 @@ Cambios en `developer` / `main` aún no etiquetados.
 ### Planned / en curso
 - Secrets FTP en environments de GitHub para deploy real
 - Branch protection cuando el plan lo permita (Pro o repo público)
+- Manual admin en `docs/` + Pages; assets ZIP en Releases; milestones v1.1 / v1.2
 
 ---
 

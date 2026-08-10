@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title | default: site.title }}</title>
+  <style>
+    :root { color-scheme: light dark; --bg: #0d0d0d; --fg: #e5e2e1; --gold: #c8a24a; --muted: #a8a5a4; --line: #2a2a2a; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+    a { color: var(--gold); }
+    header { border-bottom: 1px solid var(--line); padding: 1rem 1.25rem; }
+    header a { text-decoration: none; font-weight: 600; letter-spacing: .04em; }
+    main { max-width: 48rem; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+    h1, h2, h3 { line-height: 1.25; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .95rem; }
+    th, td { border: 1px solid var(--line); padding: .5rem .65rem; text-align: left; vertical-align: top; }
+    th { color: var(--gold); }
+    code, pre { background: #131313; border: 1px solid var(--line); border-radius: 4px; }
+    code { padding: .1rem .35rem; font-size: .9em; }
+    pre { padding: .75rem 1rem; overflow-x: auto; }
+    pre code { border: 0; padding: 0; background: transparent; }
+    ul { padding-left: 1.2rem; }
+    footer { color: var(--muted); font-size: .85rem; border-top: 1px solid var(--line); margin-top: 2rem; padding-top: 1rem; }
+    nav.links { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; margin: .75rem 0 0; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="{{ site.baseurl }}/">Barbería Junior Rojas — Docs</a>
+    <nav class="links">
+      <a href="{{ site.baseurl }}/">Inicio</a>
+      <a href="{{ site.baseurl }}/admin-agenda.html">Agenda</a>
+      <a href="{{ site.baseurl }}/admin-pagos.html">Pagos</a>
+      <a href="{{ site.baseurl }}/admin-fidelidad.html">Fidelidad</a>
+      <a href="{{ site.baseurl }}/admin-produccion.html">Producción</a>
+      <a href="{{ site.baseurl }}/go-live.html">Go-live</a>
+      <a href="https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas">GitHub</a>
+    </nav>
+  </header>
+  <main>
+    {{ content }}
+    <footer>
+      Manual del admin · no es el sitio WordPress del salón ·
+      <a href="https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas">Código fuente</a>
+    </footer>
+  </main>
+</body>
+</html>
