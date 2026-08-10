@@ -39,7 +39,13 @@ jobs:
 
       - name: No secrets Culqi hardcodeados
         run: |
-          if grep -R "pk_test_AXEwZuPbByAfn7UE" app/public/wp-content/themes/yuniorrojastheme; then
+          # Excluye tests: ahí se documenta la llave prohibida a propósito.
+          if grep -R --exclude-dir=tests --exclude='*.md' "pk_test_AXEwZuPbByAfn7UE" \
+            app/public/wp-content/themes/yuniorrojastheme \
+            app/public/wp-content/plugins/juniorrojas-domain \
+            app/public/wp-content/plugins/juniorrojas-reservas \
+            app/public/wp-content/plugins/juniorrojas-pagos \
+            app/public/wp-content/plugins/juniorrojas-core; then
             echo "Llave Culqi de prueba hardcodeada detectada"
             exit 1
           fi
