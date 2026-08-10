@@ -5,9 +5,10 @@ Guía para el repo [BarberiaJuniorRojas](https://github.com/lincoleulogiohuanca/
 ## About del repositorio (ya aplicado)
 
 - **Descripción:** Reservas y pagos (Culqi) para Barberia Junior Rojas - tema WordPress + plugin Core.
-- **Topics:** `wordpress`, `culqi`, `peru`, `reservas`, `barberia`, `php`, `ftp-deploy`
+- **Topics:** `wordpress`, `culqi`, `peru`, `reservas`, `barberia`, `php`, `ftp-deploy`, `dark-mode`, `admin-ux`
 - **Homepage:** actualiza a la URL real del salón cuando exista
 - **Default branch:** `main`
+- **Tags / releases:** `v1.0.0` (lanzamiento), `v1.1.0` (admin dark + Agenda UX) — ver [CHANGELOG](../CHANGELOG.md) y [Releases](https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases)
 
 ## Flujo de ramas
 
@@ -22,26 +23,25 @@ feature → developer → PR → main
 
 ## Branch protection (`main`)
 
-### Plan free + repo privado
+Repo **público**: protection básica ya aplicada (sin force-push, sin borrar `main`, resolución de conversaciones).  
+Aprobaciones obligatorias y status checks **no** están forzados todavía (flujo solo + CI con runners a veces inestable).
 
-GitHub **no habilita** branch protection clásica ni “required reviewers” de environments sin **GitHub Pro** o repo **público**.
-
-**Mitigación operativa (free):**
-
-1. Flujo por PR (plantilla + CI Theme smoke).
-2. Deploy production **manual**: Actions → **Deploy Production** → *Run workflow*.
-3. Deploy al push a `main` (opcional): Settings → Variables → `DEPLOY_ON_PUSH_MAIN` = `true`.
-4. Cuando quieras protection real: repo público o plan Pro, y en Settings → Branches:
+**Cuando el equipo > 1 y CI esté verde**, en Settings → Branches → `main`:
 
 | Regla | Valor |
 |-------|--------|
 | Require a pull request before merging | Sí |
+| Require approvals | **1** |
+| Require review from Code Owners | Sí |
 | Require status checks to pass | `Theme smoke / php-lint` |
 | Require branches to be up to date | Sí |
 | Allow force pushes | No |
 | Allow deletions | No |
 
 > Check exacto: **`Theme smoke / php-lint`**.
+
+Deploy production sigue **manual** por defecto: Actions → **Deploy Production** → *Run workflow*.  
+Opcional: variable `DEPLOY_ON_PUSH_MAIN` = `true`.
 
 ## Environments (ya creados: `staging`, `production`)
 

@@ -1,0 +1,5166 @@
+/**
+ * Tema oscuro completo del admin WordPress (Junior Rojas).
+ * Solo aplica con body.jr-admin-theme-dark.
+ */
+
+/* ========== Tokens (paleta alineada a la grilla Agenda) ========== */
+body.jr-admin-theme-dark {
+  --jr-bg: #12161d;
+  --jr-bg-soft: #151a22;
+  --jr-surface: #1a2030;
+  --jr-surface-2: #1c2129;
+  --jr-surface-3: #222833;
+  --jr-ink: #eef0f3;
+  --jr-ink-soft: #c9ced6;
+  --jr-muted: #9aa3af;
+  --jr-line: #3a4250;
+  --jr-line-strong: #4a5568;
+  --jr-link: #d4b45a;
+  --jr-link-hover: #e4c872;
+  --jr-accent: #d4b45a;
+  --jr-accent-hover: #e4c872;
+  --jr-accent-ink: #141820;
+  --jr-ok: #4ade96;
+  --jr-ok-bg: #0f2a1a;
+  --jr-ok-border: #1f7a48;
+  --jr-warn: #f0c14d;
+  --jr-warn-bg: #2c230c;
+  --jr-warn-border: #9a7418;
+  --jr-danger: #ff8e8e;
+  --jr-danger-bg: #2c1414;
+  --jr-danger-border: #a33a3a;
+  --jr-info-bg: #2a2410;
+  --jr-info-border: #d4b45a;
+  --jr-input-bg: #141820;
+  --jr-menu: #0b0e13;
+  --jr-menu-hover: #1a2030;
+  --jr-menu-current: #d4b45a;
+  --jr-focus: rgba(212, 180, 90, 0.45);
+  /* Gutenberg / @wordpress/components (Fonts, patrones, etc.) */
+  --wp-admin-theme-color: #d4b45a;
+  --wp-admin-theme-color--rgb: 212, 180, 90;
+  --wp-admin-theme-color-darker-10: #c4a44a;
+  --wp-admin-theme-color-darker-10--rgb: 196, 164, 74;
+  --wp-admin-theme-color-darker-20: #b4943a;
+  --wp-admin-theme-color-darker-20--rgb: 180, 148, 58;
+  --wp-components-color-accent: #d4b45a;
+  --wp-components-color-accent-darker-10: #c4a44a;
+  --wp-components-color-accent-darker-20: #b4943a;
+  --wp-components-color-accent-inverted: #141820;
+  --wp-components-color-background: #12161d;
+  --wp-components-color-foreground: #eef0f3;
+  --wp-components-color-foreground-inverted: #141820;
+  --wp-components-color-gray-100: #151a22;
+  --wp-components-color-gray-200: #1a2030;
+  --wp-components-color-gray-300: #222833;
+  --wp-components-color-gray-400: #3a4250;
+  --wp-components-color-gray-600: #9aa3af;
+  --wp-components-color-gray-700: #9aa3af;
+  --wp-components-color-gray-800: #c9ced6;
+  --wp-components-color-gray-900: #eef0f3;
+  /* WP 7 Design System (Site Editor / admin-ui-page / DataViews) */
+  --wp-dataviews-color-background: #12161d;
+  --wpds-color-bg-surface-neutral-strong: #0f1217;
+  --wpds-color-bg-surface-neutral: #161a21;
+  --wpds-color-bg-surface-neutral-weak: #1c2129;
+  --wpds-color-fg-content-neutral: #eef0f3;
+  --wpds-color-fg-content-neutral-weak: #9aa3af;
+  --wpds-color-stroke-surface-neutral-weak: #3a4250;
+  color-scheme: dark;
+  background: var(--jr-bg);
+  color: var(--jr-ink);
+}
+
+/* ========== Lienzo / textos base ========== */
+body.jr-admin-theme-dark #wpwrap,
+body.jr-admin-theme-dark #wpcontent,
+body.jr-admin-theme-dark #wpbody,
+body.jr-admin-theme-dark #wpbody-content,
+body.jr-admin-theme-dark .wrap {
+  background: var(--jr-bg) !important;
+  color: var(--jr-ink);
+}
+
+body.jr-admin-theme-dark p,
+body.jr-admin-theme-dark li,
+body.jr-admin-theme-dark td,
+body.jr-admin-theme-dark th,
+body.jr-admin-theme-dark label,
+body.jr-admin-theme-dark span,
+body.jr-admin-theme-dark .text-muted {
+  color: inherit;
+}
+
+body.jr-admin-theme-dark .wrap > h1,
+body.jr-admin-theme-dark .wrap h1,
+body.jr-admin-theme-dark .wrap h2,
+body.jr-admin-theme-dark .wrap h3,
+body.jr-admin-theme-dark .wrap h4,
+body.jr-admin-theme-dark #wpbody-content h1,
+body.jr-admin-theme-dark #wpbody-content h2,
+body.jr-admin-theme-dark #wpbody-content h3,
+body.jr-admin-theme-dark .wp-heading-inline {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .description,
+body.jr-admin-theme-dark .howto,
+body.jr-admin-theme-dark p.description,
+body.jr-admin-theme-dark .form-wrap p,
+body.jr-admin-theme-dark .subtitle,
+body.jr-admin-theme-dark .displaying-num,
+body.jr-admin-theme-dark .tablenav .displaying-num {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark code,
+body.jr-admin-theme-dark kbd,
+body.jr-admin-theme-dark samp {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-accent) !important;
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+}
+
+body.jr-admin-theme-dark hr {
+  border-color: var(--jr-line) !important;
+  background: transparent;
+}
+
+/* Enlaces (menu lateral y admin bar se re-especifica abajo) */
+body.jr-admin-theme-dark a {
+  color: var(--jr-link);
+}
+
+body.jr-admin-theme-dark a:hover,
+body.jr-admin-theme-dark a:active,
+body.jr-admin-theme-dark a:focus {
+  color: var(--jr-link-hover);
+}
+
+body.jr-admin-theme-dark .row-title,
+body.jr-admin-theme-dark .wp-list-table a.row-title {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .row-title:hover {
+  color: var(--jr-link) !important;
+}
+
+body.jr-admin-theme-dark .row-actions,
+body.jr-admin-theme-dark .row-actions span a {
+  color: var(--jr-muted);
+}
+
+body.jr-admin-theme-dark .row-actions span a:hover {
+  color: var(--jr-link-hover);
+}
+
+body.jr-admin-theme-dark .row-actions .trash a,
+body.jr-admin-theme-dark .row-actions .delete a,
+body.jr-admin-theme-dark .submitdelete {
+  color: var(--jr-danger) !important;
+}
+
+/* ========== Admin bar ========== */
+body.jr-admin-theme-dark #wpadminbar {
+  background: var(--jr-menu) !important;
+  color: var(--jr-ink-soft);
+  border-bottom: 1px solid var(--jr-line);
+}
+
+body.jr-admin-theme-dark #wpadminbar .ab-item,
+body.jr-admin-theme-dark #wpadminbar a.ab-item,
+body.jr-admin-theme-dark #wpadminbar > #wp-toolbar span.ab-label,
+body.jr-admin-theme-dark #wpadminbar > #wp-toolbar span.noticon {
+  color: var(--jr-ink-soft) !important;
+  background: transparent;
+}
+
+body.jr-admin-theme-dark #wpadminbar .ab-icon,
+body.jr-admin-theme-dark #wpadminbar .ab-icon:before,
+body.jr-admin-theme-dark #wpadminbar .ab-item:before,
+body.jr-admin-theme-dark #wpadminbar .ab-item:after {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark #wpadminbar .ab-top-menu > li:hover > .ab-item,
+body.jr-admin-theme-dark #wpadminbar .ab-top-menu > li.hover > .ab-item,
+body.jr-admin-theme-dark #wpadminbar .ab-top-menu > li > .ab-item:focus {
+  background: var(--jr-menu-hover) !important;
+  color: #fff !important;
+}
+
+body.jr-admin-theme-dark #wpadminbar .menupop .ab-sub-wrapper,
+body.jr-admin-theme-dark #wpadminbar .shortlink-input {
+  background: var(--jr-surface) !important;
+  border: 1px solid var(--jr-line);
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #wpadminbar .ab-submenu .ab-item,
+body.jr-admin-theme-dark #wpadminbar .quicklinks .menupop ul li a {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark #wpadminbar .quicklinks .menupop ul li a:hover,
+body.jr-admin-theme-dark #wpadminbar .quicklinks .menupop ul li a:focus {
+  background: var(--jr-menu-hover) !important;
+  color: #fff !important;
+}
+
+body.jr-admin-theme-dark #wpadminbar .ab-empty-item {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark #wp-admin-bar-jr-admin-theme-toggle .ab-icon.dashicons,
+body.jr-admin-theme-dark #wp-admin-bar-jr-admin-theme-toggle .ab-icon:before {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark #wp-admin-bar-command-palette .ab-label,
+body.jr-admin-theme-dark #wp-admin-bar-command-palette kbd {
+  color: var(--jr-accent) !important;
+}
+
+/* ========== Menú lateral ========== */
+body.jr-admin-theme-dark #adminmenuback,
+body.jr-admin-theme-dark #adminmenuwrap,
+body.jr-admin-theme-dark #adminmenu {
+  background: var(--jr-menu) !important;
+  border-color: var(--jr-line);
+}
+
+body.jr-admin-theme-dark #adminmenu,
+body.jr-admin-theme-dark #adminmenu li,
+body.jr-admin-theme-dark #adminmenu a {
+  color: var(--jr-ink-soft) !important;
+  background: transparent;
+}
+
+body.jr-admin-theme-dark #adminmenu div.wp-menu-image:before,
+body.jr-admin-theme-dark #adminmenu .wp-menu-image:before {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark #adminmenu li.menu-top:hover,
+body.jr-admin-theme-dark #adminmenu li.opensub > a.menu-top,
+body.jr-admin-theme-dark #adminmenu li > a.menu-top:focus {
+  background: var(--jr-menu-hover) !important;
+  color: #fff !important;
+}
+
+body.jr-admin-theme-dark #adminmenu li.menu-top:hover div.wp-menu-image:before,
+body.jr-admin-theme-dark #adminmenu li.opensub > a.menu-top div.wp-menu-image:before {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark #adminmenu li.wp-has-current-submenu a.wp-has-current-submenu,
+body.jr-admin-theme-dark #adminmenu li.current a.menu-top,
+body.jr-admin-theme-dark.folded #adminmenu li.wp-has-current-submenu a.wp-has-current-submenu {
+  background: var(--jr-surface-2) !important;
+  color: #fff !important;
+}
+
+body.jr-admin-theme-dark #adminmenu li.wp-has-current-submenu div.wp-menu-image:before,
+body.jr-admin-theme-dark #adminmenu li.current a.menu-top div.wp-menu-image:before {
+  color: var(--jr-menu-current) !important;
+}
+
+body.jr-admin-theme-dark #adminmenu .wp-submenu,
+body.jr-admin-theme-dark #adminmenu .wp-has-current-submenu .wp-submenu,
+body.jr-admin-theme-dark #adminmenu .wp-has-current-submenu.opensub .wp-submenu,
+body.jr-admin-theme-dark.folded #adminmenu .wp-has-current-submenu .wp-submenu {
+  background: #080a0e !important;
+  border-color: var(--jr-line) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #adminmenu .wp-submenu a {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark #adminmenu .wp-submenu a:hover,
+body.jr-admin-theme-dark #adminmenu .wp-submenu a:focus {
+  color: #fff !important;
+  background: transparent !important;
+}
+
+body.jr-admin-theme-dark #adminmenu .wp-submenu li.current a,
+body.jr-admin-theme-dark #adminmenu .wp-submenu li.current a:hover,
+body.jr-admin-theme-dark #adminmenu .wp-submenu li.current a:focus {
+  color: #d4b45a !important;
+  background: transparent !important;
+  font-weight: 600;
+}
+
+body.jr-admin-theme-dark #adminmenu .wp-submenu-head {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark #adminmenu .awaiting-mod,
+body.jr-admin-theme-dark #adminmenu .update-plugins {
+  background: var(--jr-accent) !important;
+  color: var(--jr-accent-ink) !important;
+}
+
+body.jr-admin-theme-dark #collapse-button {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark #collapse-button:hover {
+  color: #fff !important;
+}
+
+body.jr-admin-theme-dark #adminmenu li a:focus div.wp-menu-image:before,
+body.jr-admin-theme-dark #adminmenu .wp-submenu a:focus {
+  box-shadow: none;
+  color: var(--jr-accent) !important;
+}
+
+/* Separadores menú: sin línea visible, pero con el mismo aire que en light */
+body.jr-admin-theme-dark #adminmenu li.wp-menu-separator,
+body.jr-admin-theme-dark #adminmenu .wp-menu-separator {
+  display: list-item !important;
+  height: 0 !important;
+  margin: 8px auto 7px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  visibility: visible !important;
+  overflow: hidden !important;
+}
+
+body.jr-admin-theme-dark #adminmenu div.separator,
+body.jr-admin-theme-dark #adminmenu .separator {
+  display: block !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ========== Cajas / cards / metabox ========== */
+body.jr-admin-theme-dark .postbox,
+body.jr-admin-theme-dark .stuffbox,
+body.jr-admin-theme-dark .meta-box-sortables .postbox,
+body.jr-admin-theme-dark .card,
+body.jr-admin-theme-dark .welcome-panel {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .postbox .hndle,
+body.jr-admin-theme-dark .stuffbox .hndle,
+body.jr-admin-theme-dark .postbox .postbox-header,
+body.jr-admin-theme-dark .postbox-header .hndle,
+body.jr-admin-theme-dark .postbox .hndle h2 {
+  background: var(--jr-surface-2) !important;
+  border-bottom: 1px solid var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .postbox .inside,
+body.jr-admin-theme-dark #dashboard-widgets .postbox .inside,
+body.jr-admin-theme-dark .postbox .inside p,
+body.jr-admin-theme-dark .postbox .inside li {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark .handle-order-higher,
+body.jr-admin-theme-dark .handle-order-lower,
+body.jr-admin-theme-dark .handlediv,
+body.jr-admin-theme-dark .toggle-indicator:before,
+body.jr-admin-theme-dark .postbox .handlediv .toggle-indicator:before {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark #screen-meta,
+body.jr-admin-theme-dark #screen-options-wrap,
+body.jr-admin-theme-dark #contextual-help-wrap,
+body.jr-admin-theme-dark #screen-meta-links .show-settings {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark #screen-meta-links .show-settings {
+  color: var(--jr-ink-soft) !important;
+  box-shadow: none;
+}
+
+body.jr-admin-theme-dark #screen-meta-links .show-settings:hover {
+  color: var(--jr-ink) !important;
+  background: var(--jr-surface-2) !important;
+}
+
+/* ========== Tablas listados ========== */
+body.jr-admin-theme-dark table.widefat,
+body.jr-admin-theme-dark .wp-list-table,
+body.jr-admin-theme-dark table.fixed {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+  box-shadow: none;
+}
+
+body.jr-admin-theme-dark .wp-list-table thead th,
+body.jr-admin-theme-dark .wp-list-table thead td,
+body.jr-admin-theme-dark .wp-list-table tfoot th,
+body.jr-admin-theme-dark .wp-list-table tfoot td,
+body.jr-admin-theme-dark table.widefat thead th,
+body.jr-admin-theme-dark table.widefat thead td {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-ink-soft) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .wp-list-table tbody th,
+body.jr-admin-theme-dark .wp-list-table tbody td,
+body.jr-admin-theme-dark table.widefat tbody th,
+body.jr-admin-theme-dark table.widefat tbody td {
+  background: transparent;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .striped > tbody > :nth-child(odd),
+body.jr-admin-theme-dark ul.striped > :nth-child(odd),
+body.jr-admin-theme-dark .alternate,
+body.jr-admin-theme-dark .wp-list-table .alternate {
+  background: var(--jr-bg-soft) !important;
+}
+
+body.jr-admin-theme-dark .wp-list-table tr:hover td,
+body.jr-admin-theme-dark .wp-list-table tr:hover th {
+  background: var(--jr-menu-hover) !important;
+}
+
+body.jr-admin-theme-dark .wp-list-table .check-column {
+  color: var(--jr-muted);
+}
+
+body.jr-admin-theme-dark .sorting-indicators .sorting-indicator:before,
+body.jr-admin-theme-dark .sorted .sorting-indicator:before {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .tablenav {
+  color: var(--jr-ink-soft);
+}
+
+body.jr-admin-theme-dark .tablenav .tablenav-pages a,
+body.jr-admin-theme-dark .tablenav-pages-navspan,
+body.jr-admin-theme-dark .tablenav-pages .current {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .tablenav-pages .current {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .subsubsub a {
+  color: var(--jr-link) !important;
+}
+
+body.jr-admin-theme-dark .subsubsub a.current {
+  color: var(--jr-ink) !important;
+  border-bottom-color: var(--jr-accent);
+}
+
+body.jr-admin-theme-dark .subsubsub a .count,
+body.jr-admin-theme-dark .subsubsub a.current .count {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark .view-switch a.current:before {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .view-switch a:before {
+  color: var(--jr-muted) !important;
+}
+
+/* Columnas check status */
+body.jr-admin-theme-dark .column-status .status-draft,
+body.jr-admin-theme-dark .post-state {
+  color: var(--jr-warn) !important;
+}
+
+/* ========== Formularios ========== */
+body.jr-admin-theme-dark input[type='text'],
+body.jr-admin-theme-dark input[type='password'],
+body.jr-admin-theme-dark input[type='color'],
+body.jr-admin-theme-dark input[type='date'],
+body.jr-admin-theme-dark input[type='datetime'],
+body.jr-admin-theme-dark input[type='datetime-local'],
+body.jr-admin-theme-dark input[type='email'],
+body.jr-admin-theme-dark input[type='month'],
+body.jr-admin-theme-dark input[type='number'],
+body.jr-admin-theme-dark input[type='search'],
+body.jr-admin-theme-dark input[type='tel'],
+body.jr-admin-theme-dark input[type='time'],
+body.jr-admin-theme-dark input[type='url'],
+body.jr-admin-theme-dark input[type='week'],
+body.jr-admin-theme-dark select,
+body.jr-admin-theme-dark textarea,
+body.jr-admin-theme-dark .wp-core-ui select,
+body.jr-admin-theme-dark .wp-editor-container,
+body.jr-admin-theme-dark .QuickTags,
+body.jr-admin-theme-dark #post-status-info,
+body.jr-admin-theme-dark .components-text-control__input,
+body.jr-admin-theme-dark .components-select-control__input {
+  background: var(--jr-input-bg) !important;
+  border-color: var(--jr-line-strong) !important;
+  color: var(--jr-ink) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark input[type='checkbox'],
+body.jr-admin-theme-dark input[type='radio'] {
+  background: var(--jr-input-bg) !important;
+  border-color: var(--jr-line-strong) !important;
+  box-shadow: none !important;
+  color: var(--jr-accent);
+  accent-color: var(--jr-accent);
+}
+
+body.jr-admin-theme-dark input:focus,
+body.jr-admin-theme-dark select:focus,
+body.jr-admin-theme-dark textarea:focus,
+body.jr-admin-theme-dark .wp-core-ui select:focus {
+  border-color: var(--jr-accent) !important;
+  box-shadow: 0 0 0 1px var(--jr-accent), 0 0 0 3px var(--jr-focus) !important;
+  outline: none;
+}
+
+body.jr-admin-theme-dark input:disabled,
+body.jr-admin-theme-dark select:disabled,
+body.jr-admin-theme-dark textarea:disabled {
+  opacity: 0.55;
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark ::placeholder {
+  color: var(--jr-muted) !important;
+  opacity: 1;
+}
+
+body.jr-admin-theme-dark .form-table th,
+body.jr-admin-theme-dark .form-table td,
+body.jr-admin-theme-dark .form-table label {
+  color: var(--jr-ink-soft) !important;
+  border-bottom-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .form-table th {
+  color: var(--jr-ink) !important;
+}
+
+/* TinyMCE / editor clásico (chrome exterior al iframe) */
+body.jr-admin-theme-dark #postdivrich,
+body.jr-admin-theme-dark #wp-content-wrap,
+body.jr-admin-theme-dark .wp-editor-wrap,
+body.jr-admin-theme-dark .wp-editor-container,
+body.jr-admin-theme-dark .mce-tinymce,
+body.jr-admin-theme-dark .mce-container,
+body.jr-admin-theme-dark .mce-container-body,
+body.jr-admin-theme-dark .mce-edit-area,
+body.jr-admin-theme-dark .mce-edit-area iframe,
+body.jr-admin-theme-dark div.mce-panel {
+  background: #12161d !important;
+  border-color: #3a4250 !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .wp-editor-tools,
+body.jr-admin-theme-dark .mce-toolbar-grp,
+body.jr-admin-theme-dark div.mce-toolbar-grp,
+body.jr-admin-theme-dark .mce-top-part,
+body.jr-admin-theme-dark .mce-statusbar,
+body.jr-admin-theme-dark .mce-statusbar .mce-container-body,
+body.jr-admin-theme-dark .mce-path,
+body.jr-admin-theme-dark .quicktags-toolbar,
+body.jr-admin-theme-dark #ed_toolbar {
+  background: #1c2129 !important;
+  border-color: #3a4250 !important;
+  color: #c9ced6 !important;
+}
+
+body.jr-admin-theme-dark .wp-switch-editor {
+  background: #2c3340 !important;
+  border-color: #3a4250 !important;
+  color: #9aa3af !important;
+  text-decoration: none !important;
+}
+
+body.jr-admin-theme-dark .tmce-active .switch-tmce,
+body.jr-admin-theme-dark .html-active .switch-html {
+  background: #12161d !important;
+  border-bottom-color: #12161d !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .mce-toolbar .mce-btn,
+body.jr-admin-theme-dark .mce-toolbar .mce-btn button,
+body.jr-admin-theme-dark .mce-toolbar .mce-menubtn,
+body.jr-admin-theme-dark .mce-toolbar .mce-splitbtn {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: #c9ced6 !important;
+}
+
+body.jr-admin-theme-dark .mce-toolbar .mce-btn:hover,
+body.jr-admin-theme-dark .mce-toolbar .mce-btn:focus,
+body.jr-admin-theme-dark .mce-toolbar .mce-btn.mce-active,
+body.jr-admin-theme-dark .mce-toolbar .mce-btn.mce-active:hover {
+  background: #2c3340 !important;
+  border-color: #4a5568 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .mce-toolbar .mce-ico,
+body.jr-admin-theme-dark .mce-toolbar i.mce-i-backcolor,
+body.jr-admin-theme-dark .mce-caretdown {
+  color: #c9ced6 !important;
+  text-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .mce-toolbar .mce-btn:hover .mce-ico,
+body.jr-admin-theme-dark .mce-toolbar .mce-btn.mce-active .mce-ico {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .mce-toolbar .mce-separator,
+body.jr-admin-theme-dark .mce-toolbar-grp .mce-flow-layout-item {
+  border-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .mce-path-item,
+body.jr-admin-theme-dark .mce-divider,
+body.jr-admin-theme-dark .mce-wordcount,
+body.jr-admin-theme-dark #post-status-info,
+body.jr-admin-theme-dark #post-status-info td,
+body.jr-admin-theme-dark #wp-word-count {
+  color: #9aa3af !important;
+  background: #1c2129 !important;
+  border-color: #3a4250 !important;
+}
+
+/* Título de la entrada */
+body.jr-admin-theme-dark #titlediv #title,
+body.jr-admin-theme-dark #titlewrap input,
+body.jr-admin-theme-dark #title {
+  background: #12161d !important;
+  border: 1px solid #3a4250 !important;
+  color: #eef0f3 !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #titlediv #title:focus {
+  border-color: #d4b45a !important;
+  box-shadow: 0 0 0 1px #d4b45a !important;
+}
+
+body.jr-admin-theme-dark #title-prompt-text {
+  color: #6b7280 !important;
+}
+
+/* Textarea modo “Texto” */
+body.jr-admin-theme-dark #content,
+body.jr-admin-theme-dark textarea.wp-editor-area,
+body.jr-admin-theme-dark .wp-editor-area {
+  background: #12161d !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+/* Iframe del editor (fondo mientras carga) */
+body.jr-admin-theme-dark .mce-edit-area iframe,
+body.jr-admin-theme-dark #content_ifr,
+body.jr-admin-theme-dark iframe[id$='_ifr'] {
+  background: #12161d !important;
+  min-height: 200px;
+}
+
+/* Permalink / slug */
+body.jr-admin-theme-dark #edit-slug-box,
+body.jr-admin-theme-dark #edit-slug-box strong {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark #editable-post-name,
+body.jr-admin-theme-dark #editable-post-name input {
+  background: #12161d !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+/* Quicktags botones */
+body.jr-admin-theme-dark .quicktags-toolbar input.button,
+body.jr-admin-theme-dark .quicktags-toolbar input.ed_button {
+  background: #2c3340 !important;
+  border-color: #4a5568 !important;
+  color: #eef0f3 !important;
+}
+
+/* Menús desplegables TinyMCE */
+body.jr-admin-theme-dark .mce-menu,
+body.jr-admin-theme-dark .mce-menu-item,
+body.jr-admin-theme-dark .mce-floatpanel,
+body.jr-admin-theme-dark .mce-popover,
+body.jr-admin-theme-dark .mce-window,
+body.jr-admin-theme-dark .mce-window-head,
+body.jr-admin-theme-dark .mce-window-body,
+body.jr-admin-theme-dark .mce-foot {
+  background: #1c2129 !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .mce-menu-item:hover,
+body.jr-admin-theme-dark .mce-menu-item.mce-selected,
+body.jr-admin-theme-dark .mce-menu-item:focus {
+  background: #2c3340 !important;
+  color: #fff !important;
+}
+
+body.jr-admin-theme-dark .mce-menu-item .mce-text,
+body.jr-admin-theme-dark .mce-menu-item .mce-ico {
+  color: inherit !important;
+}
+
+/* ========== Botones (dark = dorado; azul WP solo en light) ========== */
+body.jr-admin-theme-dark .wp-core-ui .button,
+body.jr-admin-theme-dark .wp-core-ui .button-secondary,
+body.jr-admin-theme-dark .wp-core-ui .button-small,
+body.jr-admin-theme-dark .page-title-action,
+body.jr-admin-theme-dark a.page-title-action,
+body.jr-admin-theme-dark #save-post,
+body.jr-admin-theme-dark #post-preview,
+body.jr-admin-theme-dark a.preview,
+body.jr-admin-theme-dark #minor-publishing-actions .button,
+body.jr-admin-theme-dark #major-publishing-actions .button:not(.button-primary),
+body.jr-admin-theme-dark .edit-box .button,
+body.jr-admin-theme-dark .misc-pub-section .button,
+body.jr-admin-theme-dark #search-submit,
+body.jr-admin-theme-dark .search-box .button,
+body.jr-admin-theme-dark .tablenav .button,
+body.jr-admin-theme-dark .tablenav input.button,
+body.jr-admin-theme-dark input.button:not(.button-primary),
+body.jr-admin-theme-dark a.button:not(.button-primary),
+body.jr-admin-theme-dark button.button:not(.button-primary),
+body.jr-admin-theme-dark .media-frame .button:not(.button-primary),
+body.jr-admin-theme-dark .media-modal .button:not(.button-primary),
+body.jr-admin-theme-dark .jr-ingresos__filters .button:not(.button-primary),
+body.jr-admin-theme-dark .jr-ingresos__filters a.button:not(.button-primary) {
+  background: transparent !important;
+  border: 1px solid #d4b45a !important;
+  color: #d4b45a !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  text-decoration: none !important;
+}
+
+body.jr-admin-theme-dark .wp-core-ui .button:hover,
+body.jr-admin-theme-dark .wp-core-ui .button-secondary:hover,
+body.jr-admin-theme-dark .wp-core-ui .button-small:hover,
+body.jr-admin-theme-dark .page-title-action:hover,
+body.jr-admin-theme-dark a.page-title-action:hover,
+body.jr-admin-theme-dark #save-post:hover,
+body.jr-admin-theme-dark #post-preview:hover,
+body.jr-admin-theme-dark a.preview:hover,
+body.jr-admin-theme-dark #search-submit:hover,
+body.jr-admin-theme-dark .search-box .button:hover,
+body.jr-admin-theme-dark .tablenav .button:hover,
+body.jr-admin-theme-dark input.button:not(.button-primary):hover,
+body.jr-admin-theme-dark a.button:not(.button-primary):hover,
+body.jr-admin-theme-dark button.button:not(.button-primary):hover {
+  background: rgba(212, 180, 90, 0.14) !important;
+  border-color: #e4c872 !important;
+  color: #e4c872 !important;
+}
+
+body.jr-admin-theme-dark .wp-core-ui .button-primary,
+body.jr-admin-theme-dark .wp-core-ui .button-primary.button-hero,
+body.jr-admin-theme-dark .wp-core-ui .button-primary.button-large,
+body.jr-admin-theme-dark input#publish,
+body.jr-admin-theme-dark #publish,
+body.jr-admin-theme-dark input[type='submit'].button-primary,
+body.jr-admin-theme-dark .button.button-primary,
+body.jr-admin-theme-dark a.button-primary,
+body.jr-admin-theme-dark a.button.button-primary,
+body.jr-admin-theme-dark .jr-acciones-rapidas a.button-primary,
+body.jr-admin-theme-dark .wp-list-table a.button-primary,
+body.jr-admin-theme-dark .wrap a.button-primary,
+body.jr-admin-theme-dark .media-button-select,
+body.jr-admin-theme-dark .media-button-insert {
+  background: #d4b45a !important;
+  border-color: #b9943a !important;
+  color: #141820 !important;
+  font-weight: 600;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .wp-core-ui .button-primary:hover,
+body.jr-admin-theme-dark .wp-core-ui .button-primary:focus,
+body.jr-admin-theme-dark input#publish:hover,
+body.jr-admin-theme-dark #publish:hover,
+body.jr-admin-theme-dark a.button-primary:hover,
+body.jr-admin-theme-dark a.button.button-primary:hover,
+body.jr-admin-theme-dark .jr-acciones-rapidas a.button-primary:hover,
+body.jr-admin-theme-dark .wp-list-table a.button-primary:hover,
+body.jr-admin-theme-dark .wrap a.button-primary:hover {
+  background: #e4c872 !important;
+  border-color: #e4c872 !important;
+  color: #141820 !important;
+  box-shadow: 0 0 0 1px rgba(212, 180, 90, 0.45) !important;
+}
+
+body.jr-admin-theme-dark .wp-core-ui .button-primary:disabled,
+body.jr-admin-theme-dark .wp-core-ui .button-primary.disabled,
+body.jr-admin-theme-dark .wp-core-ui .button:disabled,
+body.jr-admin-theme-dark .wp-core-ui .button.disabled {
+  background: #2c3340 !important;
+  border-color: #3a4250 !important;
+  color: #6b7280 !important;
+  opacity: 0.75;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .wp-core-ui .button-link,
+body.jr-admin-theme-dark .button-link,
+body.jr-admin-theme-dark .edit-timestamp,
+body.jr-admin-theme-dark .edit-visibility,
+body.jr-admin-theme-dark .edit-post-status,
+body.jr-admin-theme-dark a.edit-post-link {
+  background: transparent !important;
+  border: 0 !important;
+  color: #d4b45a !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .wp-core-ui .button-link:hover,
+body.jr-admin-theme-dark .button-link:hover {
+  color: #e4c872 !important;
+}
+
+body.jr-admin-theme-dark .wp-core-ui .button-link-delete,
+body.jr-admin-theme-dark .button-link-delete {
+  color: #ff8e8e !important;
+}
+
+body.jr-admin-theme-dark .wp-core-ui .button-group > .button.active {
+  background: rgba(212, 180, 90, 0.18) !important;
+  border-color: #d4b45a !important;
+  color: #d4b45a !important;
+}
+
+/* Enlaces en contenido: dorado (no azul #2271b1). No pisa botones. */
+body.jr-admin-theme-dark .wrap a:not(.button):not(.page-title-action):not(.ab-item):not(.jr-cal__btn-new):not(.jr-cal__today):not(.jr-cal__seg-btn):not(.jr-cal__nav-btn):not(.jr-cal__event-link),
+body.jr-admin-theme-dark .row-actions a,
+body.jr-admin-theme-dark .subsubsub a,
+body.jr-admin-theme-dark #wpfooter a,
+body.jr-admin-theme-dark .wp-list-table a:not(.button) {
+  color: #d4b45a !important;
+}
+
+body.jr-admin-theme-dark .wrap a:not(.button):not(.page-title-action):not(.jr-cal__btn-new):not(.jr-cal__today):not(.jr-cal__seg-btn):not(.jr-cal__nav-btn):hover,
+body.jr-admin-theme-dark .row-actions a:hover,
+body.jr-admin-theme-dark .subsubsub a:hover,
+body.jr-admin-theme-dark #wpfooter a:hover,
+body.jr-admin-theme-dark .wp-list-table a:not(.button):hover {
+  color: #e4c872 !important;
+}
+
+body.jr-admin-theme-dark .row-actions .trash a,
+body.jr-admin-theme-dark .row-actions .delete a,
+body.jr-admin-theme-dark .submitdelete {
+  color: #ff8e8e !important;
+}
+
+body.jr-admin-theme-dark .subsubsub a.current {
+  color: #eef0f3 !important;
+}
+
+/* ========== Alertas / notices ========== */
+body.jr-admin-theme-dark .notice,
+body.jr-admin-theme-dark div.updated,
+body.jr-admin-theme-dark div.error,
+body.jr-admin-theme-dark div.notice,
+body.jr-admin-theme-dark .update-nag,
+body.jr-admin-theme-dark #message {
+  background: #1c2129 !important;
+  border: 1px solid #3a4250 !important;
+  border-left-width: 4px !important;
+  color: #eef0f3 !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .notice p,
+body.jr-admin-theme-dark div.updated p,
+body.jr-admin-theme-dark div.error p,
+body.jr-admin-theme-dark div.notice p,
+body.jr-admin-theme-dark .update-nag p,
+body.jr-admin-theme-dark #message p,
+body.jr-admin-theme-dark .notice p strong,
+body.jr-admin-theme-dark .notice strong {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .notice a,
+body.jr-admin-theme-dark div.updated a,
+body.jr-admin-theme-dark div.error a,
+body.jr-admin-theme-dark div.notice a,
+body.jr-admin-theme-dark .update-nag a {
+  color: #d4b45a !important;
+}
+
+body.jr-admin-theme-dark .notice a:hover {
+  color: #e4c872 !important;
+}
+
+body.jr-admin-theme-dark .notice-success,
+body.jr-admin-theme-dark div.updated,
+body.jr-admin-theme-dark .notice.notice-success {
+  background: #0f2a1a !important;
+  border-color: #1f7a48 !important;
+  border-left-color: #4ade96 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .notice-warning,
+body.jr-admin-theme-dark .notice.notice-warning,
+body.jr-admin-theme-dark .update-nag {
+  background: #2a220e !important;
+  border-color: #a8842e !important;
+  border-left-color: #f0c14d !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .notice-warning p,
+body.jr-admin-theme-dark .notice.notice-warning p,
+body.jr-admin-theme-dark .notice-warning strong {
+  color: #f5e6b8 !important;
+}
+
+body.jr-admin-theme-dark .notice-error,
+body.jr-admin-theme-dark div.error,
+body.jr-admin-theme-dark .notice.notice-error {
+  background: #2c1414 !important;
+  border-color: #a33a3a !important;
+  border-left-color: #ff8e8e !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .notice-info,
+body.jr-admin-theme-dark .notice.notice-info {
+  background: #132338 !important;
+  border-color: #2f6fad !important;
+  border-left-color: #d4b45a !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .notice-dismiss:before {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark .notice-dismiss:hover:before {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .inline .notice,
+body.jr-admin-theme-dark .notice.inline {
+  background: #222833 !important;
+}
+
+/* Metaboxes editar: bordes un poco más legibles */
+body.jr-admin-theme-dark #poststuff .postbox,
+body.jr-admin-theme-dark #post-body .postbox {
+  border-color: #4a5568 !important;
+  background: #1c2129 !important;
+}
+
+body.jr-admin-theme-dark #poststuff .postbox .postbox-header,
+body.jr-admin-theme-dark #poststuff .postbox .hndle {
+  background: #242a34 !important;
+  border-bottom-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark #major-publishing-actions {
+  background: #151a22 !important;
+  border-top-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark #minor-publishing {
+  border-bottom-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .misc-pub-section {
+  border-bottom-color: #3a4250 !important;
+  color: #c9ced6 !important;
+}
+
+body.jr-admin-theme-dark .misc-pub-section b,
+body.jr-admin-theme-dark .misc-pub-section strong {
+  color: #eef0f3 !important;
+}
+
+/* Focus campos al editar post */
+body.jr-admin-theme-dark #titlediv #title:focus,
+body.jr-admin-theme-dark .acf-input input:focus,
+body.jr-admin-theme-dark .acf-input textarea:focus,
+body.jr-admin-theme-dark textarea:focus {
+  border-color: #d4b45a !important;
+  box-shadow: 0 0 0 1px #d4b45a !important;
+  outline: none !important;
+}
+
+/* ========== Tabs / filters ========== */
+body.jr-admin-theme-dark .nav-tab-wrapper,
+body.jr-admin-theme-dark .wrap h2.nav-tab-wrapper,
+body.jr-admin-theme-dark h1.nav-tab-wrapper {
+  border-bottom-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .nav-tab {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark .nav-tab:hover {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .nav-tab-active,
+body.jr-admin-theme-dark .nav-tab-active:focus,
+body.jr-admin-theme-dark .nav-tab-active:focus:active,
+body.jr-admin-theme-dark .nav-tab-active:hover {
+  background: var(--jr-bg) !important;
+  border-bottom-color: var(--jr-bg) !important;
+  color: var(--jr-ink) !important;
+}
+
+/* ========== Widgets dashboard (por si quedan) ========== */
+body.jr-admin-theme-dark #dashboard-widgets .meta-box-sortables {
+  color: var(--jr-ink);
+}
+
+body.jr-admin-theme-dark .dashboard-widget-control-form,
+body.jr-admin-theme-dark #dashboard_quick_press .input-text-wrap input {
+  background: var(--jr-input-bg);
+  color: var(--jr-ink);
+}
+
+/* ========== Plugins / updates ========== */
+body.jr-admin-theme-dark.plugins-php #wpbody-content,
+body.jr-admin-theme-dark.plugins-php .wrap {
+  background: var(--jr-bg) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark table.plugins,
+body.jr-admin-theme-dark .wp-list-table.plugins {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .plugins thead th,
+body.jr-admin-theme-dark .plugins thead td,
+body.jr-admin-theme-dark .plugins tfoot th,
+body.jr-admin-theme-dark .plugins tfoot td {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-ink-soft) !important;
+  border-color: var(--jr-line) !important;
+}
+
+/* Filas base + inactivas (WP pinta #fff) */
+body.jr-admin-theme-dark .plugins tr,
+body.jr-admin-theme-dark .plugins tr td,
+body.jr-admin-theme-dark .plugins tr th,
+body.jr-admin-theme-dark .plugins .inactive td,
+body.jr-admin-theme-dark .plugins .inactive th,
+body.jr-admin-theme-dark .plugins tr.inactive + tr.inactive td,
+body.jr-admin-theme-dark .plugins tr.inactive + tr.inactive th {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .plugins .inactive th.check-column {
+  border-left: 4px solid transparent !important;
+}
+
+/* Activas: tinte ok, no blanco */
+body.jr-admin-theme-dark .plugins .active td,
+body.jr-admin-theme-dark .plugins .active th,
+body.jr-admin-theme-dark .plugins tr.active + tr.active td,
+body.jr-admin-theme-dark .plugins tr.active + tr.active th {
+  background: rgba(76, 222, 150, 0.08) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .plugins .active th.check-column {
+  border-left: 4px solid var(--jr-ok) !important;
+}
+
+body.jr-admin-theme-dark .plugins .update td,
+body.jr-admin-theme-dark .plugins .update th {
+  background: var(--jr-warn-bg) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-warn-border) !important;
+}
+
+body.jr-admin-theme-dark .plugins .paused td,
+body.jr-admin-theme-dark .plugins .paused th {
+  background: var(--jr-danger-bg) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-danger-border) !important;
+}
+
+body.jr-admin-theme-dark .plugins tr:hover td,
+body.jr-admin-theme-dark .plugins tr:hover th {
+  background: var(--jr-menu-hover) !important;
+}
+
+body.jr-admin-theme-dark .plugins .active:hover td,
+body.jr-admin-theme-dark .plugins .active:hover th {
+  background: rgba(76, 222, 150, 0.14) !important;
+}
+
+body.jr-admin-theme-dark .plugins .plugin-title,
+body.jr-admin-theme-dark .plugins .plugin-title strong,
+body.jr-admin-theme-dark .plugins .plugin-title a,
+body.jr-admin-theme-dark .plugin-card .name,
+body.jr-admin-theme-dark .plugin-card .name a {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .plugins .plugin-description,
+body.jr-admin-theme-dark .plugins .plugin-description p,
+body.jr-admin-theme-dark .plugins .plugin-version-author-uri,
+body.jr-admin-theme-dark .plugins .plugin-version-author-uri a,
+body.jr-admin-theme-dark .plugins .column-auto-updates,
+body.jr-admin-theme-dark .plugins .column-description,
+body.jr-admin-theme-dark .plugins .second,
+body.jr-admin-theme-dark .plugins .second a {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark .plugins .plugin-version-author-uri a:hover,
+body.jr-admin-theme-dark .plugins .row-actions a:hover,
+body.jr-admin-theme-dark .plugins .plugin-title a:hover {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .plugins .row-actions,
+body.jr-admin-theme-dark .plugins .row-actions a,
+body.jr-admin-theme-dark .plugins .row-actions .deactivate a,
+body.jr-admin-theme-dark .plugins .row-actions .activate a,
+body.jr-admin-theme-dark .plugins .row-actions .settings a {
+  color: var(--jr-link) !important;
+}
+
+body.jr-admin-theme-dark .plugins .row-actions .delete a,
+body.jr-admin-theme-dark .plugins .row-actions .uninstall a {
+  color: var(--jr-danger) !important;
+}
+
+body.jr-admin-theme-dark .plugins .auto-update-disabled,
+body.jr-admin-theme-dark .plugins .auto-update-enabled,
+body.jr-admin-theme-dark .plugins .toggle-auto-update {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark .plugins .toggle-auto-update:hover {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .plugin-update-tr td,
+body.jr-admin-theme-dark .plugin-update-tr .plugin-update {
+  background: var(--jr-warn-bg) !important;
+  border-color: var(--jr-warn-border) !important;
+  color: var(--jr-ink) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .plugin-update-tr .update-message,
+body.jr-admin-theme-dark .update-message.notice,
+body.jr-admin-theme-dark .plugin-card .update-now,
+body.jr-admin-theme-dark .notice-warning.notice-alt {
+  background: var(--jr-warn-bg) !important;
+  border-color: var(--jr-warn-border) !important;
+  color: var(--jr-ink) !important;
+}
+
+/* Añadir plugins / cards del directorio */
+body.jr-admin-theme-dark .plugin-card,
+body.jr-admin-theme-dark .plugin-card .plugin-card-top,
+body.jr-admin-theme-dark .plugin-card .desc,
+body.jr-admin-theme-dark .plugin-card .name {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .plugin-card .plugin-card-bottom {
+  background: var(--jr-bg-soft) !important;
+  color: var(--jr-ink-soft) !important;
+  border-top-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .plugin-card .desc p,
+body.jr-admin-theme-dark .plugin-card .column-rating,
+body.jr-admin-theme-dark .plugin-card .column-updated,
+body.jr-admin-theme-dark .plugin-card .column-downloaded,
+body.jr-admin-theme-dark .plugin-card .column-compatibility,
+body.jr-admin-theme-dark .plugin-card .vers,
+body.jr-admin-theme-dark .plugin-card .authors,
+body.jr-admin-theme-dark .plugin-card .authors a {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark .plugin-card .authors a:hover,
+body.jr-admin-theme-dark .plugin-card .thickbox,
+body.jr-admin-theme-dark .plugin-card .more-details,
+body.jr-admin-theme-dark .plugin-action-buttons a.open-plugin-details-modal {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .plugin-card .column-compatibility span:before {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark .plugin-card .column-compatibility .compatibility-compatible:before {
+  color: var(--jr-ok) !important;
+}
+
+body.jr-admin-theme-dark .plugin-card .column-compatibility .compatibility-incompatible:before {
+  color: var(--jr-danger) !important;
+}
+
+body.jr-admin-theme-dark .plugin-card .star-rating .star,
+body.jr-admin-theme-dark .star-rating .star {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .plugin-card .plugin-action-buttons .button,
+body.jr-admin-theme-dark .plugin-card .plugin-action-buttons .button-primary,
+body.jr-admin-theme-dark .plugin-card .install-now,
+body.jr-admin-theme-dark .plugin-card .activate-now {
+  background: var(--jr-accent) !important;
+  border-color: var(--jr-accent) !important;
+  color: var(--jr-accent-ink) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .plugin-card .plugin-action-buttons .button:hover,
+body.jr-admin-theme-dark .plugin-card .install-now:hover,
+body.jr-admin-theme-dark .plugin-card .activate-now:hover {
+  background: var(--jr-accent-hover) !important;
+  border-color: var(--jr-accent-hover) !important;
+  color: var(--jr-accent-ink) !important;
+}
+
+body.jr-admin-theme-dark .plugin-card .plugin-action-buttons .button.button-disabled,
+body.jr-admin-theme-dark .plugin-card .button.button-disabled {
+  background: var(--jr-surface-2) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark .wp-filter,
+body.jr-admin-theme-dark .wp-filter .filter-links li a,
+body.jr-admin-theme-dark .wp-filter .search-form input[type='search'],
+body.jr-admin-theme-dark .wp-filter-search {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .wp-filter .filter-links .current,
+body.jr-admin-theme-dark .wp-filter .filter-links li a.current {
+  color: var(--jr-accent) !important;
+  border-bottom-color: var(--jr-accent) !important;
+  background: transparent !important;
+}
+
+body.jr-admin-theme-dark .wp-filter .filter-links li a:hover,
+body.jr-admin-theme-dark .wp-filter .filter-links li a:focus {
+  color: var(--jr-accent-hover) !important;
+}
+
+body.jr-admin-theme-dark .no-plugin-results {
+  color: var(--jr-muted) !important;
+}
+
+/* Etiquetas populares (fondo blanco de core) */
+body.jr-admin-theme-dark p.popular-tags,
+body.jr-admin-theme-dark .popular-tags,
+body.jr-admin-theme-dark .tagcloud {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink-soft) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .popular-tags a,
+body.jr-admin-theme-dark .tagcloud a {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark .popular-tags a:hover,
+body.jr-admin-theme-dark .tagcloud a:hover {
+  color: var(--jr-accent) !important;
+}
+
+/* Subir plugin */
+body.jr-admin-theme-dark .upload-plugin,
+body.jr-admin-theme-dark .upload-plugin .wp-upload-form,
+body.jr-admin-theme-dark .upload-theme,
+body.jr-admin-theme-dark .upload-theme .wp-upload-form {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+/* Modal «Más detalles» del plugin */
+body.jr-admin-theme-dark #TB_overlay {
+  background: rgba(0, 0, 0, 0.72) !important;
+}
+
+body.jr-admin-theme-dark #TB_window,
+body.jr-admin-theme-dark #TB_window.plugin-details-modal,
+body.jr-admin-theme-dark #plugin-information,
+body.jr-admin-theme-dark #plugin-information-scrollable,
+body.jr-admin-theme-dark #plugin-information-content,
+body.jr-admin-theme-dark #plugin-information .section,
+body.jr-admin-theme-dark #plugin-information .fyi {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark #plugin-information-title,
+body.jr-admin-theme-dark #plugin-information-tabs,
+body.jr-admin-theme-dark #plugin-information-footer {
+  background: var(--jr-bg-soft) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark #plugin-information-tabs a {
+  color: var(--jr-ink-soft) !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+body.jr-admin-theme-dark #plugin-information-tabs a.current {
+  color: var(--jr-ink) !important;
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+  border-bottom-color: var(--jr-surface) !important;
+}
+
+body.jr-admin-theme-dark #plugin-information .fyi strong,
+body.jr-admin-theme-dark #plugin-information .fyi h2,
+body.jr-admin-theme-dark #plugin-information .fyi h3,
+body.jr-admin-theme-dark #plugin-information-title h2 {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark #plugin-information .section p,
+body.jr-admin-theme-dark #plugin-information .fyi li,
+body.jr-admin-theme-dark #plugin-information .fyi-description,
+body.jr-admin-theme-dark #plugin-information .review-meta {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark #plugin-information .counter-back {
+  background: var(--jr-surface-3) !important;
+}
+
+body.jr-admin-theme-dark #plugin-information .counter-bar {
+  background: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark #plugin-information-footer .button-primary {
+  background: var(--jr-accent) !important;
+  border-color: var(--jr-accent) !important;
+  color: var(--jr-accent-ink) !important;
+}
+
+/* ========== Media modal ========== */
+body.jr-admin-theme-dark .media-modal,
+body.jr-admin-theme-dark .media-modal-content,
+body.jr-admin-theme-dark .media-frame,
+body.jr-admin-theme-dark .media-frame-content,
+body.jr-admin-theme-dark .media-frame-router,
+body.jr-admin-theme-dark .media-frame-title,
+body.jr-admin-theme-dark .media-frame-toolbar,
+body.jr-admin-theme-dark .media-frame-menu,
+body.jr-admin-theme-dark .media-sidebar,
+body.jr-admin-theme-dark .attachments-browser .media-toolbar,
+body.jr-admin-theme-dark .attachment-details,
+body.jr-admin-theme-dark .media-selection {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .media-frame a,
+body.jr-admin-theme-dark .media-modal a {
+  color: var(--jr-link) !important;
+}
+
+body.jr-admin-theme-dark .media-frame-router .media-menu-item,
+body.jr-admin-theme-dark .media-router .media-menu-item {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark .media-frame-router .media-menu-item.active {
+  color: var(--jr-ink) !important;
+  background: transparent;
+  box-shadow: inset 0 -3px 0 var(--jr-accent);
+}
+
+body.jr-admin-theme-dark .attachment .thumbnail,
+body.jr-admin-theme-dark .attachment-preview {
+  background: var(--jr-bg-soft) !important;
+  box-shadow: inset 0 0 0 1px var(--jr-line);
+}
+
+/* ========== Gutenberg (suave) ========== */
+body.jr-admin-theme-dark .block-editor-page,
+body.jr-admin-theme-dark .interface-interface-skeleton,
+body.jr-admin-theme-dark .edit-post-layout,
+body.jr-admin-theme-dark .interface-interface-skeleton__body,
+body.jr-admin-theme-dark .interface-interface-skeleton__content {
+  background: var(--jr-bg) !important;
+  color: var(--jr-ink);
+}
+
+body.jr-admin-theme-dark .edit-post-sidebar,
+body.jr-admin-theme-dark .interface-complementary-area,
+body.jr-admin-theme-dark .editor-styles-wrapper,
+body.jr-admin-theme-dark .block-editor-writing-flow {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .components-panel,
+body.jr-admin-theme-dark .components-panel__body,
+body.jr-admin-theme-dark .components-button.is-secondary {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .components-button.is-primary {
+  background: var(--jr-accent) !important;
+  color: var(--jr-accent-ink) !important;
+}
+
+/* ========== ACF ========== */
+body.jr-admin-theme-dark .acf-fields > .acf-field,
+body.jr-admin-theme-dark .acf-field,
+body.jr-admin-theme-dark .acf-box,
+body.jr-admin-theme-dark .acf-postbox,
+body.jr-admin-theme-dark .acf-table,
+body.jr-admin-theme-dark .acf-hl {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .acf-label label,
+body.jr-admin-theme-dark .acf-th,
+body.jr-admin-theme-dark .acf-field .acf-label {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark .acf-input input,
+body.jr-admin-theme-dark .acf-input select,
+body.jr-admin-theme-dark .acf-input textarea,
+body.jr-admin-theme-dark .acf-input .select2-selection {
+  background: var(--jr-input-bg) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line-strong) !important;
+}
+
+body.jr-admin-theme-dark .select2-dropdown,
+body.jr-admin-theme-dark .select2-container--default .select2-results__option {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background: var(--jr-menu-hover) !important;
+  color: #fff !important;
+}
+
+/* ========== Footer ========== */
+body.jr-admin-theme-dark #wpfooter {
+  color: var(--jr-muted) !important;
+  border-top: 1px solid var(--jr-line) !important;
+  background: transparent;
+}
+
+body.jr-admin-theme-dark #wpfooter a {
+  color: var(--jr-link) !important;
+}
+
+/* ========== Scrollbars (WebKit) ========== */
+body.jr-admin-theme-dark *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+body.jr-admin-theme-dark *::-webkit-scrollbar-track {
+  background: var(--jr-bg);
+}
+
+body.jr-admin-theme-dark *::-webkit-scrollbar-thumb {
+  background: var(--jr-line-strong);
+  border-radius: 6px;
+}
+
+body.jr-admin-theme-dark *::-webkit-scrollbar-thumb:hover {
+  background: var(--jr-muted);
+}
+
+/* ========== Escritorio JR (HEX fijos: deben ganar a dashboard.css) ========== */
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .inside,
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash {
+  background: transparent !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash {
+  --jr-ink: #eef0f3;
+  --jr-muted: #9aa3af;
+  --jr-line: #3a4250;
+  --jr-bg: #1a1f28;
+  --jr-surface: #222833;
+  --jr-ok: #4ade96;
+  --jr-warn: #f0c14d;
+  --jr-warn-bg: #2c230c;
+  --jr-ok-bg: #0f2a1a;
+  --jr-accent: #d4b45a;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__intro,
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__muted {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__health {
+  background: #222833 !important;
+  border: 1px solid #3a4250 !important;
+  border-left: 3px solid #d4b45a !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__health p {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__banner {
+  border-color: #3a4250 !important;
+  background: #1a1f28 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__banner strong {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__banner span {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__banner--is-warn {
+  background: #2c230c !important;
+  border-color: #9a7418 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__banner--is-ok {
+  background: #0f2a1a !important;
+  border-color: #1f7a48 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard a.jr-dash__chip,
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__chip {
+  background: #222833 !important;
+  border: 1px solid #4a5568 !important;
+  color: #eef0f3 !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard a.jr-dash__chip:hover,
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard a.jr-dash__chip:focus,
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__chip:hover,
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__chip:focus {
+  background: #2c3340 !important;
+  border-color: #d4b45a !important;
+  color: #d4b45a !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard a.jr-dash__chip.is-alert,
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__chip.is-alert {
+  background: #2c230c !important;
+  border-color: #9a7418 !important;
+  color: #f0c14d !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__panel {
+  background: #1c2129 !important;
+  border: 1px solid #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__panel-head h3 {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__pill--ok {
+  background: #0f2a1a !important;
+  color: #4ade96 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__pill--warn {
+  background: #2c230c !important;
+  color: #f0c14d !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__empty {
+  background: #151a22 !important;
+  border: 1px dashed #3a4250 !important;
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__empty--ok {
+  background: #0f2a1a !important;
+  border: 1px solid #1f7a48 !important;
+  color: #4ade96 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__table,
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__table th,
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__table td {
+  background: transparent !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__table thead th {
+  background: #222833 !important;
+  color: #c9ced6 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__estado--confirmada {
+  color: #4ade96 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__estado--pendiente {
+  color: #f0c14d !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__estado--completada {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__list li {
+  border-bottom-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__list strong {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash__more a {
+  color: #d4b45a !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash a.button,
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash .button {
+  background: #2c3340 !important;
+  border-color: #4a5568 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash a.button:hover,
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .jr-dash .button:hover {
+  background: #3a4250 !important;
+  color: #fff !important;
+}
+
+/* Evitar que widefat del admin pinte blanco los paneles del dash */
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard table.widefat,
+body.jr-admin-theme-dark #yuniorrojas_ops_dashboard .widefat {
+  background: transparent !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+  box-shadow: none !important;
+}
+
+/* Generales jr-dash (fuera del ID del widget, por si se mueve) */
+body.jr-admin-theme-dark .jr-dash a.jr-dash__chip {
+  color: #eef0f3 !important;
+  background: #222833 !important;
+}
+
+/* ========== Agenda ========== */
+body.jr-admin-theme-dark .jr-cal,
+body.jr-admin-theme-dark #wpbody-content .wrap.jr-cal {
+  --jr-ink: #eef0f3;
+  --jr-muted: #9aa3af;
+  --jr-line: #3a4250;
+  --jr-soft: #151a22;
+  --jr-card: #1c2129;
+  --jr-accent: #d4b45a;
+  --jr-gold: #d4b45a;
+  color: #eef0f3 !important;
+  background: transparent !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__top-left h1,
+body.jr-admin-theme-dark .jr-cal__month strong,
+body.jr-admin-theme-dark .jr-cal__range,
+body.jr-admin-theme-dark .jr-cal__day-name,
+body.jr-admin-theme-dark .jr-cal__stats strong,
+body.jr-admin-theme-dark .jr-cal__legend-item {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__top-left p,
+body.jr-admin-theme-dark .jr-cal__day-sub,
+body.jr-admin-theme-dark .jr-cal__tick,
+body.jr-admin-theme-dark .jr-cal__stats,
+body.jr-admin-theme-dark .jr-cal__barbero-filter,
+body.jr-admin-theme-dark .jr-cal__legend-title {
+  color: #9aa3af !important;
+}
+
+/* Botón + Nueva cita — texto oscuro legible sobre dorado */
+body.jr-admin-theme-dark .wrap a.jr-cal__btn-new,
+body.jr-admin-theme-dark .jr-cal a.jr-cal__btn-new,
+body.jr-admin-theme-dark a.jr-cal__btn-new {
+  background: #d4b45a !important;
+  border: 1px solid #d4b45a !important;
+  border-radius: 2px !important;
+  color: #141820 !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .wrap a.jr-cal__btn-new:hover,
+body.jr-admin-theme-dark .jr-cal a.jr-cal__btn-new:hover,
+body.jr-admin-theme-dark a.jr-cal__btn-new:hover,
+body.jr-admin-theme-dark .wrap a.jr-cal__btn-new:focus,
+body.jr-admin-theme-dark a.jr-cal__btn-new:focus {
+  background: #e4c872 !important;
+  border-color: #e4c872 !important;
+  color: #141820 !important;
+  box-shadow: none !important;
+}
+
+/* Toolbar / filtros — botones rectangulares WP */
+body.jr-admin-theme-dark .jr-cal__filters,
+body.jr-admin-theme-dark .jr-cal__toolbar {
+  background: #1c2129 !important;
+  border-color: #3a4250 !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__today,
+body.jr-admin-theme-dark a.jr-cal__today,
+body.jr-admin-theme-dark .jr-cal__seg-btn,
+body.jr-admin-theme-dark a.jr-cal__seg-btn,
+body.jr-admin-theme-dark .jr-cal__nav-btn,
+body.jr-admin-theme-dark a.jr-cal__nav-btn {
+  background: #2c3340 !important;
+  border: 1px solid #4a5568 !important;
+  border-radius: 3px !important;
+  color: #eef0f3 !important;
+  box-shadow: none !important;
+  font-weight: 400 !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__today:hover,
+body.jr-admin-theme-dark a.jr-cal__today:hover,
+body.jr-admin-theme-dark .jr-cal__seg-btn:hover,
+body.jr-admin-theme-dark a.jr-cal__seg-btn:hover,
+body.jr-admin-theme-dark .jr-cal__nav-btn:hover,
+body.jr-admin-theme-dark a.jr-cal__nav-btn:hover {
+  background: #3a4250 !important;
+  border-color: #d4b45a !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__seg {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__seg-btn,
+body.jr-admin-theme-dark a.jr-cal__seg-btn {
+  border-radius: 0 !important;
+  margin-left: -1px !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__seg-btn:first-child,
+body.jr-admin-theme-dark a.jr-cal__seg-btn:first-child {
+  border-radius: 3px 0 0 3px !important;
+  margin-left: 0 !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__seg-btn:last-child,
+body.jr-admin-theme-dark a.jr-cal__seg-btn:last-child {
+  border-radius: 0 3px 3px 0 !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__seg-btn.is-active,
+body.jr-admin-theme-dark a.jr-cal__seg-btn.is-active {
+  background: #151a22 !important;
+  border-color: #d4b45a !important;
+  color: #eef0f3 !important;
+  z-index: 1;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__barbero-filter select {
+  background: #12161d !important;
+  border-color: #4a5568 !important;
+  border-radius: 3px !important;
+  color: #eef0f3 !important;
+  min-height: 30px;
+  box-shadow: none !important;
+}
+
+/* Board — flat como la grilla de referencia */
+body.jr-admin-theme-dark .jr-cal__board {
+  background: #141820 !important;
+  border: 1px solid #3a4250 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__corner,
+body.jr-admin-theme-dark .jr-cal__head-row,
+body.jr-admin-theme-dark .jr-cal__time-col {
+  background: #1a2030 !important;
+  border-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__day-head {
+  border-color: #3a4250 !important;
+  background: #1a2030 !important;
+}
+
+/* Columna / cabecera “hoy” — flat, solo borde gold */
+body.jr-admin-theme-dark .jr-cal__day-head.is-today {
+  background: #d4b45a !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__day-head.is-today .jr-cal__day-name,
+body.jr-admin-theme-dark .jr-cal__day-head.is-today .jr-cal__day-sub {
+  color: #141820 !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__col {
+  border-color: #3a4250 !important;
+  background-color: #141820 !important;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(90px - 1px),
+    #3a4250 calc(90px - 1px),
+    #3a4250 90px
+  ) !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__col.is-today {
+  background-color: #1a1810 !important;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(90px - 1px),
+    #3a4250 calc(90px - 1px),
+    #3a4250 90px
+  ) !important;
+  box-shadow: none !important;
+  border-left: 2px solid #d4b45a !important;
+  border-right: 2px solid #d4b45a !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__day-n {
+  background: #222833 !important;
+  color: #9aa3af !important;
+  border-radius: 2px !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__day-head.is-today .jr-cal__day-n {
+  background: #141820 !important;
+  color: #d4b45a !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__now {
+  border-top: 2px solid #d4b45a !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__now span {
+  background: #d4b45a !important;
+  color: #141820 !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+/* Eventos — flat */
+body.jr-admin-theme-dark .jr-cal__event {
+  filter: none;
+  border-radius: 2px !important;
+  border-left-width: 4px !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__event:hover {
+  box-shadow: none !important;
+  outline: 1px solid color-mix(in srgb, var(--jr-ev-bd) 70%, #fff);
+  outline-offset: 0;
+}
+
+body.jr-admin-theme-dark .jr-cal__event-time {
+  border-bottom-color: color-mix(in srgb, var(--jr-ev-bd) 45%, transparent) !important;
+  color: color-mix(in srgb, var(--jr-ev-bd) 85%, #fff) !important;
+  opacity: 1 !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__event-title {
+  color: var(--jr-ev-tx) !important;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+body.jr-admin-theme-dark .jr-cal__event-meta,
+body.jr-admin-theme-dark .jr-cal__event-barbero {
+  color: color-mix(in srgb, var(--jr-ev-tx) 80%, #fff) !important;
+  opacity: 0.9 !important;
+}
+
+body.jr-admin-theme-dark .jr-cal__tick {
+  color: #b0b8c4 !important;
+  font-weight: 700 !important;
+}
+
+body.jr-admin-theme-dark .jr-cal a:not(.jr-cal__btn-new):not(.jr-cal__today):not(.jr-cal__seg-btn):not(.jr-cal__nav-btn):not(.jr-cal__event-link) {
+  color: #d4b45a !important;
+}
+
+/* ========== Ingresos ========== */
+body.jr-admin-theme-dark .wrap.jr-ingresos,
+body.jr-admin-theme-dark .jr-ingresos {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__intro {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos h1 {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__filters,
+body.jr-admin-theme-dark .jr-ingresos__kpi,
+body.jr-admin-theme-dark .jr-ingresos__chart-card,
+body.jr-admin-theme-dark .jr-ingresos__table-wrap {
+  background: #1c2129 !important;
+  border: 1px solid #3a4250 !important;
+  color: #eef0f3 !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__filters label span,
+body.jr-admin-theme-dark .jr-ingresos__kpi-label {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__kpi-value,
+body.jr-admin-theme-dark .jr-ingresos__chart-card h2,
+body.jr-admin-theme-dark .jr-ingresos__table-wrap h2 {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__kpi--metodos li,
+body.jr-admin-theme-dark .jr-ingresos__kpi--metodos li strong {
+  color: #c9ced6 !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__filters input[type='date'],
+body.jr-admin-theme-dark .jr-ingresos__filters select {
+  background: #12161d !important;
+  border-color: #4a5568 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__filters .button,
+body.jr-admin-theme-dark .jr-ingresos__filters a.button {
+  background: #2c3340 !important;
+  border: 1px solid #4a5568 !important;
+  color: #eef0f3 !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__filters .button:hover,
+body.jr-admin-theme-dark .jr-ingresos__filters a.button:hover {
+  background: #3a4250 !important;
+  color: #fff !important;
+  border-color: #6b7280 !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__filters .button-primary,
+body.jr-admin-theme-dark .jr-ingresos__filters input.button-primary {
+  background: #d4b45a !important;
+  border-color: #b9943a !important;
+  color: #141820 !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__filters .button-primary:hover {
+  background: #e4c872 !important;
+  border-color: #e4c872 !important;
+  color: #141820 !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos [data-jr-empty] {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__table,
+body.jr-admin-theme-dark .jr-ingresos__table th,
+body.jr-admin-theme-dark .jr-ingresos__table td {
+  background: transparent !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__table thead th {
+  background: #242a34 !important;
+  color: #c9ced6 !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__table a {
+  color: #d4b45a !important;
+}
+
+body.jr-admin-theme-dark .jr-ingresos__table a:hover {
+  color: #e4c872 !important;
+}
+
+/* ========== Metaboxes JR propias (procesos / horarios / redes) ========== */
+body.jr-admin-theme-dark .yuniorrojas-proceso,
+body.jr-admin-theme-dark .yuniorrojas-procesos-empty,
+body.jr-admin-theme-dark .yuniorrojas-horario,
+body.jr-admin-theme-dark .yuniorrojas-horarios-empty,
+body.jr-admin-theme-dark .yuniorrojas-red,
+body.jr-admin-theme-dark .yuniorrojas-redes-empty {
+  background: #1a1f28 !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .yuniorrojas-proceso__header,
+body.jr-admin-theme-dark .yuniorrojas-horario__header,
+body.jr-admin-theme-dark .yuniorrojas-red__header {
+  background: #151a22 !important;
+  border-bottom-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .yuniorrojas-proceso__numero,
+body.jr-admin-theme-dark .yuniorrojas-horario__numero,
+body.jr-admin-theme-dark .yuniorrojas-red__numero,
+body.jr-admin-theme-dark .yuniorrojas-procesos-count,
+body.jr-admin-theme-dark .yuniorrojas-horarios-count,
+body.jr-admin-theme-dark .yuniorrojas-redes-count {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .yuniorrojas-proceso__handle,
+body.jr-admin-theme-dark .yuniorrojas-horario__handle,
+body.jr-admin-theme-dark .yuniorrojas-red__handle {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark .yuniorrojas-proceso__body label,
+body.jr-admin-theme-dark .yuniorrojas-horario__body label,
+body.jr-admin-theme-dark .yuniorrojas-red__body label,
+body.jr-admin-theme-dark .yuniorrojas-proceso__body label strong,
+body.jr-admin-theme-dark .yuniorrojas-horario__body label strong,
+body.jr-admin-theme-dark .yuniorrojas-red__body label strong {
+  color: #c8ced6 !important;
+}
+
+body.jr-admin-theme-dark .yuniorrojas-proceso__body input,
+body.jr-admin-theme-dark .yuniorrojas-proceso__body textarea,
+body.jr-admin-theme-dark .yuniorrojas-proceso__body select,
+body.jr-admin-theme-dark .yuniorrojas-horario__body input,
+body.jr-admin-theme-dark .yuniorrojas-horario__body select,
+body.jr-admin-theme-dark .yuniorrojas-red__body input,
+body.jr-admin-theme-dark .yuniorrojas-red__body select {
+  background: #12161d !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .yuniorrojas-proceso__body input:focus,
+body.jr-admin-theme-dark .yuniorrojas-proceso__body textarea:focus,
+body.jr-admin-theme-dark .yuniorrojas-horario__body input:focus,
+body.jr-admin-theme-dark .yuniorrojas-red__body input:focus,
+body.jr-admin-theme-dark .yuniorrojas-red__body select:focus {
+  border-color: #d4b45a !important;
+  box-shadow: 0 0 0 1px #d4b45a !important;
+}
+
+/* Placeholders de drag: dorado, no azul WP */
+body.jr-admin-theme-dark .yuniorrojas-proceso-placeholder,
+body.jr-admin-theme-dark .yuniorrojas-horario-placeholder,
+body.jr-admin-theme-dark .yuniorrojas-red-placeholder {
+  background: #2a2410 !important;
+  border-color: #d4b45a !important;
+}
+
+body.jr-admin-theme-dark .yuniorrojas-contacto-settings .form-table th,
+body.jr-admin-theme-dark .yuniorrojas-contacto-settings .form-table td,
+body.jr-admin-theme-dark .yuniorrojas-contacto-settings .form-table label {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .yuniorrojas-contacto-settings h2.title {
+  color: #eef0f3 !important;
+  border-bottom-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .yuniorrojas-eliminar-horario,
+body.jr-admin-theme-dark .yuniorrojas-eliminar-red,
+body.jr-admin-theme-dark .yuniorrojas-eliminar-proceso {
+  background: transparent !important;
+  border-color: #8b3a3a !important;
+  color: #f0a0a0 !important;
+}
+
+body.jr-admin-theme-dark .yuniorrojas-eliminar-horario:hover,
+body.jr-admin-theme-dark .yuniorrojas-eliminar-red:hover,
+body.jr-admin-theme-dark .yuniorrojas-eliminar-proceso:hover {
+  background: #3a1c1c !important;
+  border-color: #c06060 !important;
+  color: #ffc9c9 !important;
+}
+
+/* Menú activo: acento dorado (no blanco) */
+body.jr-admin-theme-dark #adminmenu li.wp-has-current-submenu a.wp-has-current-submenu,
+body.jr-admin-theme-dark #adminmenu li.current a.menu-top,
+body.jr-admin-theme-dark.folded #adminmenu li.wp-has-current-submenu a.wp-has-current-submenu {
+  background: #1a2030 !important;
+  color: #fff !important;
+}
+
+body.jr-admin-theme-dark #adminmenu li.wp-has-current-submenu a.wp-has-current-submenu::after,
+body.jr-admin-theme-dark #adminmenu li.current a.menu-top::after {
+  border-right-color: var(--jr-bg) !important;
+}
+
+body.jr-admin-theme-dark #adminmenu .wp-has-current-submenu .wp-submenu .wp-submenu-head,
+body.jr-admin-theme-dark #adminmenu .wp-menu-arrow,
+body.jr-admin-theme-dark #adminmenu .wp-menu-arrow div {
+  background: #1a2030 !important;
+  border-color: transparent !important;
+}
+
+body.jr-admin-theme-dark #adminmenu li.wp-has-current-submenu::before,
+body.jr-admin-theme-dark #adminmenu li.current::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #d4b45a;
+  z-index: 1;
+}
+
+body.jr-admin-theme-dark #adminmenu li.menu-top {
+  position: relative;
+}
+
+/* Screen options / ayuda */
+body.jr-admin-theme-dark #screen-meta-links .show-settings,
+body.jr-admin-theme-dark #screen-meta-links .button,
+body.jr-admin-theme-dark #contextual-help-link {
+  background: transparent !important;
+  border: 1px solid #d4b45a !important;
+  color: #d4b45a !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #screen-meta-links .show-settings:hover {
+  background: rgba(212, 180, 90, 0.14) !important;
+  color: #e4c872 !important;
+}
+
+/* Reservas: badges de estado */
+body.jr-admin-theme-dark .jr-reserva-estado--confirmada {
+  background: #0f2a1a !important;
+  color: #4ade96 !important;
+  border-color: #1f7a48 !important;
+}
+
+body.jr-admin-theme-dark .jr-reserva-estado--pendiente {
+  background: #2c230c !important;
+  color: #f0c14d !important;
+  border-color: #9a7418 !important;
+}
+
+body.jr-admin-theme-dark .jr-reserva-estado--completada {
+  background: #242a34 !important;
+  color: #c9ced6 !important;
+  border-color: #434b58 !important;
+}
+
+body.jr-admin-theme-dark .jr-reserva-estado--cancelada,
+body.jr-admin-theme-dark .jr-reserva-estado--no_show {
+  background: #2c1414 !important;
+  color: #ff8e8e !important;
+  border-color: #a33a3a !important;
+}
+
+/* Edición de reserva (metabox blanco → dark) */
+body.jr-admin-theme-dark .jr-reserva-admin__block {
+  background: #1c2129 !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .jr-reserva-admin__block h3 {
+  color: #eef0f3 !important;
+  border-bottom-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .jr-reserva-admin__block--sistema {
+  background: #151a22 !important;
+}
+
+body.jr-admin-theme-dark .jr-reserva-admin__badge {
+  background: #0f2a1a !important;
+  color: #4ade96 !important;
+}
+
+body.jr-admin-theme-dark .jr-reserva-admin__badge--manual {
+  background: #2a2410 !important;
+  color: #d4b45a !important;
+}
+
+body.jr-admin-theme-dark.post-type-jr_reservas #titlediv #title {
+  background: #12161d !important;
+  color: #c9ced6 !important;
+  border-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .jr-reserva-admin input[readonly],
+body.jr-admin-theme-dark .jr-reserva-admin textarea[readonly] {
+  background: #151a22 !important;
+  color: #9aa3af !important;
+  border-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .jr-reserva-cancelar-btn {
+  color: #ff8e8e !important;
+  border-color: #ff8e8e !important;
+  background: transparent !important;
+}
+
+/* Acciones rápidas en listado de reservas */
+body.jr-admin-theme-dark .jr-acciones-rapidas,
+.jr-acciones-rapidas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+body.jr-admin-theme-dark .jr-acciones-rapidas .button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 30px !important;
+  height: 30px !important;
+  line-height: 1 !important;
+  padding: 0 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  box-sizing: border-box !important;
+}
+
+body.jr-admin-theme-dark .jr-acciones-rapidas .button-primary {
+  background: #d4b45a !important;
+  border-color: #b9943a !important;
+  color: #141820 !important;
+}
+
+body.jr-admin-theme-dark .jr-acciones-rapidas .button:not(.button-primary) {
+  background: transparent !important;
+  border: 1px solid #d4b45a !important;
+  color: #d4b45a !important;
+}
+
+/* Medios de pago — tip, preview QR, focus */
+body.jr-admin-theme-dark .jr-medio-tip {
+  background: #2a2410 !important;
+  border-left-color: #d4b45a !important;
+  color: #f5e6b8 !important;
+}
+
+body.jr-admin-theme-dark .jr-medio-fields label,
+body.jr-admin-theme-dark .jr-medio-fields h3 {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .jr-medio-fields .description {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark .jr-medio-qr__preview {
+  background: #151a22 !important;
+  border-color: #3a4250 !important;
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark .jr-medio-qr__preview .description {
+  color: #9aa3af !important;
+}
+
+/* Publicar: enlaces Editar / Aceptar */
+body.jr-admin-theme-dark #post-body #submitdiv a,
+body.jr-admin-theme-dark #submitdiv .edit-timestamp,
+body.jr-admin-theme-dark #submitdiv .edit-visibility,
+body.jr-admin-theme-dark #submitdiv .edit-post-status,
+body.jr-admin-theme-dark #submitdiv .save-post-status,
+body.jr-admin-theme-dark #submitdiv .cancel-post-status,
+body.jr-admin-theme-dark #submitdiv .save-timestamp,
+body.jr-admin-theme-dark #submitdiv .cancel-timestamp,
+body.jr-admin-theme-dark #submitdiv .save-post-visibility,
+body.jr-admin-theme-dark #submitdiv .cancel-post-visibility {
+  color: #d4b45a !important;
+}
+
+body.jr-admin-theme-dark #post-body #submitdiv a:hover {
+  color: #e4c872 !important;
+}
+
+/* Submenú actual (Medios de pago, etc.): sin azul WP */
+body.jr-admin-theme-dark #adminmenu .wp-submenu li.current a,
+body.jr-admin-theme-dark #adminmenu .wp-submenu li.current a:hover,
+body.jr-admin-theme-dark #adminmenu .wp-submenu li.current a:focus,
+body.jr-admin-theme-dark #adminmenu a.wp-has-current-submenu:focus + .wp-submenu li.current a {
+  color: #d4b45a !important;
+  background: transparent !important;
+  font-weight: 600;
+}
+
+body.jr-admin-theme-dark #adminmenu li.wp-has-current-submenu a.wp-has-current-submenu,
+body.jr-admin-theme-dark #adminmenu li.current a.menu-top {
+  background: #1a2030 !important;
+  color: #fff !important;
+}
+
+body.jr-admin-theme-dark #adminmenu li.wp-has-current-submenu div.wp-menu-image:before,
+body.jr-admin-theme-dark #adminmenu li.current a.menu-top div.wp-menu-image:before {
+  color: #d4b45a !important;
+}
+
+/* Atributos de entrada / orden */
+body.jr-admin-theme-dark #pageparentdiv,
+body.jr-admin-theme-dark #pageparentdiv .inside {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark #pageparentdiv input,
+body.jr-admin-theme-dark #pageparentdiv select {
+  background: #12161d !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+/* Inputs búsqueda listados */
+body.jr-admin-theme-dark .search-box input[type='search'],
+body.jr-admin-theme-dark .search-box input[name='s'],
+body.jr-admin-theme-dark p.search-box input {
+  background: #12161d !important;
+  border-color: #4a5568 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .search-box input:focus,
+body.jr-admin-theme-dark p.search-box input:focus {
+  border-color: #d4b45a !important;
+  box-shadow: 0 0 0 1px #d4b45a !important;
+}
+
+/* ========== Apariencia → Temas (overlay + grid) ========== */
+body.jr-admin-theme-dark .theme-browser .theme {
+  background: #1a1f28 !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .theme-browser .theme:hover,
+body.jr-admin-theme-dark .theme-browser .theme:focus {
+  border-color: #d4b45a !important;
+}
+
+body.jr-admin-theme-dark .theme-browser .theme .theme-name,
+body.jr-admin-theme-dark .theme-browser .theme .more-details,
+body.jr-admin-theme-dark .theme-browser .theme .theme-actions .button,
+body.jr-admin-theme-dark .theme .notice,
+body.jr-admin-theme-dark .theme-browser .theme .theme-author {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .theme-browser .theme .theme-actions {
+  background: linear-gradient(transparent, #151a22 45%) !important;
+}
+
+body.jr-admin-theme-dark .theme-browser .theme.active .theme-name span {
+  background: #2a2410 !important;
+  color: #f5e6b8 !important;
+}
+
+body.jr-admin-theme-dark .wp-filter,
+body.jr-admin-theme-dark .filter-drawer,
+body.jr-admin-theme-dark .filter-links li > a,
+body.jr-admin-theme-dark .theme-install-php .wp-filter {
+  background: #151a22 !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .filter-links .current,
+body.jr-admin-theme-dark .filter-links li > a.current,
+body.jr-admin-theme-dark .filter-links li > a:focus,
+body.jr-admin-theme-dark .filter-links li > a:hover {
+  color: #d4b45a !important;
+  border-bottom-color: #d4b45a !important;
+  box-shadow: none !important;
+}
+
+/* Overlay de detalle del tema (.theme-wrap / .theme-info) */
+body.jr-admin-theme-dark .theme-overlay .theme-backdrop {
+  background: rgba(0, 0, 0, 0.72) !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-wrap {
+  background: #1a1f28 !important;
+  border: 1px solid #3a4250 !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55) !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-header {
+  background: #151a22 !important;
+  border-bottom: 1px solid #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-header button,
+body.jr-admin-theme-dark .theme-overlay .theme-header .close,
+body.jr-admin-theme-dark .theme-overlay .theme-header .left,
+body.jr-admin-theme-dark .theme-overlay .theme-header .right {
+  color: #c9ced6 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-header button:hover,
+body.jr-admin-theme-dark .theme-overlay .theme-header button:focus {
+  color: #d4b45a !important;
+  background: #242a34 !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-about,
+body.jr-admin-theme-dark .theme-overlay .theme-screenshots,
+body.jr-admin-theme-dark .theme-overlay .screenshot,
+body.jr-admin-theme-dark .theme-overlay .theme-info {
+  background: #1a1f28 !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-name,
+body.jr-admin-theme-dark .theme-overlay h2.theme-name,
+body.jr-admin-theme-dark .theme-overlay .theme-version,
+body.jr-admin-theme-dark .theme-overlay .theme-author,
+body.jr-admin-theme-dark .theme-overlay .theme-author a,
+body.jr-admin-theme-dark .theme-overlay .theme-description,
+body.jr-admin-theme-dark .theme-overlay .theme-tags,
+body.jr-admin-theme-dark .theme-overlay .theme-tags span {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-author a,
+body.jr-admin-theme-dark .theme-overlay .theme-tags a {
+  color: #d4b45a !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-author a:hover {
+  color: #e4c872 !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .current-label {
+  background: #2a2410 !important;
+  color: #f5e6b8 !important;
+  border: 1px solid #d4b45a !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-tags .screen-reader-text {
+  color: inherit;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-actions {
+  background: #151a22 !important;
+  border-top: 1px solid #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-actions .button {
+  background: transparent !important;
+  border: 1px solid #d4b45a !important;
+  color: #d4b45a !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-actions .button:hover {
+  background: #2a2410 !important;
+  color: #e4c872 !important;
+  border-color: #e4c872 !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-actions .button-primary {
+  background: #d4b45a !important;
+  border-color: #d4b45a !important;
+  color: #141820 !important;
+}
+
+body.jr-admin-theme-dark .theme-overlay .theme-actions .button-primary:hover {
+  background: #e4c872 !important;
+  border-color: #e4c872 !important;
+  color: #141820 !important;
+}
+
+body.jr-admin-theme-dark .broken-themes,
+body.jr-admin-theme-dark .broken-themes table {
+  background: #1a1f28 !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+/* ========== Apariencia → Fonts / Font Library (Gutenberg) ========== */
+html.wp-toolbar body.jr-admin-theme-dark,
+html.wp-toolbar body.jr-admin-theme-dark #wpwrap,
+html.wp-toolbar body.jr-admin-theme-dark #wpcontent,
+html.wp-toolbar body.jr-admin-theme-dark #wpbody,
+html.wp-toolbar body.jr-admin-theme-dark #wpbody-content {
+  background-color: #0f1217 !important;
+  color: #eef0f3 !important;
+}
+
+/* ========== Site Editor WP7: Patrones / Páginas / Plantillas (admin-ui + DataViews) ========== */
+body.jr-admin-theme-dark .edit-site-layout,
+body.jr-admin-theme-dark .edit-site-layout__content,
+body.jr-admin-theme-dark .edit-site-layout__area,
+body.jr-admin-theme-dark .edit-site-layout__canvas-container {
+  background: #0b0e13 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .admin-ui-page,
+body.jr-admin-theme-dark .admin-ui-page__header,
+body.jr-admin-theme-dark .admin-ui-page__content,
+body.jr-admin-theme-dark .edit-site-page,
+body.jr-admin-theme-dark .edit-site-page-header,
+body.jr-admin-theme-dark .edit-site-page-content,
+body.jr-admin-theme-dark .edit-site-page-patterns-dataviews,
+body.jr-admin-theme-dark .edit-site-patterns__section-header {
+  background: #0f1217 !important;
+  background-color: #0f1217 !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+  --wp-dataviews-color-background: #0f1217;
+  --wpds-color-bg-surface-neutral-strong: #0f1217;
+  --wpds-color-bg-surface-neutral: #161a21;
+  --wpds-color-bg-surface-neutral-weak: #1c2129;
+  --wpds-color-fg-content-neutral: #eef0f3;
+  --wpds-color-fg-content-neutral-weak: #9aa3af;
+  --wpds-color-stroke-surface-neutral-weak: #3a4250;
+  --wp-admin-theme-color: #d4b45a;
+  --wp-admin-theme-color--rgb: 212, 180, 90;
+}
+
+body.jr-admin-theme-dark .admin-ui-page__header {
+  border-bottom: 1px solid #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .admin-ui-page__header-title,
+body.jr-admin-theme-dark .edit-site-page-header__title,
+body.jr-admin-theme-dark .edit-site-patterns__title,
+body.jr-admin-theme-dark .edit-site-patterns__title .components-heading {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .admin-ui-page__header-subtitle,
+body.jr-admin-theme-dark .edit-site-page-header__sub-title,
+body.jr-admin-theme-dark .edit-site-patterns__sub-title {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark .dataviews-wrapper,
+body.jr-admin-theme-dark .dataviews-picker-wrapper,
+body.jr-admin-theme-dark .dataviews__view-actions,
+body.jr-admin-theme-dark .dataviews-filters__container,
+body.jr-admin-theme-dark .dataviews-footer,
+body.jr-admin-theme-dark .dataviews-footer__content,
+body.jr-admin-theme-dark .dataviews-no-results,
+body.jr-admin-theme-dark .dataviews-loading,
+body.jr-admin-theme-dark .dataviews-pagination,
+body.jr-admin-theme-dark .dataviews-view-grid,
+body.jr-admin-theme-dark .dataviews-view-list,
+body.jr-admin-theme-dark .dataviews-view-table-wrapper,
+body.jr-admin-theme-dark table.dataviews-view-table {
+  background: #0f1217 !important;
+  background-color: #0f1217 !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+  --wp-dataviews-color-background: #0f1217;
+}
+
+body.jr-admin-theme-dark .dataviews-no-results,
+body.jr-admin-theme-dark .dataviews-loading {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark .dataviews-search,
+body.jr-admin-theme-dark .dataviews-search .components-input-control__container,
+body.jr-admin-theme-dark .dataviews-search .components-input-control__backdrop,
+body.jr-admin-theme-dark .dataviews-search input,
+body.jr-admin-theme-dark .dataviews-filters__search-widget-filter-combobox__input {
+  background: #12161d !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .dataviews-search input::placeholder,
+body.jr-admin-theme-dark .dataviews-filters__search-widget-filter-combobox__input::placeholder {
+  color: #8b939e !important;
+}
+
+body.jr-admin-theme-dark .dataviews-filters__summary-chip-container .dataviews-filters__summary-chip {
+  background: #1c2129 !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .dataviews-filters__summary-chip-container .dataviews-filters__summary-chip:hover:not(.is-not-clickable),
+body.jr-admin-theme-dark .dataviews-filters__summary-chip-container .dataviews-filters__summary-chip:focus-visible,
+body.jr-admin-theme-dark .dataviews-filters__summary-chip-container .dataviews-filters__summary-chip[aria-expanded='true'] {
+  background: #2c3340 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .dataviews-filters__summary-chip-container .dataviews-filters__summary-chip.has-values {
+  color: #d4b45a !important;
+  background: rgba(212, 180, 90, 0.12) !important;
+}
+
+body.jr-admin-theme-dark .dataviews-filters__summary-chip-container .dataviews-filters__summary-chip.has-values:hover,
+body.jr-admin-theme-dark .dataviews-filters__summary-chip-container .dataviews-filters__summary-chip.has-values[aria-expanded='true'] {
+  background: rgba(212, 180, 90, 0.2) !important;
+}
+
+body.jr-admin-theme-dark .dataviews-view-grid__card,
+body.jr-admin-theme-dark .dataviews-view-grid__media,
+body.jr-admin-theme-dark .dataviews-view-grid__media-placeholder,
+body.jr-admin-theme-dark .dataviews-view-list__item,
+body.jr-admin-theme-dark .dataviews-view-list__item-wrapper {
+  background: #1c2129 !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .dataviews-title-field,
+body.jr-admin-theme-dark .dataviews-view-grid__title-field,
+body.jr-admin-theme-dark .dataviews-view-list__title-field,
+body.jr-admin-theme-dark .dataviews-view-grid__field-value,
+body.jr-admin-theme-dark .dataviews-view-list__field-value {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .dataviews-view-grid__field-name,
+body.jr-admin-theme-dark .dataviews-view-list__field,
+body.jr-admin-theme-dark .dataviews-pagination,
+body.jr-admin-theme-dark .dataviews-bulk-actions-footer__item-count {
+  color: #9aa3af !important;
+}
+
+body.jr-admin-theme-dark .admin-ui-page__header-actions .components-button:not(.is-primary):not(.is-destructive),
+body.jr-admin-theme-dark .dataviews__view-actions .components-button:not(.is-primary):not(.is-destructive),
+body.jr-admin-theme-dark .dataviews-filters__container .components-button:not(.is-primary):not(.is-destructive) {
+  color: #c9ced6 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .admin-ui-page__header-actions .components-button:not(.is-primary):not(.is-destructive):hover,
+body.jr-admin-theme-dark .dataviews__view-actions .components-button:not(.is-primary):not(.is-destructive):hover,
+body.jr-admin-theme-dark .dataviews-filters__container .components-button:not(.is-primary):not(.is-destructive):hover {
+  color: #eef0f3 !important;
+  background: #1c2129 !important;
+}
+
+body.jr-admin-theme-dark .admin-ui-page__header-actions .components-button.is-primary,
+body.jr-admin-theme-dark .edit-site-page-header .components-button.is-primary {
+  background: #d4b45a !important;
+  border-color: #d4b45a !important;
+  color: #141820 !important;
+}
+
+body.jr-admin-theme-dark .dataviews-filters__summary-popover,
+body.jr-admin-theme-dark .dataviews-filters__search-widget-listbox,
+body.jr-admin-theme-dark .dataviews-config__popover,
+body.jr-admin-theme-dark .dataviews-config__popover-content-wrapper,
+body.jr-admin-theme-dark .components-popover__content {
+  background: #1a1f28 !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .dataviews-filters__search-widget-listitem,
+body.jr-admin-theme-dark .dataviews-filters__search-widget-no-elements {
+  color: #c9ced6 !important;
+}
+
+body.jr-admin-theme-dark .dataviews-filters__search-widget-listitem:hover,
+body.jr-admin-theme-dark .dataviews-filters__search-widget-listitem[aria-selected='true'] {
+  background: #242a34 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .font-library-modal,
+body.jr-admin-theme-dark .font-library-modal__tabpanel-layout,
+body.jr-admin-theme-dark .font-library-modal__tabpanel-layout__main,
+body.jr-admin-theme-dark .font-library-modal__tabpanel-layout__footer,
+body.jr-admin-theme-dark .font-library-modal__fonts-grid,
+body.jr-admin-theme-dark .font-library-modal__font-card,
+body.jr-admin-theme-dark .font-library-modal__subtitle,
+body.jr-admin-theme-dark [class*='font-library-modal'],
+body.jr-admin-theme-dark [class*='font-library'] {
+  background-color: #0f1217 !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .font-library-modal__tabpanel-layout__footer {
+  background: #151a22 !important;
+  border-top: 1px solid #3a4250 !important;
+}
+
+/* Página Fonts embebida (wrap + app de componentes) */
+body.jr-admin-theme-dark .wrap > .components-tab-panel,
+body.jr-admin-theme-dark #wpbody-content .components-tab-panel,
+body.jr-admin-theme-dark #wpbody-content .components-tab-panel__tabs,
+body.jr-admin-theme-dark #wpbody-content .components-tab-panel__tab-content,
+body.jr-admin-theme-dark #wpbody-content .interface-interface-skeleton,
+body.jr-admin-theme-dark #wpbody-content .interface-interface-skeleton__body,
+body.jr-admin-theme-dark #wpbody-content .interface-interface-skeleton__content,
+body.jr-admin-theme-dark #wpbody-content .edit-site-layout,
+body.jr-admin-theme-dark #wpbody-content .edit-site-layout__content,
+body.jr-admin-theme-dark #wpbody-content .edit-site-page,
+body.jr-admin-theme-dark #wpbody-content .edit-site-page-header,
+body.jr-admin-theme-dark #wpbody-content .edit-site-page-content {
+  background: #0f1217 !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .components-tab-panel__tabs {
+  border-bottom: 1px solid #3a4250 !important;
+  background: transparent !important;
+}
+
+body.jr-admin-theme-dark .components-tab-panel__tabs-item {
+  color: #9aa3af !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .components-tab-panel__tabs-item:hover,
+body.jr-admin-theme-dark .components-tab-panel__tabs-item:focus {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .components-tab-panel__tabs-item.is-active,
+body.jr-admin-theme-dark .components-tab-panel__tabs-item[aria-selected='true'] {
+  color: #d4b45a !important;
+  box-shadow: inset 0 -3px 0 0 #d4b45a !important;
+}
+
+body.jr-admin-theme-dark .components-button.is-primary,
+body.jr-admin-theme-dark .font-library-modal__tabpanel-layout__footer .components-button.is-primary {
+  background: #d4b45a !important;
+  border-color: #d4b45a !important;
+  color: #141820 !important;
+}
+
+body.jr-admin-theme-dark .components-button.is-primary:hover,
+body.jr-admin-theme-dark .components-button.is-primary:focus {
+  background: #e4c872 !important;
+  border-color: #e4c872 !important;
+  color: #141820 !important;
+}
+
+body.jr-admin-theme-dark .components-button.is-secondary,
+body.jr-admin-theme-dark .components-button.is-tertiary,
+body.jr-admin-theme-dark .components-button:not(.is-primary):not(.is-destructive) {
+  color: #d4b45a !important;
+  box-shadow: inset 0 0 0 1px #d4b45a !important;
+  background: transparent !important;
+}
+
+body.jr-admin-theme-dark .components-button.is-tertiary {
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .components-modal__frame,
+body.jr-admin-theme-dark .components-modal__content,
+body.jr-admin-theme-dark .components-modal__header {
+  background: #1a1f28 !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .components-modal__header .components-modal__header-heading,
+body.jr-admin-theme-dark .components-modal__header-heading {
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .components-base-control__label,
+body.jr-admin-theme-dark .components-input-control__label,
+body.jr-admin-theme-dark .components-truncate,
+body.jr-admin-theme-dark .components-text,
+body.jr-admin-theme-dark .font-library-modal p,
+body.jr-admin-theme-dark #wpbody-content .components-notice {
+  color: #c9ced6 !important;
+}
+
+body.jr-admin-theme-dark .components-text-control__input,
+body.jr-admin-theme-dark .components-input-control__input,
+body.jr-admin-theme-dark .components-select-control__input,
+body.jr-admin-theme-dark .components-textarea-control__input {
+  background: #12161d !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+body.jr-admin-theme-dark .components-card,
+body.jr-admin-theme-dark .components-card__body,
+body.jr-admin-theme-dark .components-panel,
+body.jr-admin-theme-dark .components-panel__body {
+  background: #1a1f28 !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .components-drop-zone__content,
+body.jr-admin-theme-dark .components-form-file-upload {
+  color: #eef0f3 !important;
+}
+
+/* Mensaje vacío "No fonts installed" */
+body.jr-admin-theme-dark #wpbody-content h1,
+body.jr-admin-theme-dark #wpbody-content h2,
+body.jr-admin-theme-dark #wpbody-content .edit-site-page-header__title {
+  color: #eef0f3 !important;
+}
+
+/* ========== Admin bar: Ctrl+K + toggle claro/oscuro (ambos temas) ========== */
+#wpadminbar #wp-admin-bar-command-palette > .ab-item,
+#wpadminbar #wp-admin-bar-jr-admin-theme-toggle > .ab-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px;
+  height: 32px !important;
+  line-height: 1 !important;
+  padding: 0 10px !important;
+  box-sizing: border-box !important;
+}
+
+#wpadminbar #wp-admin-bar-command-palette .ab-icon,
+#wpadminbar #wp-admin-bar-jr-admin-theme-toggle .ab-icon {
+  float: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  top: 0 !important;
+  position: relative !important;
+  line-height: 1 !important;
+  font-size: 18px !important;
+}
+
+#wpadminbar #wp-admin-bar-command-palette .ab-icon:before,
+#wpadminbar #wp-admin-bar-jr-admin-theme-toggle .ab-icon:before {
+  display: block !important;
+  position: relative !important;
+  top: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 20px !important;
+  font-size: 18px !important;
+  text-align: center !important;
+  speak: never;
+}
+
+/* Restaura icono dashicons del toggle (antes se ocultaba el :before) */
+#wpadminbar #wp-admin-bar-jr-admin-theme-toggle .ab-icon.dashicons {
+  font-family: dashicons !important;
+}
+
+#wpadminbar #wp-admin-bar-command-palette .ab-label,
+#wpadminbar #wp-admin-bar-jr-admin-theme-toggle .ab-label {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: auto !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  float: none !important;
+  vertical-align: middle;
+}
+
+#wpadminbar #wp-admin-bar-command-palette kbd {
+  display: inline-flex !important;
+  align-items: center !important;
+  font-family: inherit !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em;
+  line-height: 1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+@media screen and (max-width: 782px) {
+  #wpadminbar #wp-admin-bar-command-palette > .ab-item,
+  #wpadminbar #wp-admin-bar-jr-admin-theme-toggle > .ab-item {
+    height: 46px !important;
+    padding: 0 12px !important;
+  }
+
+  #wpadminbar #wp-admin-bar-jr-admin-theme-toggle .ab-label {
+    display: none !important;
+  }
+
+  #wpadminbar #wp-admin-bar-command-palette .ab-icon,
+  #wpadminbar #wp-admin-bar-jr-admin-theme-toggle .ab-icon,
+  #wpadminbar #wp-admin-bar-command-palette .ab-icon:before,
+  #wpadminbar #wp-admin-bar-jr-admin-theme-toggle .ab-icon:before {
+    width: 28px !important;
+    height: 28px !important;
+    line-height: 28px !important;
+    font-size: 24px !important;
+  }
+}
+
+/* Contraste: menú y barra no deben heredar azul de links globales */
+body.jr-admin-theme-dark #adminmenu a:hover,
+body.jr-admin-theme-dark #adminmenu a:focus {
+  box-shadow: none;
+}
+
+body.jr-admin-theme-dark #adminmenu .wp-has-current-submenu .wp-submenu .wp-submenu-head,
+body.jr-admin-theme-dark #adminmenu .wp-menu-arrow,
+body.jr-admin-theme-dark #adminmenu .wp-menu-arrow div {
+  background: var(--jr-surface-2) !important;
+  border-color: transparent !important;
+}
+
+/* Category checklists / tags */
+body.jr-admin-theme-dark .categorydiv div.tabs-panel,
+body.jr-admin-theme-dark .tagsdiv .ajaxtag,
+body.jr-admin-theme-dark .tagchecklist,
+body.jr-admin-theme-dark ul.categorychecklist,
+body.jr-admin-theme-dark #category-all,
+body.jr-admin-theme-dark #category-pop,
+body.jr-admin-theme-dark .categorydiv .tabs-panel {
+  background: #12161d !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+body.jr-admin-theme-dark .categorydiv ul.category-tabs,
+body.jr-admin-theme-dark .categorydiv ul.add-menu-item-tabs,
+body.jr-admin-theme-dark .wp-tab-bar {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid #3a4250 !important;
+  background: transparent !important;
+}
+
+body.jr-admin-theme-dark .categorydiv ul.category-tabs li,
+body.jr-admin-theme-dark .categorydiv ul.add-menu-item-tabs li,
+body.jr-admin-theme-dark .wp-tab-bar li {
+  background: transparent !important;
+  border: 0 !important;
+  margin: 0 4px 0 0;
+}
+
+body.jr-admin-theme-dark .categorydiv ul.category-tabs li a,
+body.jr-admin-theme-dark .categorydiv ul.add-menu-item-tabs li a,
+body.jr-admin-theme-dark .category-tabs li a,
+body.jr-admin-theme-dark .wp-tab-bar a {
+  display: inline-block;
+  padding: 6px 10px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-bottom: 0 !important;
+  color: #9aa3af !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .categorydiv ul.category-tabs li.tabs,
+body.jr-admin-theme-dark .categorydiv ul.category-tabs li.tabs a,
+body.jr-admin-theme-dark .categorydiv ul.add-menu-item-tabs li.tabs,
+body.jr-admin-theme-dark .categorydiv ul.add-menu-item-tabs li.tabs a,
+body.jr-admin-theme-dark .category-tabs li.tabs a,
+body.jr-admin-theme-dark .wp-tab-bar li.wp-tab-active,
+body.jr-admin-theme-dark .wp-tab-bar li.wp-tab-active a {
+  background: #12161d !important;
+  border: 1px solid #3a4250 !important;
+  border-bottom-color: #12161d !important;
+  color: #eef0f3 !important;
+  border-radius: 2px 2px 0 0;
+}
+
+body.jr-admin-theme-dark .categorydiv ul.category-tabs li a:hover,
+body.jr-admin-theme-dark .categorydiv ul.add-menu-item-tabs li a:hover {
+  color: #eef0f3 !important;
+  background: #222833 !important;
+}
+
+body.jr-admin-theme-dark .categorydiv .tabs-panel label,
+body.jr-admin-theme-dark .categorychecklist label,
+body.jr-admin-theme-dark .categorychecklist li {
+  color: #c9ced6 !important;
+}
+
+body.jr-admin-theme-dark #category-adder h4,
+body.jr-admin-theme-dark #category-adder h4 a,
+body.jr-admin-theme-dark .taxonomy-add-new,
+body.jr-admin-theme-dark .category-add-toggle,
+body.jr-admin-theme-dark #category-add-toggle {
+  color: #d4b45a !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+body.jr-admin-theme-dark #category-adder h4 a:hover,
+body.jr-admin-theme-dark .taxonomy-add-new:hover,
+body.jr-admin-theme-dark #category-add-toggle:hover {
+  color: #e4c872 !important;
+}
+
+body.jr-admin-theme-dark #newcategory,
+body.jr-admin-theme-dark #newcategory_parent,
+body.jr-admin-theme-dark .category-add input[type='text'],
+body.jr-admin-theme-dark .category-add select {
+  background: #12161d !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+/* Popular categories panel same treatment */
+body.jr-admin-theme-dark #categorychecklist,
+body.jr-admin-theme-dark #categorychecklist-pop {
+  background: transparent !important;
+  color: #c9ced6 !important;
+}
+
+/* Search box list tables */
+body.jr-admin-theme-dark p.search-box input[name='s'] {
+  background: var(--jr-input-bg) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line-strong) !important;
+}
+
+/* Bulk actions + date filters already covered by select/button */
+
+/* Fix white leftovers genéricos en wraps custom */
+body.jr-admin-theme-dark .wrap .card {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+/* ========== Herramientas → Salud del sitio / Privacidad ========== */
+body.jr-admin-theme-dark.site-health #wpcontent,
+body.jr-admin-theme-dark.privacy-settings #wpcontent {
+  background: var(--jr-bg) !important;
+}
+
+body.jr-admin-theme-dark .health-check-header,
+body.jr-admin-theme-dark .privacy-settings-header {
+  background: var(--jr-surface) !important;
+  border-bottom-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .health-check-header h1,
+body.jr-admin-theme-dark .privacy-settings-header h1,
+body.jr-admin-theme-dark .health-check-title-section,
+body.jr-admin-theme-dark .privacy-settings-title-section {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .health-check-tab,
+body.jr-admin-theme-dark .privacy-settings-tab {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark .health-check-tab:hover,
+body.jr-admin-theme-dark .privacy-settings-tab:hover,
+body.jr-admin-theme-dark .health-check-tab:focus,
+body.jr-admin-theme-dark .privacy-settings-tab:focus {
+  color: var(--jr-ink) !important;
+  outline-color: var(--jr-line-strong) !important;
+}
+
+body.jr-admin-theme-dark .health-check-tab.active,
+body.jr-admin-theme-dark .privacy-settings-tab.active {
+  color: var(--jr-ink) !important;
+  box-shadow: inset 0 -3px var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .health-check-body,
+body.jr-admin-theme-dark .privacy-settings-body,
+body.jr-admin-theme-dark .site-health-issues-wrapper,
+body.jr-admin-theme-dark .site-status-has-issues,
+body.jr-admin-theme-dark .site-status-all-clear {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .health-check-body h2,
+body.jr-admin-theme-dark .health-check-body h3,
+body.jr-admin-theme-dark .site-status-all-clear .encouragement {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion,
+body.jr-admin-theme-dark .privacy-settings-accordion {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-heading,
+body.jr-admin-theme-dark .privacy-settings-accordion-heading {
+  border-top-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-trigger,
+body.jr-admin-theme-dark .privacy-settings-accordion-trigger,
+body.jr-admin-theme-dark .wrap .health-check-accordion-trigger {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-trigger:hover,
+body.jr-admin-theme-dark .health-check-accordion-trigger:active,
+body.jr-admin-theme-dark .health-check-accordion-trigger:focus,
+body.jr-admin-theme-dark .privacy-settings-accordion-trigger:hover,
+body.jr-admin-theme-dark .privacy-settings-accordion-trigger:active,
+body.jr-admin-theme-dark .privacy-settings-accordion-trigger:focus {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-trigger .title,
+body.jr-admin-theme-dark .privacy-settings-accordion-trigger .title {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-trigger .icon,
+body.jr-admin-theme-dark .privacy-settings-accordion-trigger .icon,
+body.jr-admin-theme-dark .site-health-view-passed .icon {
+  border-color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-trigger .badge,
+body.jr-admin-theme-dark .privacy-settings-accordion-trigger .badge {
+  color: var(--jr-ink) !important;
+  background: var(--jr-bg-soft) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-trigger .badge.blue,
+body.jr-admin-theme-dark .privacy-settings-accordion-trigger .badge.blue {
+  border-color: var(--jr-accent) !important;
+  color: var(--jr-accent) !important;
+  background: rgba(212, 180, 90, 0.12) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-trigger .badge.orange,
+body.jr-admin-theme-dark .privacy-settings-accordion-trigger .badge.orange {
+  border-color: var(--jr-warn) !important;
+  color: var(--jr-warn) !important;
+  background: var(--jr-warn-bg) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-trigger .badge.red,
+body.jr-admin-theme-dark .privacy-settings-accordion-trigger .badge.red {
+  border-color: var(--jr-danger) !important;
+  color: var(--jr-danger) !important;
+  background: var(--jr-danger-bg) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-trigger .badge.green,
+body.jr-admin-theme-dark .privacy-settings-accordion-trigger .badge.green {
+  border-color: var(--jr-ok) !important;
+  color: var(--jr-ok) !important;
+  background: var(--jr-ok-bg) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-trigger .badge.gray,
+body.jr-admin-theme-dark .privacy-settings-accordion-trigger .badge.gray {
+  border-color: var(--jr-line-strong) !important;
+  color: var(--jr-muted) !important;
+  background: var(--jr-bg-soft) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-panel,
+body.jr-admin-theme-dark .privacy-settings-accordion-panel {
+  background: var(--jr-bg-soft) !important;
+  color: var(--jr-ink-soft) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .health-check-accordion-panel a,
+body.jr-admin-theme-dark .privacy-settings-accordion-panel a {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .wp-core-ui .button.site-health-view-passed,
+body.jr-admin-theme-dark .site-health-view-more .button {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line-strong) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .wp-core-ui .button.site-health-view-passed:hover,
+body.jr-admin-theme-dark .site-health-view-more .button:hover {
+  background: var(--jr-surface-2) !important;
+  border-color: var(--jr-accent) !important;
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .site-health-progress-label,
+body.jr-admin-theme-dark .health-check-body .pass,
+body.jr-admin-theme-dark .health-check-body .good,
+body.jr-admin-theme-dark .health-check-body .warning,
+body.jr-admin-theme-dark .health-check-body .info,
+body.jr-admin-theme-dark .health-check-body .fail,
+body.jr-admin-theme-dark .health-check-body .error {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark .health-check-table,
+body.jr-admin-theme-dark .widefat.health-check-table,
+body.jr-admin-theme-dark .health-check-table th,
+body.jr-admin-theme-dark .health-check-table td {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .health-check-offscreen-nav .health-check-tab {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+
+body.jr-admin-theme-dark .health-check-offscreen-nav:before {
+  border-color: transparent transparent var(--jr-surface) !important;
+}
+
+body.jr-admin-theme-dark .health-check-offscreen-nav .health-check-tab.active {
+  box-shadow: inset 3px 0 var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .site-health-copy-buttons .success {
+  color: var(--jr-ok) !important;
+}
+
+body.jr-admin-theme-dark #dashboard_site_health .health-check-widget,
+body.jr-admin-theme-dark #dashboard_site_health .site-health-details {
+  color: var(--jr-ink-soft) !important;
+}
+
+/* ========== All-in-One WP Migration (Exportar / Importar / Backups) ========== */
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-container,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-left,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-right,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-row {
+  color: #eef0f3 !important;
+}
+
+/* Título sin float: el form ya no se pega a la derecha */
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder h1 {
+  float: none !important;
+  display: flex !important;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100% !important;
+  margin: 0 0 1.25rem 0 !important;
+  padding: 0 !important;
+  clear: both !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder form,
+html.wp-toolbar body.jr-admin-theme-dark #ai1wm-export-form,
+html.wp-toolbar body.jr-admin-theme-dark #ai1wm-import-form,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-field-set,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-buttons,
+html.wp-toolbar body.jr-admin-theme-dark #ai1wm-queries,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-accordion,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-gray,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-export,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-import {
+  clear: both !important;
+  float: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  box-sizing: border-box !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-gray {
+  width: auto !important;
+  display: inline-flex !important;
+  align-items: center;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-export,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-import,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-group {
+  width: auto !important;
+  display: inline-block !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-green {
+  top: 0 !important;
+  margin-top: 0.5rem !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-right .ai1wm-sidebar,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-right .ai1wm-segment,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-sidebar,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-segment,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-replace-row,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-message-warning,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-field-set {
+  background: #1c2129 !important;
+  background-color: #1c2129 !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-message-warning {
+  border-left-color: #f0c14d !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder h1,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder h2,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder h3,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder h4,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder p,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder label,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder small,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder li,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder strong,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder span,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-sidebar h1,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-sidebar h2,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-sidebar h3,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-sidebar h4,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-sidebar p,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-sidebar strong,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-segment,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-segment p,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-segment a,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-feedback-types,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-feedback-types a,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-feedback-types > li > a,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query p,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query strong,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query small {
+  color: #eef0f3 !important;
+  text-shadow: none !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-title-grey {
+  color: #9aa3af !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-title-green,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-icon-export {
+  color: #4ade96 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-title-red {
+  color: #ff8e8e !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-social-icon {
+  color: #c9ced6 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-social-icon:hover {
+  color: #d4b45a !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-accordion h4 {
+  color: #d4b45a !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-accordion h4 small {
+  color: #8b939e !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-accordion ul li,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-accordion ul li small,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-accordion ul li label {
+  color: #c9ced6 !important;
+}
+
+/* Find / Replace — bloque interactivo */
+html.wp-toolbar body.jr-admin-theme-dark #ai1wm-queries {
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query {
+  background: #161a21 !important;
+  background-color: #161a21 !important;
+  border: 1px solid #2e3540 !important;
+  border-radius: 10px !important;
+  padding: 14px 16px !important;
+  margin: 0 0 12px 0 !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query:hover {
+  border-color: #434b58 !important;
+  background: #1a1f28 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query.ai1wm-open {
+  background: #1c2129 !important;
+  background-color: #1c2129 !important;
+  border-color: #d4b45a !important;
+  box-shadow: 0 0 0 1px rgba(212, 180, 90, 0.25) !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query p {
+  color: #c9ced6 !important;
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+  margin: 0 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query p strong {
+  color: #eef0f3 !important;
+  font-weight: 600 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query p small,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query-find-text,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query-replace-text {
+  color: #d4b45a !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  border-bottom: none !important;
+  padding: 0 2px;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query.ai1wm-open p small,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query.ai1wm-open .ai1wm-query-find-text,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query.ai1wm-open .ai1wm-query-replace-text {
+  border-bottom: 1px dashed rgba(212, 180, 90, 0.55) !important;
+  color: #e4c872 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query-arrow {
+  color: #8b939e !important;
+  float: right;
+  top: 2px !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query.ai1wm-open .ai1wm-query-arrow {
+  color: #d4b45a !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query.ai1wm-open div {
+  display: grid !important;
+  gap: 8px;
+  margin-top: 12px !important;
+  height: auto !important;
+  min-height: 5rem;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query div input,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query input[type='text'],
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query-find-input,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query-replace-input,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-field input,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-field textarea,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-feedback-email,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-feedback-message,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder input[type='text'],
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder input[type='email'],
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder input[type='password'],
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder textarea,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder select,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-input-password-container input {
+  background: #0f1217 !important;
+  background-color: #0f1217 !important;
+  color: #eef0f3 !important;
+  border: 1px solid #3a4250 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  height: 2.5rem !important;
+  line-height: 2.5rem !important;
+  padding: 0 12px !important;
+  margin-bottom: 0 !important;
+  font-size: 13px !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query div input:focus,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query-find-input:focus,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query-replace-input:focus,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder input:focus,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder textarea:focus {
+  border-color: #d4b45a !important;
+  box-shadow: 0 0 0 3px rgba(212, 180, 90, 0.22) !important;
+  outline: none !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query div input::placeholder,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query-find-input::placeholder,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-query-replace-input::placeholder,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder input::placeholder,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-holder textarea::placeholder {
+  color: #8b939e !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-gray,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-gray:visited {
+  background: #161a21 !important;
+  background-color: #161a21 !important;
+  color: #eef0f3 !important;
+  border: 1px solid #3a4250 !important;
+  border-radius: 8px !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  padding: 8px 18px 8px 16px !important;
+  letter-spacing: 0.04em;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-gray:hover {
+  background: #242a34 !important;
+  color: #d4b45a !important;
+  border-color: #d4b45a !important;
+}
+
+/* Botón export/import: mantener identidad verde del plugin */
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-green,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-green-small,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-export .ai1wm-button-main,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-import .ai1wm-button-main {
+  color: #4ade96 !important;
+  border-color: #27ae60 !important;
+  background: transparent !important;
+  text-shadow: none !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-green:hover,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-green-small:hover,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-export .ai1wm-button-main:hover,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-button-import .ai1wm-button-main:hover {
+  background: #27ae60 !important;
+  color: #fff !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-dropdown-menu {
+  background: #1c2129 !important;
+  border-color: #27ae60 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-dropdown-menu li a,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-dropdown-menu li a:visited {
+  color: #4ade96 !important;
+  background: transparent !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-dropdown-menu li a:hover,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-dropdown-menu li a:visited:hover {
+  color: #eef0f3 !important;
+  background: #242a34 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-modal-container,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-dialog-message {
+  background: #1c2129 !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55) !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-drag-drop-area,
+html.wp-toolbar body.jr-admin-theme-dark #ai1wm-import-init div.ai1wm-button-import {
+  background: #1c2129 !important;
+  border-color: #434b58 !important;
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-drag-over {
+  border-color: #d4b45a !important;
+  background: #242a34 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-message.ai1wm-success-message {
+  background: #0f2a1a !important;
+  color: #4ade96 !important;
+  border-color: #1f7a48 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-message.ai1wm-error-message,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-error-message {
+  background: #2c1414 !important;
+  color: #ff8e8e !important;
+  border-color: #a33a3a !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-backups,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-backups table,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-backups th,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-backups td {
+  background: #1c2129 !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-backups tbody td.ai1wm-backup-actions > div .ai1wm-backup-dots:hover,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-backups tbody td.ai1wm-backup-actions > div .ai1wm-backup-dots:focus {
+  background: #242a34 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-backups tbody td.ai1wm-backup-actions > div .ai1wm-backup-dots-menu > ul {
+  background: #242a34 !important;
+  color: #eef0f3 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-feedback-form,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-feedback-terms-segment {
+  color: #c9ced6 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-feedback-types a:hover,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-segment a:hover {
+  color: #d4b45a !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-emphasize {
+  color: #d4b45a !important;
+}
+
+/* Schedules (Premium) */
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container {
+  background: transparent !important;
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container header {
+  background: #1c2129 !important;
+  border: 1px solid #3a4250 !important;
+  border-radius: 10px !important;
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container header h1,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container header .ai1wm-schedules-subtitle {
+  color: #d4b45a !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container header > div a {
+  background: linear-gradient(180deg, #d4b45a, #b4943a) !important;
+  color: #141820 !important;
+  border-radius: 8px !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container header > div a > span {
+  background-color: #141820 !important;
+  color: #eef0f3 !important;
+  border-radius: 6px !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content {
+  background: #1c2129 !important;
+  border: 1px solid #3a4250 !important;
+  border-radius: 10px !important;
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content aside nav a {
+  color: #c9ced6 !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content aside nav a:hover,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content aside nav a.active {
+  background: rgba(212, 180, 90, 0.12) !important;
+  border-color: transparent !important;
+  border-left: 3px solid #d4b45a !important;
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content section {
+  border-left: 1px solid #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content section article,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content section article > div.active {
+  background: transparent !important;
+  border-color: #3a4250 !important;
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content section article > div.active h2 {
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content section article > div.active h2 a,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-button-link a {
+  color: #d4b45a !important;
+  border-left-color: #3a4250 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content section article > div.active p,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content section article > div.active .description {
+  color: #9aa3af !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content section article > a {
+  color: #eef0f3 !important;
+  background: #161a21 !important;
+  border-color: #3a4250 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-schedules-container .ai1wm-schedules-content section article > a.active {
+  border-bottom-color: #3a4250 !important;
+}
+
+/* Reset Hub (Premium) */
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-reset-container,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-reset-container .ai1wm-reset-content {
+  background: transparent !important;
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-reset-container .ai1wm-reset-content h1,
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-reset-container .ai1wm-reset-content p {
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .ai1wm-reset-container .ai1wm-reset-content p {
+  color: #c9ced6 !important;
+}
+
+/* ========== Ajustes → Connectors (WP 7) ========== */
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page,
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page--empty {
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page > p {
+  color: #9aa3af !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page > p a {
+  color: #d4b45a !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item {
+  background: #1c2129 !important;
+  border: 1px solid #3a4250 !important;
+  border-radius: 10px !important;
+  color: #eef0f3 !important;
+  box-shadow: none !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item .components-truncate,
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item .components-text,
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item h2,
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item h3,
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item p,
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item span {
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item .components-text.has-muted-color,
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item p {
+  color: #9aa3af !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item .components-button:not(.is-primary):not(.is-destructive),
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item .components-button.is-secondary,
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item .components-button.is-tertiary {
+  color: #d4b45a !important;
+  background: transparent !important;
+  box-shadow: inset 0 0 0 1px #d4b45a !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item .components-button:not(.is-primary):hover {
+  background: rgba(212, 180, 90, 0.12) !important;
+  color: #e4c872 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-item .components-button.is-primary {
+  background: #d4b45a !important;
+  border-color: #d4b45a !important;
+  color: #141820 !important;
+  box-shadow: none !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .ai-plugin-callout {
+  background-color: #2a2410 !important;
+  background-image:
+    radial-gradient(ellipse 70% 120% at 18% 115%, rgba(212, 180, 90, 0.35) 0, rgba(212, 180, 90, 0) 60%),
+    radial-gradient(ellipse 55% 110% at 92% -15%, rgba(228, 200, 114, 0.22) 0, rgba(228, 200, 114, 0) 65%),
+    radial-gradient(ellipse 40% 85% at 58% -10%, rgba(90, 70, 30, 0.5) 0, rgba(90, 70, 30, 0) 70%) !important;
+  border: 1px solid #3a4250 !important;
+  border-radius: 10px !important;
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .ai-plugin-callout__content p,
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .ai-plugin-callout__content {
+  color: #eef0f3 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .ai-plugin-callout__content a {
+  color: #e4c872 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .ai-plugin-callout .components-button.is-primary {
+  background: #d4b45a !important;
+  border-color: #d4b45a !important;
+  color: #141820 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .connector-settings,
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .connector-settings .components-base-control,
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .connector-settings .components-text-control__input {
+  background: #12161d !important;
+  color: #eef0f3 !important;
+  border-color: #3a4250 !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .connector-settings__error {
+  color: #ff8e8e !important;
+}
+
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page__file-mods-notice,
+html.wp-toolbar body.jr-admin-theme-dark .connectors-page .components-notice {
+  background: #1c2129 !important;
+  border-color: #3a4250 !important;
+  color: #c9ced6 !important;
+}
+
+/* ========== Apariencia → Menús (nav-menus.php) ========== */
+/* .nav-menus-php está en <body>: usar body.jr-admin-theme-dark.nav-menus-php (sin espacio) */
+body.jr-admin-theme-dark.nav-menus-php .manage-menus,
+body.jr-admin-theme-dark .manage-menus {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .manage-menus .selected-menu,
+body.jr-admin-theme-dark.nav-menus-php .manage-menus label,
+body.jr-admin-theme-dark.nav-menus-php .add-new-menu-action,
+body.jr-admin-theme-dark .manage-menus .selected-menu,
+body.jr-admin-theme-dark .manage-menus label {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .accordion-container,
+body.jr-admin-theme-dark.nav-menus-php #menu-management .menu-edit,
+body.jr-admin-theme-dark.nav-menus-php .widget-top {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+  box-shadow: none !important;
+}
+
+/* Core: .nav-menus-php #post-body { background:#fff } */
+body.jr-admin-theme-dark.nav-menus-php #post-body,
+body.jr-admin-theme-dark.nav-menus-php #post-body-content,
+body.jr-admin-theme-dark.nav-menus-php #menu-management,
+body.jr-admin-theme-dark.nav-menus-php #menu-management-liquid,
+body.jr-admin-theme-dark.nav-menus-php #menu-management .menu-edit,
+body.jr-admin-theme-dark.nav-menus-php #menu-management .inside,
+body.jr-admin-theme-dark.nav-menus-php .menu-edit {
+  background: var(--jr-surface) !important;
+  background-color: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #menu-to-edit,
+body.jr-admin-theme-dark.nav-menus-php .menu,
+body.jr-admin-theme-dark.nav-menus-php .menu > li {
+  background: transparent !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #post-body {
+  border-top: 1px solid var(--jr-line) !important;
+  border-bottom: 0 !important; /* evita doble línea con el footer */
+}
+
+body.jr-admin-theme-dark.nav-menus-php #nav-menu-header,
+body.jr-admin-theme-dark.nav-menus-php #nav-menu-footer,
+body.jr-admin-theme-dark #nav-menu-header,
+body.jr-admin-theme-dark #nav-menu-footer {
+  background: var(--jr-surface-2) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+/* Un solo separador fino sobre Guardar / Borrar menú */
+body.jr-admin-theme-dark.nav-menus-php #nav-menu-footer {
+  border-top: 1px solid var(--jr-line) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #nav-menu-footer .major-publishing-actions,
+body.jr-admin-theme-dark.nav-menus-php #nav-menu-footer #major-publishing-actions,
+body.jr-admin-theme-dark.nav-menus-php #major-publishing-actions {
+  border-top: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #nav-menu-header .menu-name-label,
+body.jr-admin-theme-dark.nav-menus-php #nav-menu-header label,
+body.jr-admin-theme-dark.nav-menus-php .menu-edit #post-body-content h3,
+body.jr-admin-theme-dark.nav-menus-php .menu-edit #post-body-content h4,
+body.jr-admin-theme-dark.nav-menus-php .post-body-plain,
+body.jr-admin-theme-dark.nav-menus-php .howto,
+body.jr-admin-theme-dark.nav-menus-php #post-body-content .howto,
+body.jr-admin-theme-dark.nav-menus-php #post-body-content > p,
+body.jr-admin-theme-dark.nav-menus-php #post-body-content .drag-instructions,
+body.jr-admin-theme-dark.nav-menus-php #post-body-content .drag-instructions span {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #menu-name,
+body.jr-admin-theme-dark.nav-menus-php input#menu-name {
+  background: var(--jr-input-bg) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line-strong) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .accordion-section {
+  border-bottom-color: var(--jr-line) !important;
+  background: var(--jr-surface) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .accordion-section.open:hover {
+  border-bottom-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .accordion-section-title {
+  background: var(--jr-surface-2) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .accordion-section-title button.accordion-trigger {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .accordion-section-title button.accordion-trigger:hover,
+body.jr-admin-theme-dark.nav-menus-php .accordion-section-title button.accordion-trigger:focus {
+  background: var(--jr-surface-3) !important;
+  color: var(--jr-ink) !important;
+  box-shadow: 0 0 0 1px var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .accordion-section-title span.dashicons.dashicons-arrow-down {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .accordion-section-title:hover span.dashicons.dashicons-arrow-down {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .accordion-section-content,
+body.jr-admin-theme-dark.nav-menus-php #nav-menu-meta .accordion-section-content {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink-soft) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .wp-tab-panel,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .tabs-panel,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .categorydiv div.tabs-panel,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .posttypediv div.tabs-panel,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .taxonomydiv div.tabs-panel,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .customlinkdiv div.tabs-panel {
+  background: var(--jr-input-bg) !important;
+  background-color: var(--jr-input-bg) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .tabs-panel label,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .categorychecklist label,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .categorychecklist li,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .tabs-panel li {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column ul.add-menu-item-tabs,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column ul.category-tabs,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column ul.wp-tab-bar,
+body.jr-admin-theme-dark.nav-menus-php #side-sortables .add-menu-item-tabs {
+  border-bottom-color: var(--jr-line) !important;
+  background: transparent !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php ul.category-tabs li.tabs,
+body.jr-admin-theme-dark.nav-menus-php ul.add-menu-item-tabs li.tabs,
+body.jr-admin-theme-dark.nav-menus-php .wp-tab-active,
+body.jr-admin-theme-dark.nav-menus-php #side-sortables .add-menu-item-tabs li.tabs,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column ul.add-menu-item-tabs li.tabs,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column ul.category-tabs li.tabs {
+  background: var(--jr-input-bg) !important;
+  background-color: var(--jr-input-bg) !important;
+  border: 1px solid var(--jr-line) !important;
+  border-bottom-color: var(--jr-input-bg) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php ul.add-menu-item-tabs li,
+body.jr-admin-theme-dark.nav-menus-php ul.category-tabs li,
+body.jr-admin-theme-dark.nav-menus-php ul.wp-tab-bar li {
+  background: transparent !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php ul.add-menu-item-tabs li a,
+body.jr-admin-theme-dark.nav-menus-php ul.category-tabs li a,
+body.jr-admin-theme-dark.nav-menus-php ul.wp-tab-bar li a,
+body.jr-admin-theme-dark.nav-menus-php #side-sortables .add-menu-item-tabs a {
+  color: var(--jr-muted) !important;
+  background: transparent !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php ul.add-menu-item-tabs li a:hover,
+body.jr-admin-theme-dark.nav-menus-php ul.category-tabs li a:hover {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #side-sortables .category-tabs .tabs a,
+body.jr-admin-theme-dark.nav-menus-php #side-sortables .add-menu-item-tabs .tabs a,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column ul.add-menu-item-tabs li.tabs a,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column ul.category-tabs li.tabs a,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column ul.wp-tab-bar li.wp-tab-active a {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .button-controls,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .list-controls,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .select-all,
+body.jr-admin-theme-dark.nav-menus-php #menu-settings-column .add-menu-item-pagelinks {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-item-bar .menu-item-handle,
+body.jr-admin-theme-dark.nav-menus-php .menu .menu-item-bar .menu-item-handle,
+body.jr-admin-theme-dark.nav-menus-php #menu-to-edit .menu-item-handle {
+  background: var(--jr-surface-2) !important;
+  background-color: var(--jr-surface-2) !important;
+  border: 1px solid var(--jr-line-strong) !important;
+  color: var(--jr-ink) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-item-bar .menu-item-handle:hover {
+  border-color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-item-handle .item-title,
+body.jr-admin-theme-dark.nav-menus-php .menu-item-handle .menu-item-title {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-item-handle .is-submenu,
+body.jr-admin-theme-dark.nav-menus-php .menu-item-handle .item-type {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-item-handle .item-edit,
+body.jr-admin-theme-dark.nav-menus-php .menu-item-handle .item-edit:before,
+body.jr-admin-theme-dark.nav-menus-php .item-controls {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-item-handle .item-edit:hover,
+body.jr-admin-theme-dark.nav-menus-php .menu-item-handle .item-edit:focus {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-item-settings {
+  background: var(--jr-bg-soft) !important;
+  border-color: var(--jr-line-strong) !important;
+  color: var(--jr-ink-soft) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-item-settings label,
+body.jr-admin-theme-dark.nav-menus-php .menu-item-settings p,
+body.jr-admin-theme-dark.nav-menus-php .menu-item-settings .description,
+body.jr-admin-theme-dark.nav-menus-php .menu-item-settings .field-move-visual-label {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-item-settings .submitdelete,
+body.jr-admin-theme-dark.nav-menus-php .menu-item-settings .item-delete {
+  color: var(--jr-danger) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-settings,
+body.jr-admin-theme-dark.nav-menus-php #post-body .menu-settings {
+  background: transparent !important;
+  border-top: 1px solid var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+  margin-top: 2em;
+  padding-top: 1em;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-settings > h3,
+body.jr-admin-theme-dark.nav-menus-php .menu-settings h3 {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-settings-group,
+body.jr-admin-theme-dark.nav-menus-php .menu-settings-input {
+  background: transparent !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-settings-group-name,
+body.jr-admin-theme-dark.nav-menus-php .menu-settings label,
+body.jr-admin-theme-dark.nav-menus-php .menu-settings .howto,
+body.jr-admin-theme-dark.nav-menus-php .menu-settings .checkbox-input,
+body.jr-admin-theme-dark.nav-menus-php .menu-edit .checkbox-input,
+body.jr-admin-theme-dark.nav-menus-php .menu-settings .menu-settings-input label,
+body.jr-admin-theme-dark.nav-menus-php .theme-location-set {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-settings input[type='checkbox'],
+body.jr-admin-theme-dark.nav-menus-php .menu-edit input[type='checkbox'],
+body.jr-admin-theme-dark.nav-menus-php .bulk-select-switcher,
+body.jr-admin-theme-dark.nav-menus-php #menu-to-edit input[type='checkbox'] {
+  accent-color: var(--jr-accent);
+  color-scheme: dark;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu .sortable-placeholder {
+  background: var(--jr-info-bg) !important;
+  border: 1px dashed var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #menu-to-edit .menu-item-invalid .menu-item-handle {
+  background: var(--jr-danger-bg) !important;
+  border-color: var(--jr-danger-border) !important;
+  color: var(--jr-danger) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu li.deleting .menu-item-handle {
+  background-color: var(--jr-danger-bg) !important;
+  border-color: var(--jr-danger-border) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .bulk-select-button,
+body.jr-admin-theme-dark.nav-menus-php .bulk-selection .bulk-select-button,
+body.jr-admin-theme-dark.nav-menus-php label.bulk-select-button {
+  background: var(--jr-surface-2) !important;
+  background-color: var(--jr-surface-2) !important;
+  border: 1px solid var(--jr-accent) !important;
+  color: var(--jr-accent) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php label.bulk-select-button:hover,
+body.jr-admin-theme-dark.nav-menus-php label.bulk-select-button:active,
+body.jr-admin-theme-dark.nav-menus-php label.bulk-select-button:focus-within {
+  background: rgba(212, 180, 90, 0.14) !important;
+  border-color: var(--jr-accent-hover) !important;
+  color: var(--jr-accent-hover) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .bulk-select-button-label,
+body.jr-admin-theme-dark.nav-menus-php input.bulk-select-switcher:focus + .bulk-select-button-label {
+  color: inherit !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .bulk-actions input.menu-items-delete {
+  color: var(--jr-danger) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .major-publishing-actions,
+body.jr-admin-theme-dark.nav-menus-php .delete-action,
+body.jr-admin-theme-dark.nav-menus-php .publishing-action {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .submitdelete,
+body.jr-admin-theme-dark.nav-menus-php .menu-delete {
+  color: var(--jr-danger) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .locations-row-links,
+body.jr-admin-theme-dark.nav-menus-php .locations-edit-menu-link,
+body.jr-admin-theme-dark.nav-menus-php .locations-add-menu-link {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .locations-edit-menu-link {
+  border-right-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-locations,
+body.jr-admin-theme-dark.nav-menus-php .widefat.menu-locations {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php .menu-locations th,
+body.jr-admin-theme-dark.nav-menus-php .menu-locations td {
+  background: transparent !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark.nav-menus-php #nav-menu-theme-locations,
+body.jr-admin-theme-dark.nav-menus-php #nav-menu-theme-locations .inside {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink-soft) !important;
+  border-color: var(--jr-line) !important;
+}
+
+/* Accordion genérico admin (widgets / otras pantallas) */
+body.jr-admin-theme-dark .accordion-section {
+  border-bottom-color: var(--jr-line) !important;
+  background: var(--jr-surface) !important;
+}
+
+body.jr-admin-theme-dark .accordion-section.open:hover {
+  border-bottom-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .accordion-section-title,
+body.jr-admin-theme-dark .control-section .accordion-section-title {
+  background: var(--jr-surface-2) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .accordion-section-title button.accordion-trigger {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .accordion-section-title button.accordion-trigger:hover,
+body.jr-admin-theme-dark .accordion-section-title button.accordion-trigger:focus {
+  background: var(--jr-surface-3) !important;
+  color: var(--jr-ink) !important;
+  box-shadow: 0 0 0 1px var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .accordion-section-title span.dashicons.dashicons-arrow-down {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark .accordion-section-title:hover span.dashicons.dashicons-arrow-down {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .accordion-section-content {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink-soft) !important;
+  border-color: var(--jr-line) !important;
+}
+
+/* ========== Customizer (Personalizar) ========== */
+body.wp-customizer.jr-admin-theme-dark,
+body.jr-admin-theme-dark.wp-customizer {
+  background: var(--jr-bg) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .wp-full-overlay,
+body.jr-admin-theme-dark #customize-controls,
+body.jr-admin-theme-dark .wp-full-overlay-sidebar,
+body.jr-admin-theme-dark .wp-full-overlay-sidebar-content,
+body.jr-admin-theme-dark #customize-theme-controls,
+body.jr-admin-theme-dark .customize-pane-parent,
+body.jr-admin-theme-dark .in-sub-panel {
+  background: var(--jr-bg-soft) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+/* Header: cerrar + Publicar */
+body.jr-admin-theme-dark .wp-full-overlay-header,
+body.jr-admin-theme-dark #customize-header-actions {
+  background: var(--jr-surface) !important;
+  border-bottom: 1px solid var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .customize-controls-close,
+body.jr-admin-theme-dark .customize-controls-preview-toggle {
+  background: transparent !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink-soft) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .customize-controls-close:hover,
+body.jr-admin-theme-dark .customize-controls-close:focus,
+body.jr-admin-theme-dark .customize-controls-preview-toggle:hover,
+body.jr-admin-theme-dark .customize-controls-preview-toggle:focus {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line-strong) !important;
+}
+
+body.jr-admin-theme-dark .customize-controls-close:before,
+body.jr-admin-theme-dark .customize-controls-preview-toggle:before {
+  color: inherit !important;
+}
+
+body.jr-admin-theme-dark #customize-save-button-wrapper .button,
+body.jr-admin-theme-dark #customize-save-button-wrapper .button-primary,
+body.jr-admin-theme-dark #save {
+  background: var(--jr-accent) !important;
+  border-color: var(--jr-accent) !important;
+  color: var(--jr-accent-ink) !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #customize-save-button-wrapper .button:disabled,
+body.jr-admin-theme-dark #customize-save-button-wrapper .button[disabled],
+body.jr-admin-theme-dark #save:disabled,
+body.jr-admin-theme-dark #save[disabled] {
+  background: var(--jr-surface-3) !important;
+  border-color: var(--jr-line-strong) !important;
+  color: var(--jr-muted) !important;
+  opacity: 1 !important;
+}
+
+body.jr-admin-theme-dark #customize-save-button-wrapper .button:not(:disabled):hover,
+body.jr-admin-theme-dark #save:not(:disabled):hover {
+  background: var(--jr-accent-hover) !important;
+  border-color: var(--jr-accent-hover) !important;
+  color: var(--jr-accent-ink) !important;
+}
+
+/* Info / título del sitio */
+body.jr-admin-theme-dark #customize-info,
+body.jr-admin-theme-dark .customize-info,
+body.jr-admin-theme-dark .customize-section-description-container {
+  background: var(--jr-surface) !important;
+  border-bottom: 1px solid var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark #customize-info .accordion-section-title,
+body.jr-admin-theme-dark #customize-info .preview-notice,
+body.jr-admin-theme-dark .customize-info .accordion-section-title,
+body.jr-admin-theme-dark .customize-info .preview-notice {
+  background: transparent !important;
+  color: var(--jr-ink) !important;
+  border: 0 !important;
+}
+
+body.jr-admin-theme-dark #customize-info .preview-notice,
+body.jr-admin-theme-dark .customize-info .preview-notice {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark #customize-info .panel-title.site-title,
+body.jr-admin-theme-dark .customize-info .panel-title.site-title,
+body.jr-admin-theme-dark #customize-info h3,
+body.jr-admin-theme-dark .customize-info h3 {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark #customize-info .customize-help-toggle,
+body.jr-admin-theme-dark .customize-help-toggle,
+body.jr-admin-theme-dark .customize-section-description-container .customize-help-toggle {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark #customize-info .customize-help-toggle:hover,
+body.jr-admin-theme-dark .customize-help-toggle:hover,
+body.jr-admin-theme-dark #customize-info .customize-help-toggle:focus,
+body.jr-admin-theme-dark .customize-help-toggle:focus {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark #customize-info .customize-screen-options-toggle,
+body.jr-admin-theme-dark .customize-screen-options-toggle {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark .customize-screen-options,
+body.jr-admin-theme-dark #customize-info .customize-panel-description,
+body.jr-admin-theme-dark .customize-panel-description,
+body.jr-admin-theme-dark .customize-section-description,
+body.jr-admin-theme-dark .customize-control-description {
+  background: var(--jr-bg) !important;
+  color: var(--jr-ink-soft) !important;
+  border-color: var(--jr-line) !important;
+}
+
+/* Tema activo */
+body.jr-admin-theme-dark #customize-theme-controls .control-panel-themes > .accordion-section-title,
+body.jr-admin-theme-dark .control-panel-themes .accordion-section-title,
+body.jr-admin-theme-dark #accordion-section-themes .accordion-section-title {
+  background: var(--jr-surface) !important;
+  border: 1px solid var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+  margin: 12px !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #accordion-section-themes .accordion-section-title:hover,
+body.jr-admin-theme-dark #accordion-section-themes .accordion-section-title:focus {
+  background: var(--jr-surface-2) !important;
+  border-color: var(--jr-line-strong) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark #customize-theme-controls .control-panel-themes .accordion-section-title .change-theme,
+body.jr-admin-theme-dark .customize-themes-section-title .change-theme,
+body.jr-admin-theme-dark #accordion-section-themes .change-theme {
+  background: transparent !important;
+  border: 1px solid var(--jr-accent) !important;
+  color: var(--jr-accent) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #accordion-section-themes .change-theme:hover,
+body.jr-admin-theme-dark #accordion-section-themes .change-theme:focus {
+  background: var(--jr-accent) !important;
+  color: var(--jr-accent-ink) !important;
+}
+
+body.jr-admin-theme-dark #customize-theme-controls .control-panel-themes .accordion-section-title .customize-action,
+body.jr-admin-theme-dark #accordion-section-themes .customize-action {
+  color: var(--jr-muted) !important;
+}
+
+/* Lista de paneles / secciones */
+body.jr-admin-theme-dark #customize-theme-controls .accordion-section-title,
+body.jr-admin-theme-dark .customize-pane-child .accordion-section-title,
+body.jr-admin-theme-dark .control-section .accordion-section-title,
+body.jr-admin-theme-dark .control-panel .accordion-section-title {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-bottom: 1px solid var(--jr-line) !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #customize-theme-controls .accordion-section-title:after,
+body.jr-admin-theme-dark .control-section .accordion-section-title:after,
+body.jr-admin-theme-dark .control-panel .accordion-section-title:after,
+body.jr-admin-theme-dark .customize-pane-child .customize-section-back:before,
+body.jr-admin-theme-dark .customize-pane-child .customize-panel-back:before {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark #customize-theme-controls .accordion-section-title:hover,
+body.jr-admin-theme-dark #customize-theme-controls .accordion-section-title:focus,
+body.jr-admin-theme-dark .control-section .accordion-section-title:hover,
+body.jr-admin-theme-dark .control-section .accordion-section-title:focus,
+body.jr-admin-theme-dark .control-panel .accordion-section-title:hover,
+body.jr-admin-theme-dark .control-panel .accordion-section-title:focus {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-ink) !important;
+  border-left-color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark #customize-theme-controls .accordion-section-title:hover:after,
+body.jr-admin-theme-dark #customize-theme-controls .accordion-section-title:focus:after {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .control-section.open .accordion-section-title,
+body.jr-admin-theme-dark .control-panel.open .accordion-section-title {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-ink) !important;
+  border-bottom-color: var(--jr-line) !important;
+}
+
+/* Subpaneles (cabecera con flecha atrás) */
+body.jr-admin-theme-dark .customize-section-title,
+body.jr-admin-theme-dark .customize-panel-title,
+body.jr-admin-theme-dark .customize-section-title h3,
+body.jr-admin-theme-dark .customize-panel-title h3,
+body.jr-admin-theme-dark .customize-section-back,
+body.jr-admin-theme-dark .customize-panel-back {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .customize-section-back:hover,
+body.jr-admin-theme-dark .customize-panel-back:hover,
+body.jr-admin-theme-dark .customize-section-back:focus,
+body.jr-admin-theme-dark .customize-panel-back:focus {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .customize-section-title .customize-action,
+body.jr-admin-theme-dark .customize-panel-title .customize-action {
+  color: var(--jr-muted) !important;
+}
+
+/* Controles (campos de cada opción) */
+body.jr-admin-theme-dark .customize-control,
+body.jr-admin-theme-dark .customize-control-title,
+body.jr-admin-theme-dark .customize-control label,
+body.jr-admin-theme-dark .customize-control .description,
+body.jr-admin-theme-dark .customize-control-notifications-container {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .customize-control .description,
+body.jr-admin-theme-dark .customize-control-description {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark .customize-control input[type='text'],
+body.jr-admin-theme-dark .customize-control input[type='search'],
+body.jr-admin-theme-dark .customize-control input[type='number'],
+body.jr-admin-theme-dark .customize-control input[type='url'],
+body.jr-admin-theme-dark .customize-control input[type='email'],
+body.jr-admin-theme-dark .customize-control input[type='password'],
+body.jr-admin-theme-dark .customize-control input[type='tel'],
+body.jr-admin-theme-dark .customize-control select,
+body.jr-admin-theme-dark .customize-control textarea,
+body.jr-admin-theme-dark .customize-control .wp-editor-area {
+  background: var(--jr-input-bg) !important;
+  color: var(--jr-ink) !important;
+  border: 1px solid var(--jr-line-strong) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .customize-control input:focus,
+body.jr-admin-theme-dark .customize-control select:focus,
+body.jr-admin-theme-dark .customize-control textarea:focus {
+  border-color: var(--jr-accent) !important;
+  box-shadow: 0 0 0 1px var(--jr-focus) !important;
+  outline: none !important;
+}
+
+body.jr-admin-theme-dark .customize-control .button,
+body.jr-admin-theme-dark .customize-control .button-secondary,
+body.jr-admin-theme-dark .customize-control .upload-button,
+body.jr-admin-theme-dark .customize-control .remove-button,
+body.jr-admin-theme-dark .customize-control .default-button {
+  background: var(--jr-surface-3) !important;
+  border: 1px solid var(--jr-line-strong) !important;
+  color: var(--jr-ink) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .customize-control .button:hover,
+body.jr-admin-theme-dark .customize-control .button-secondary:hover,
+body.jr-admin-theme-dark .customize-control .upload-button:hover {
+  background: var(--jr-surface-2) !important;
+  border-color: var(--jr-accent) !important;
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .customize-control .button-primary {
+  background: var(--jr-accent) !important;
+  border-color: var(--jr-accent) !important;
+  color: var(--jr-accent-ink) !important;
+}
+
+body.jr-admin-theme-dark .customize-control .button-link,
+body.jr-admin-theme-dark .customize-control a {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .customize-control .button-link:hover,
+body.jr-admin-theme-dark .customize-control a:hover {
+  color: var(--jr-accent-hover) !important;
+}
+
+/* Color picker / media */
+body.jr-admin-theme-dark .customize-control-color .wp-picker-container .wp-color-result,
+body.jr-admin-theme-dark .wp-picker-container .wp-color-result {
+  border-color: var(--jr-line-strong) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .wp-picker-container .wp-picker-input-wrap label,
+body.jr-admin-theme-dark .wp-picker-container .wp-color-result-text {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark .wp-picker-holder .iris-picker,
+body.jr-admin-theme-dark .wp-picker-container .wp-picker-holder {
+  background: var(--jr-surface) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .attachment-media-view,
+body.jr-admin-theme-dark .thumbnail-image,
+body.jr-admin-theme-dark .current .container {
+  background: var(--jr-input-bg) !important;
+  border-color: var(--jr-line) !important;
+  color: var(--jr-ink) !important;
+}
+
+/* Menús dentro del Customizer */
+body.jr-admin-theme-dark #available-menu-items,
+body.jr-admin-theme-dark .available-menu-items-list,
+body.jr-admin-theme-dark .accordion-section-content,
+body.jr-admin-theme-dark .new-menu-section-content,
+body.jr-admin-theme-dark .assigned-menu-location,
+body.jr-admin-theme-dark .menu-item-bar .menu-item-handle,
+body.jr-admin-theme-dark .menu-item-settings,
+body.jr-admin-theme-dark .nav-menu-locations,
+body.jr-admin-theme-dark .add-new-menu-item-spinner {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .menu-item-bar .menu-item-handle,
+body.jr-admin-theme-dark .menu-item-handle .item-title,
+body.jr-admin-theme-dark .menu-item-handle .item-type,
+body.jr-admin-theme-dark .menu-item-settings label,
+body.jr-admin-theme-dark .nav-menu-locations label {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .menu-item-handle .item-type {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark #available-menu-items .item-title,
+body.jr-admin-theme-dark .available-menu-item .item-title {
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark #available-menu-items .item-add,
+body.jr-admin-theme-dark .available-menu-item .item-add {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .reorder-toggle,
+body.jr-admin-theme-dark .add-new-menu-item {
+  color: var(--jr-accent) !important;
+}
+
+/* Selector de temas */
+body.jr-admin-theme-dark .customize-themes-full-container,
+body.jr-admin-theme-dark .customize-themes-section,
+body.jr-admin-theme-dark #customize-theme-controls .theme-overlay,
+body.jr-admin-theme-dark .theme-browser .theme,
+body.jr-admin-theme-dark .themes-filter-bar {
+  background: var(--jr-bg-soft) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .theme-browser .theme .theme-name,
+body.jr-admin-theme-dark .theme-browser .theme .theme-actions,
+body.jr-admin-theme-dark .theme-browser .theme .more-details {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .theme-browser .theme:hover,
+body.jr-admin-theme-dark .theme-browser .theme.focus {
+  border-color: var(--jr-accent) !important;
+  box-shadow: 0 0 0 1px var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .wp-filter-search,
+body.jr-admin-theme-dark .themes-filter-bar input[type='search'] {
+  background: var(--jr-input-bg) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line-strong) !important;
+}
+
+/* CodeMirror (Customizer CSS adicional + Editor de temas/plugins) */
+body.jr-admin-theme-dark .customize-control-code_editor .CodeMirror,
+body.jr-admin-theme-dark .CodeMirror,
+body.jr-admin-theme-dark .cm-s-default.CodeMirror,
+body.jr-admin-theme-dark .CodeMirror-wrap,
+body.jr-admin-theme-dark .CodeMirror-scroll,
+body.jr-admin-theme-dark .CodeMirror-sizer,
+body.jr-admin-theme-dark .CodeMirror-lines,
+body.jr-admin-theme-dark .CodeMirror-code,
+body.jr-admin-theme-dark .CodeMirror-gutters,
+body.jr-admin-theme-dark .CodeMirror-gutter,
+body.jr-admin-theme-dark .CodeMirror-gutter-wrapper {
+  background: #0d1117 !important;
+  background-color: #0d1117 !important;
+  color: #e6edf3 !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .CodeMirror pre.CodeMirror-line,
+body.jr-admin-theme-dark .CodeMirror pre.CodeMirror-line-like,
+body.jr-admin-theme-dark .CodeMirror .CodeMirror-line,
+body.jr-admin-theme-dark .CodeMirror .CodeMirror-line span {
+  background: transparent !important;
+  color: inherit;
+}
+
+body.jr-admin-theme-dark .CodeMirror-gutters {
+  border-right: 1px solid var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .CodeMirror-cursor {
+  border-left-color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .CodeMirror-linenumber {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark .CodeMirror-activeline-background {
+  background: rgba(212, 180, 90, 0.08) !important;
+}
+
+body.jr-admin-theme-dark .CodeMirror-selected,
+body.jr-admin-theme-dark .CodeMirror-focused .CodeMirror-selected {
+  background: rgba(212, 180, 90, 0.22) !important;
+}
+
+body.jr-admin-theme-dark .CodeMirror-matchingbracket {
+  color: #e4c872 !important;
+  background: rgba(212, 180, 90, 0.15) !important;
+}
+
+body.jr-admin-theme-dark .cm-s-default .cm-keyword,
+body.jr-admin-theme-dark .cm-s-default .cm-property,
+body.jr-admin-theme-dark .cm-s-default .cm-meta {
+  color: #ff7b72 !important;
+}
+
+body.jr-admin-theme-dark .cm-s-default .cm-atom,
+body.jr-admin-theme-dark .cm-s-default .cm-number {
+  color: #79c0ff !important;
+}
+
+body.jr-admin-theme-dark .cm-s-default .cm-string,
+body.jr-admin-theme-dark .cm-s-default .cm-string-2 {
+  color: #a5d6ff !important;
+}
+
+body.jr-admin-theme-dark .cm-s-default .cm-comment {
+  color: #8b939e !important;
+}
+
+body.jr-admin-theme-dark .cm-s-default .cm-def,
+body.jr-admin-theme-dark .cm-s-default .cm-variable-2,
+body.jr-admin-theme-dark .cm-s-default .cm-variable-3 {
+  color: #d2a8ff !important;
+}
+
+body.jr-admin-theme-dark .cm-s-default .cm-tag,
+body.jr-admin-theme-dark .cm-s-default .cm-qualifier,
+body.jr-admin-theme-dark .cm-s-default .cm-builtin {
+  color: #7ee787 !important;
+}
+
+body.jr-admin-theme-dark .cm-s-default .cm-attribute,
+body.jr-admin-theme-dark .cm-s-default .cm-operator {
+  color: #d4b45a !important;
+}
+
+body.jr-admin-theme-dark .cm-s-default .cm-variable,
+body.jr-admin-theme-dark .cm-s-default .cm-punctuation {
+  color: #e6edf3 !important;
+}
+
+/* ========== Editor de archivos (temas / plugins) ========== */
+body.jr-admin-theme-dark.theme-editor-php,
+body.jr-admin-theme-dark.plugin-editor-php {
+  background: var(--jr-bg) !important;
+}
+
+body.jr-admin-theme-dark .fileedit-sub,
+body.jr-admin-theme-dark .fileedit-sub h2,
+body.jr-admin-theme-dark .fileedit-sub span,
+body.jr-admin-theme-dark #templateside h2,
+body.jr-admin-theme-dark #templateside h3,
+body.jr-admin-theme-dark #template h2,
+body.jr-admin-theme-dark .theme-editor-php .wrap > h1,
+body.jr-admin-theme-dark .plugin-editor-php .wrap > h1 {
+  color: var(--jr-ink) !important;
+  background: transparent !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .fileedit-sub select,
+body.jr-admin-theme-dark #theme,
+body.jr-admin-theme-dark #plugin,
+body.jr-admin-theme-dark .fileedit-sub input[type='submit'] {
+  background: var(--jr-input-bg) !important;
+  color: var(--jr-ink) !important;
+  border: 1px solid var(--jr-line-strong) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #template,
+body.jr-admin-theme-dark #template > div,
+body.jr-admin-theme-dark .form-table td,
+body.jr-admin-theme-dark form#template {
+  background: transparent !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark #newcontent,
+body.jr-admin-theme-dark textarea#newcontent,
+body.jr-admin-theme-dark #template textarea {
+  background: #0d1117 !important;
+  color: #e6edf3 !important;
+  border: 1px solid var(--jr-line) !important;
+  caret-color: var(--jr-accent);
+}
+
+body.jr-admin-theme-dark #templateside,
+body.jr-admin-theme-dark .templateside,
+body.jr-admin-theme-dark ul.tree,
+body.jr-admin-theme-dark ul.tree ul,
+body.jr-admin-theme-dark .tree-folder,
+body.jr-admin-theme-dark .tree-folder-contents {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark #templateside ul,
+body.jr-admin-theme-dark #templateside li,
+body.jr-admin-theme-dark #templateside a,
+body.jr-admin-theme-dark .tree-folder > a,
+body.jr-admin-theme-dark .tree-folder-contents a,
+body.jr-admin-theme-dark .howto {
+  color: var(--jr-ink-soft) !important;
+  background: transparent !important;
+}
+
+body.jr-admin-theme-dark #templateside a:hover,
+body.jr-admin-theme-dark .tree-folder-contents a:hover {
+  color: var(--jr-accent) !important;
+  background: var(--jr-surface-2) !important;
+}
+
+body.jr-admin-theme-dark #templateside .notice,
+body.jr-admin-theme-dark #templateside li.notice {
+  background: var(--jr-info-bg) !important;
+  border-color: var(--jr-info-border) !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark #templateside .active > a,
+body.jr-admin-theme-dark #templateside li.active > a,
+body.jr-admin-theme-dark #templateside .current-file,
+body.jr-admin-theme-dark #templateside .highlight,
+body.jr-admin-theme-dark .tree-folder-contents .current-file,
+body.jr-admin-theme-dark .tree-folder-contents li.hover > a {
+  background: var(--jr-surface-2) !important;
+  color: var(--jr-accent) !important;
+  border-color: var(--jr-accent) !important;
+  box-shadow: none !important;
+}
+
+/* Modal ¡Cuidado! / Heads up (editor de plugins y temas) */
+body.jr-admin-theme-dark .file-editor-warning .notification-dialog,
+body.jr-admin-theme-dark #file-editor-warning .notification-dialog,
+body.jr-admin-theme-dark #post-lock-dialog .notification-dialog,
+body.jr-admin-theme-dark .notification-dialog-wrap .notification-dialog {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink) !important;
+  border: 1px solid var(--jr-line-strong) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55) !important;
+}
+
+body.jr-admin-theme-dark .notification-dialog-background,
+body.jr-admin-theme-dark .file-editor-warning .notification-dialog-background {
+  background: #000 !important;
+  opacity: 0.78 !important;
+}
+
+body.jr-admin-theme-dark .file-editor-warning,
+body.jr-admin-theme-dark .file-editor-warning-content,
+body.jr-admin-theme-dark .file-editor-warning-message,
+body.jr-admin-theme-dark .file-editor-warning .notice {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: var(--jr-ink) !important;
+}
+
+body.jr-admin-theme-dark .file-editor-warning h1,
+body.jr-admin-theme-dark #file-editor-warning h1,
+body.jr-admin-theme-dark .file-editor-warning-message h1,
+body.jr-admin-theme-dark #post-lock-dialog h1 {
+  color: var(--jr-accent) !important;
+  border: 0 !important;
+}
+
+body.jr-admin-theme-dark .file-editor-warning strong,
+body.jr-admin-theme-dark .file-editor-warning-message,
+body.jr-admin-theme-dark .file-editor-warning p,
+body.jr-admin-theme-dark #file-editor-warning p,
+body.jr-admin-theme-dark #post-lock-dialog p {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark #file-editor-warning .button,
+body.jr-admin-theme-dark .file-editor-warning-go-back,
+body.jr-admin-theme-dark .file-editor-warning .button:not(.button-primary) {
+  background: var(--jr-surface-3) !important;
+  border: 1px solid var(--jr-line-strong) !important;
+  color: var(--jr-ink) !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #file-editor-warning .button:hover,
+body.jr-admin-theme-dark .file-editor-warning-go-back:hover {
+  background: var(--jr-surface-2) !important;
+  border-color: var(--jr-accent) !important;
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark #file-editor-warning .button-primary,
+body.jr-admin-theme-dark .file-editor-warning-dismiss.button-primary {
+  background: var(--jr-accent) !important;
+  border-color: var(--jr-accent) !important;
+  color: var(--jr-accent-ink) !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #file-editor-warning .button-primary:hover,
+body.jr-admin-theme-dark .file-editor-warning-dismiss.button-primary:hover {
+  background: var(--jr-accent-hover) !important;
+  border-color: var(--jr-accent-hover) !important;
+  color: var(--jr-accent-ink) !important;
+}
+
+body.jr-admin-theme-dark .documentation-pointer,
+body.jr-admin-theme-dark .docs-section,
+body.jr-admin-theme-dark #documentation,
+body.jr-admin-theme-dark .php-lookup {
+  background: var(--jr-surface) !important;
+  color: var(--jr-ink-soft) !important;
+  border-color: var(--jr-line) !important;
+}
+
+body.jr-admin-theme-dark .submit,
+body.jr-admin-theme-dark #submit,
+body.jr-admin-theme-dark .edit-php #submitdiv {
+  background: transparent !important;
+}
+
+body.jr-admin-theme-dark #template .submit .button-primary,
+body.jr-admin-theme-dark #submit.button-primary,
+body.jr-admin-theme-dark .theme-editor-php #submit,
+body.jr-admin-theme-dark .plugin-editor-php #submit {
+  background: var(--jr-accent) !important;
+  border-color: var(--jr-accent) !important;
+  color: var(--jr-accent-ink) !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark #template .submit .button-primary:hover,
+body.jr-admin-theme-dark #submit.button-primary:hover {
+  background: var(--jr-accent-hover) !important;
+  border-color: var(--jr-accent-hover) !important;
+  color: var(--jr-accent-ink) !important;
+}
+
+/* Footer: ocultar controles + preview dispositivos */
+body.jr-admin-theme-dark .wp-full-overlay-footer,
+body.jr-admin-theme-dark #customize-footer-actions {
+  background: var(--jr-surface) !important;
+  border-top: 1px solid var(--jr-line) !important;
+  color: var(--jr-ink-soft) !important;
+  box-shadow: none !important;
+}
+
+body.jr-admin-theme-dark .collapse-sidebar,
+body.jr-admin-theme-dark .collapse-sidebar-label,
+body.jr-admin-theme-dark .collapse-sidebar-arrow {
+  color: var(--jr-ink-soft) !important;
+}
+
+body.jr-admin-theme-dark .collapse-sidebar:hover,
+body.jr-admin-theme-dark .collapse-sidebar:focus {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark .devices-wrapper .preview-desktop:before,
+body.jr-admin-theme-dark .devices-wrapper .preview-tablet:before,
+body.jr-admin-theme-dark .devices-wrapper .preview-mobile:before,
+body.jr-admin-theme-dark #customize-footer-actions .devices button:before {
+  color: var(--jr-muted) !important;
+}
+
+body.jr-admin-theme-dark .devices-wrapper .preview-desktop.active:before,
+body.jr-admin-theme-dark .devices-wrapper .preview-tablet.active:before,
+body.jr-admin-theme-dark .devices-wrapper .preview-mobile.active:before,
+body.jr-admin-theme-dark #customize-footer-actions .devices button.active:before {
+  color: var(--jr-accent) !important;
+}
+
+body.jr-admin-theme-dark #customize-footer-actions .devices button:hover:before,
+body.jr-admin-theme-dark .devices-wrapper button:hover:before {
+  color: var(--jr-ink) !important;
+}
+
+/* Notificaciones del Customizer */
+body.jr-admin-theme-dark #customize-notifications-area,
+body.jr-admin-theme-dark .customize-control-notifications-container .notice,
+body.jr-admin-theme-dark .customize-control-notifications-container li {
+  background: var(--jr-info-bg) !important;
+  color: var(--jr-ink) !important;
+  border-color: var(--jr-info-border) !important;
+}
+
+body.jr-admin-theme-dark .notice-success,
+body.jr-admin-theme-dark .customize-control-notifications-container .notice-success {
+  background: var(--jr-ok-bg) !important;
+  border-color: var(--jr-ok-border) !important;
+  color: var(--jr-ok) !important;
+}
+
+body.jr-admin-theme-dark .notice-error,
+body.jr-admin-theme-dark .customize-control-notifications-container .notice-error {
+  background: var(--jr-danger-bg) !important;
+  border-color: var(--jr-danger-border) !important;
+  color: var(--jr-danger) !important;
+}
+
+body.jr-admin-theme-dark .notice-warning,
+body.jr-admin-theme-dark .customize-control-notifications-container .notice-warning {
+  background: var(--jr-warn-bg) !important;
+  border-color: var(--jr-warn-border) !important;
+  color: var(--jr-warn) !important;
+}
+
+/* Overlay de carga del preview (no el iframe del sitio) */
+body.jr-admin-theme-dark .wp-full-overlay-main {
+  background: var(--jr-bg) !important;
+}
+
+body.jr-admin-theme-dark .customize-loading #customize-preview iframe {
+  opacity: 0.35;
+}

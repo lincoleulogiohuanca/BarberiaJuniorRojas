@@ -395,7 +395,7 @@ function yuniorrojas_ingresos_registrar_menu(): void
         'manage_options',
         'yuniorrojas-ingresos',
         'yuniorrojas_ingresos_render_page',
-        'dashicons-chart-area',
+        'dashicons-money-alt',
         26
     );
 }
@@ -421,6 +421,16 @@ function yuniorrojas_ingresos_admin_assets(string $hook): void
         array(),
         file_exists($css_path) ? (string) filemtime($css_path) : '1.0.0'
     );
+
+    if (function_exists('yuniorrojas_admin_theme_is_dark') && yuniorrojas_admin_theme_is_dark()) {
+        $dark_path = $theme_path . '/assets/admin/admin-theme-dark.css';
+        wp_enqueue_style(
+            'yuniorrojas-admin-theme-dark',
+            $theme_uri . '/assets/admin/admin-theme-dark.css',
+            array('yuniorrojas-ingresos'),
+            file_exists($dark_path) ? (string) filemtime($dark_path) : '1.0.0'
+        );
+    }
 
     wp_enqueue_script(
         'chartjs',

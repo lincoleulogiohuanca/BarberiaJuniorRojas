@@ -19,9 +19,17 @@ Menú WordPress: **Reservas** (CPT `jr_reservas`) y submenús de agenda / client
 
 ## Agenda
 
-1. Entra a **Reservas → Agenda** (o el listado del CPT filtrado por fecha).
-2. Filtra por barbero / día según la UI.
-3. Abre una reserva para editar notas internas, estado o barbero.
+1. Entra a **Agenda** en el menú lateral (calendario semanal / diario).
+2. Filtra por **Hoy / Día / Semana**, navega con las flechas y elige barbero.
+3. Las citas se colorean por barbero; en **modo oscuro** usan paleta joya (dorado, verde, azul…).
+4. **+ Nueva cita** abre el alta del CPT de reservas.
+5. Abre una card para editar, confirmar o usar acciones rápidas.
+
+### Apariencia del admin
+
+- Interruptor **Oscuro / Claro** en la barra superior (preferencia por usuario).
+- Controles de Agenda: botones **rectangulares** (estilo WordPress, no pills).
+- En dark, la columna del día actual se destaca en dorado JR (`#f5c542`).
 
 ## Buenas prácticas
 

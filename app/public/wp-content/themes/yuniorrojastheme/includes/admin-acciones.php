@@ -180,7 +180,7 @@ function yuniorrojas_admin_acciones_html(int $reserva_id, ?array $reserva = null
         return '';
     }
 
-    return '<div class="jr-acciones-rapidas" style="display:flex;flex-wrap:wrap;gap:4px;">' . implode('', $html) . '</div>';
+    return '<div class="jr-acciones-rapidas">' . implode('', $html) . '</div>';
 }
 
 /**

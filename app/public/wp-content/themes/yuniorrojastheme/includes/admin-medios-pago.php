@@ -91,7 +91,24 @@ function yuniorrojas_medios_pago_render_metabox(WP_Post $post): void
         .jr-medio-fields .description { margin-top:.35rem; }
         .jr-medio-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
         .jr-medio-manual { <?php echo $tipo !== 'manual' ? 'display:none;' : ''; ?> }
-        .jr-medio-tip { padding:.75rem 1rem; background:#f0f6fc; border-left:4px solid #2271b1; }
+        .jr-medio-tip {
+            padding:.75rem 1rem;
+            background:#f6f7f7;
+            border-left:4px solid #c8a24a;
+            color:#1d2327;
+        }
+        .jr-medio-qr__preview {
+            min-height:80px;
+            max-width:180px;
+            margin-bottom:.65rem;
+            border:1px solid #c3c4c7;
+            background:#f0f0f1;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .jr-medio-qr__preview img { max-width:100%; height:auto; display:block; }
+        .jr-medio-qr__actions { margin:0; display:flex; gap:.5rem; flex-wrap:wrap; }
         @media (max-width:782px){ .jr-medio-grid{ grid-template-columns:1fr; } }
     </style>
     <div class="jr-medio-fields">
@@ -165,10 +182,9 @@ function yuniorrojas_medios_pago_render_metabox(WP_Post $post): void
                 <div
                     class="jr-medio-qr__preview"
                     data-jr-medio-qr-preview
-                    style="min-height:80px;max-width:180px;margin-bottom:.65rem;border:1px solid #ccd0d4;background:#f6f7f7;display:flex;align-items:center;justify-content:center;"
                 >
                     <?php if ($qr_src !== '') : ?>
-                        <img src="<?php echo esc_url($qr_src); ?>" alt="" style="max-width:100%;height:auto;display:block;">
+                        <img src="<?php echo esc_url($qr_src); ?>" alt="">
                     <?php else : ?>
                         <span class="description" style="padding:.75rem;text-align:center;">
                             <?php esc_html_e('Sin imagen subida', YUNIORROJAS_TEXT_DOMAIN); ?>
@@ -182,7 +198,7 @@ function yuniorrojas_medios_pago_render_metabox(WP_Post $post): void
                     value="<?php echo esc_attr((string) max(0, $qr_id)); ?>"
                     data-jr-medio-qr-id
                 >
-                <p class="jr-medio-qr__actions" style="margin:0;display:flex;gap:.5rem;flex-wrap:wrap;">
+                <p class="jr-medio-qr__actions">
                     <button type="button" class="button button-secondary" data-jr-medio-qr-select>
                         <?php echo $qr_id > 0
                             ? esc_html__('Cambiar imagen QR', YUNIORROJAS_TEXT_DOMAIN)

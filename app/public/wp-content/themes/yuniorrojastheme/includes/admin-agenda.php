@@ -101,20 +101,33 @@ function yuniorrojas_agenda_lunes_semana(string $fecha): string
 }
 
 /**
- * Colores de bloque por barbero (paleta suave tipo dashboard).
+ * Colores de bloque por barbero.
+ * Light: pasteles saturados. Dark: sin rosa; dorado JR + joyas vivas.
  *
  * @return array{bg:string,border:string,text:string}
  */
 function yuniorrojas_agenda_color_barbero(int $barbero_id): array
 {
-    $palette = array(
-        array('bg' => '#e8f5ef', 'border' => '#3d8f6a', 'text' => '#1a3d2e'),
-        array('bg' => '#e8f0fa', 'border' => '#3a6ea5', 'text' => '#1a2f4a'),
-        array('bg' => '#faf3e0', 'border' => '#b08930', 'text' => '#3d3010'),
-        array('bg' => '#f3eaf7', 'border' => '#7a5a96', 'text' => '#2e2040'),
-        array('bg' => '#fdeceb', 'border' => '#c45c4a', 'text' => '#4a221c'),
-        array('bg' => '#e9f7f8', 'border' => '#2a9d8f', 'text' => '#164038'),
-    );
+    $dark = function_exists('yuniorrojas_admin_theme_is_dark') && yuniorrojas_admin_theme_is_dark();
+
+    $palette = $dark
+        ? array(
+            // Dorado del borde “hoy” — color principal JR
+            array('bg' => '#2a220c', 'border' => '#f5c542', 'text' => '#fff8e1'),
+            array('bg' => '#062a1c', 'border' => '#22e3a0', 'text' => '#e6fff5'),
+            array('bg' => '#071e36', 'border' => '#4db8ff', 'text' => '#e8f6ff'),
+            array('bg' => '#1a1235', 'border' => '#b794f6', 'text' => '#f5efff'),
+            array('bg' => '#062426', 'border' => '#2ee6d6', 'text' => '#e6fffc'),
+            array('bg' => '#2a1608', 'border' => '#ff9f43', 'text' => '#fff4e8'),
+        )
+        : array(
+            array('bg' => '#fef3c7', 'border' => '#d97706', 'text' => '#78350f'),
+            array('bg' => '#d1fae5', 'border' => '#059669', 'text' => '#064e3b'),
+            array('bg' => '#dbeafe', 'border' => '#2563eb', 'text' => '#1e3a8a'),
+            array('bg' => '#ede9fe', 'border' => '#7c3aed', 'text' => '#4c1d95'),
+            array('bg' => '#ccfbf1', 'border' => '#0d9488', 'text' => '#134e4a'),
+            array('bg' => '#ffedd5', 'border' => '#ea580c', 'text' => '#7c2d12'),
+        );
 
     $idx = abs($barbero_id) % count($palette);
     return $palette[$idx];
@@ -156,6 +169,19 @@ function yuniorrojas_agenda_assets(string $hook): void
         array(),
         file_exists($path) ? (string) filemtime($path) : '1.0.0'
     );
+
+    // Dark después de agenda.css para que gane en modo oscuro.
+    if (function_exists('yuniorrojas_admin_theme_is_dark') && yuniorrojas_admin_theme_is_dark()) {
+        $dark_path = get_template_directory() . '/assets/admin/admin-theme-dark.css';
+        $dark_uri  = get_template_directory_uri() . '/assets/admin/admin-theme-dark.css';
+        wp_enqueue_style(
+            'yuniorrojas-admin-theme-dark',
+            $dark_uri,
+            array('yuniorrojas-agenda'),
+            file_exists($dark_path) ? (string) filemtime($dark_path) : '1.0.0'
+        );
+    }
+
     wp_enqueue_script(
         'yuniorrojas-agenda',
         $jsu,
