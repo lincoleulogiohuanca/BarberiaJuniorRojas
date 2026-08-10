@@ -55,13 +55,13 @@ add_action('updated_post_meta', 'jr_core_sync_on_meta_update', 20, 4);
 add_action('added_post_meta', 'jr_core_sync_on_meta_update', 20, 4);
 
 /**
- * Herramientas → JR DB Backfill.
+ * Herramientas → BarberFlow DB Backfill.
  */
 function jr_core_tools_menu(): void
 {
     add_management_page(
-        'JR DB Backfill',
-        'JR DB Backfill',
+        'BarberFlow DB Backfill',
+        'BarberFlow DB Backfill',
         'manage_options',
         'jr-core-backfill',
         'jr_core_tools_render'
@@ -88,7 +88,7 @@ function jr_core_tools_render(): void
     }
 
     $ready = function_exists('jr_db_ready') && jr_db_ready();
-    echo '<div class="wrap"><h1>Junior Rojas — índice de reservas</h1>';
+    echo '<div class="wrap"><h1>BarberFlow — índice de reservas</h1>';
     if ($msg !== '') {
         echo '<div class="notice notice-success"><p>' . esc_html($msg) . '</p></div>';
     }

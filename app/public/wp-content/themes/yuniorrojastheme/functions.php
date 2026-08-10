@@ -1,8 +1,8 @@
 <?php
 /**
- * Theme Junior Rojas — presentation only (UI).
+ * BarberFlow Theme — presentation only (UI).
  *
- * Business domain (bookings, Culqi, admin, REST): plugin juniorrojas-core.
+ * Platform modules: BarberFlow Core, BarberFlow Book, BarberFlow Payments, BarberFlow Pro.
  */
 
 if (!defined('ABSPATH')) {
@@ -22,7 +22,7 @@ function yuniorrojas_theme_require_core(): void
         if (!current_user_can('activate_plugins')) {
             return;
         }
-        echo '<div class="notice notice-error"><p><strong>yuniorrojastheme</strong> necesita <strong>Domain</strong>, <strong>Reservas</strong>, <strong>Pagos</strong> y <strong>Core</strong> activos.</p></div>';
+        echo '<div class="notice notice-error"><p><strong>BarberFlow Theme</strong> necesita <strong>BarberFlow Core</strong>, <strong>BarberFlow Book</strong>, <strong>BarberFlow Payments</strong> y <strong>BarberFlow Pro</strong> activos.</p></div>';
     });
 
     // Minimal constants so theme setup does not fatal without Core.

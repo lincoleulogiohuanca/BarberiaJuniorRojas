@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Junior Rojas Reservas
+ * Plugin Name: BarberFlow Book
  * Plugin URI: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas
- * Description: Motor de citas JR: disponibilidad, locks (via Domain), REST reservas, lista de espera, notificaciones y fidelidad. Requiere Junior Rojas Domain.
+ * Description: Reservas BarberFlow (producto Booking): disponibilidad, locks, REST, lista de espera, notificaciones y fidelidad. Requiere BarberFlow Core.
  * Version: 1.0.0
  * Author: Lincol Eulogio Huanca
  * Text Domain: juniorrojas-reservas
@@ -40,7 +40,7 @@ function jr_reservas_admin_notice_domain_missing(): void
     if (!current_user_can('activate_plugins')) {
         return;
     }
-    echo '<div class="notice notice-error"><p><strong>Junior Rojas Reservas</strong> requiere el plugin <strong>Junior Rojas Domain</strong> activo.</p></div>';
+    echo '<div class="notice notice-error"><p><strong>BarberFlow Book</strong> requiere el plugin <strong>BarberFlow Core</strong> activo.</p></div>';
 }
 
 /**

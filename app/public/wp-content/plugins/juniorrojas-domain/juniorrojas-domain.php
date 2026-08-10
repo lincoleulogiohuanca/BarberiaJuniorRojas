@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Junior Rojas Domain
+ * Plugin Name: BarberFlow Core
  * Plugin URI: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas
- * Description: Cimiento del producto JR: CPT, constants, helpers, metas de catálogo, schema wp_jr_* y queries. Requerido por Junior Rojas Core.
+ * Description: Funciones principales BarberFlow: servicios, staff (barberos), helpers y schema wp_jr_*. Módulos: Services + Staff. Requerido por Book, Payments y Pro.
  * Version: 1.0.0
  * Author: Lincol Eulogio Huanca
  * Text Domain: juniorrojas-domain

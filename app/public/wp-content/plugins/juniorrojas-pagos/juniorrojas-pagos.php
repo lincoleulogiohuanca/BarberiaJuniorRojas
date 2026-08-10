@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Junior Rojas Pagos
+ * Plugin Name: BarberFlow Payments
  * Plugin URI: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas
- * Description: Borde de dinero JR: Culqi, medios de pago, settings, webhook e idempotencia (schema en Domain). Requiere Domain + Reservas.
+ * Description: Pagos BarberFlow: Culqi, medios, settings, webhook e idempotencia. Requiere BarberFlow Core + BarberFlow Book.
  * Version: 1.0.0
  * Author: Lincol Eulogio Huanca
  * Text Domain: juniorrojas-pagos
@@ -61,15 +61,15 @@ function jr_pagos_admin_notice_deps_missing(): void
     }
     $faltan = array();
     if (!jr_pagos_domain_ready()) {
-        $faltan[] = 'Junior Rojas Domain';
+        $faltan[] = 'BarberFlow Core';
     }
     if (!jr_pagos_reservas_ready()) {
-        $faltan[] = 'Junior Rojas Reservas';
+        $faltan[] = 'BarberFlow Book';
     }
     if ($faltan === array()) {
         return;
     }
-    echo '<div class="notice notice-error"><p><strong>Junior Rojas Pagos</strong> requiere activos: <strong>'
+    echo '<div class="notice notice-error"><p><strong>BarberFlow Payments</strong> requiere activos: <strong>'
         . esc_html(implode('</strong>, <strong>', $faltan))
         . '</strong>.</p></div>';
 }

@@ -11,6 +11,14 @@ https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases
 
 ## [Unreleased]
 
+### Changed
+- Marca **BarberFlow**: Theme, Core, Book, Payments, Pro; catálogo Free / Booking / Suite.
+
+
+### Changed
+- Branding de plataforma: tema **BarberFlow Theme**; plugins **BarberFlow Core**, **BarberFlow Book**, **BarberFlow Payments**, **BarberFlow Pro** (slugs de carpeta sin cambio).
+
+
 ### Added
 - Plugin **Junior Rojas Pagos**: Culqi, medios de pago, settings, webhook (idempotencia en Domain).
 

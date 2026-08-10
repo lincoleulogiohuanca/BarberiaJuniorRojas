@@ -37,7 +37,7 @@ Menú WordPress: **Reservas** (CPT `jr_reservas`) y submenús de agenda / client
 - Cliente: desde **Mi cuenta** (mantiene la misma reserva, cambia fecha/hora).
 - Admin: edita meta de fecha/hora en el metabox de la reserva.
 
-## Plugin Core
+## BarberFlow Pro
 
-Si el plugin **Junior Rojas Core** está activo, las citas se indexan en tabla `wp_jr_*` para disponibilidad rápida.  
-Tras importar reservas antiguas: **Herramientas → JR DB Backfill**.
+Si el plugin **BarberFlow Pro / stack BarberFlow** está activo, las citas se indexan en tabla `wp_jr_*` para disponibilidad rápida.  
+Tras importar reservas antiguas: **Herramientas → BarberFlow DB Backfill**.

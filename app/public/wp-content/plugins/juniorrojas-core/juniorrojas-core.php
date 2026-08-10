@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Junior Rojas Core
+ * Plugin Name: BarberFlow Pro
  * Plugin URI: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas
- * Description: Capa app JR (admin operativo, contacto, hardening). Requiere Domain + Reservas + Pagos.
+ * Description: Premium BarberFlow: agenda, CRM clientes, Gallery/Reviews admin, dashboard, contacto. Requiere Core + Book + Payments.
  * Version: 1.5.0
  * Author: Lincol Eulogio Huanca
  * Text Domain: juniorrojas-core
@@ -72,18 +72,18 @@ function jr_core_admin_notice_deps_missing(): void
     }
     $faltan = array();
     if (!jr_core_domain_ready()) {
-        $faltan[] = 'Junior Rojas Domain';
+        $faltan[] = 'BarberFlow Core';
     }
     if (!jr_core_reservas_ready()) {
-        $faltan[] = 'Junior Rojas Reservas';
+        $faltan[] = 'BarberFlow Book';
     }
     if (!jr_core_pagos_ready()) {
-        $faltan[] = 'Junior Rojas Pagos';
+        $faltan[] = 'BarberFlow Payments';
     }
     if ($faltan === array()) {
         return;
     }
-    echo '<div class="notice notice-error"><p><strong>Junior Rojas Core</strong> requiere activos: <strong>'
+    echo '<div class="notice notice-error"><p><strong>BarberFlow Pro</strong> requiere activos: <strong>'
         . esc_html(implode('</strong>, <strong>', $faltan))
         . '</strong>.</p></div>';
 }
@@ -148,6 +148,6 @@ function jr_core_admin_notice_theme(): void
     if ($ok) {
         return;
     }
-    echo '<div class="notice notice-warning"><p><strong>Junior Rojas Core</strong> est&aacute; activo; se recomienda el tema <code>yuniorrojastheme</code> para la UI de cliente.</p></div>';
+    echo '<div class="notice notice-warning"><p><strong>BarberFlow Pro</strong> est&aacute; activo; se recomienda el tema <strong>BarberFlow Theme</strong> (<code>yuniorrojastheme</code>) para la UI de cliente.</p></div>';
 }
 add_action('admin_notices', 'jr_core_admin_notice_theme');

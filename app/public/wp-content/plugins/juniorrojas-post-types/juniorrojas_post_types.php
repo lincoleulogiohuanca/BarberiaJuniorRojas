@@ -1,8 +1,8 @@
 <?php
 /*
-    Plugin Name: Barberia Junior Rojas - Post Types (legacy)
+    Plugin Name: BarberFlow Legacy CPTs
     Plugin URI: http://x.com/lincoleulogio
-    Description: LEGACY. El CPT de servicios lo registra el tema / Junior Rojas Core. Este plugin se mantiene solo por compatibilidad; puedes desactivarlo si Core + tema están activos.
+    Description: LEGACY. El CPT lo registra BarberFlow Core. Desactivar si Core + Theme están activos.
     Version: 1.1.0
     Author: Lincol Eulogio Huanca
     Author URI: http://x.com/lincoleulogio
