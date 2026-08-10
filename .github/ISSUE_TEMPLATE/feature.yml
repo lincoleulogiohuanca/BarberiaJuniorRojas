@@ -1,0 +1,55 @@
+name: Feature
+description: Proponer una mejora o nueva función.
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: Describe la necesidad del negocio o del cliente final.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Reservas
+        - Pagos
+        - Fidelidad
+        - Admin / operaciones
+        - UX / design
+        - Performance / seguridad
+        - Integraciones
+        - Otro
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema o necesidad
+      description: ¿Qué duele hoy?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Propuesta
+      description: ¿Cómo se vería la solución ideal?
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad sugerida
+      options:
+        - Baja
+        - Media
+        - Alta
+        - Urgente (bloquea negocio)
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Criterios de aceptación
+      placeholder: |
+        - [ ] …
+        - [ ] …

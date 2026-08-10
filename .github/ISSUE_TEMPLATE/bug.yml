@@ -1,0 +1,67 @@
+name: Bug
+description: Reportar un error en reservas, pagos, admin o front.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe el fallo de forma reproducible. No pegues llaves Culqi, contraseñas ni dumps.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Reservas / disponibilidad
+        - Pagos Culqi
+        - Pagos manuales (Plin / transferencia)
+        - Mi cuenta / auth
+        - Admin (agenda, ingresos, pagos)
+        - Front (UI / JS)
+        - Deploy / hosting
+        - Otro
+    validations:
+      required: true
+  - type: dropdown
+    id: env
+    attributes:
+      label: Entorno
+      options:
+        - Local (Local WP)
+        - Staging
+        - Production
+        - No sé
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducir
+      placeholder: |
+        1. Ir a …
+        2. Elegir servicio…
+        3. Error al…
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamiento esperado
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamiento actual
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Navegador / dispositivo
+      placeholder: Chrome 120, iPhone Safari…
+  - type: textarea
+    id: extra
+    attributes:
+      label: Extra (logs, captura, ID de reserva)
+      description: Sin secretos. Puedes indicar ID de reserva o charge_id enmascarado.

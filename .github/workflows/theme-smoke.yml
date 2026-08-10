@@ -1,21 +1,19 @@
-# Smoke-check del tema (sintaxis PHP + estructura)
+# CI: lint PHP/JS structure — gate de merge a main
 name: Theme smoke
 
 on:
   push:
-    branches: [main, master]
-    paths:
-      - 'app/public/wp-content/themes/yuniorrojastheme/**'
-      - 'app/public/wp-content/plugins/juniorrojas-core/**'
-      - 'app/public/wp-content/plugins/juniorrojas-post-types/**'
+    branches: [main, developer]
   pull_request:
-    paths:
-      - 'app/public/wp-content/themes/yuniorrojastheme/**'
-      - 'app/public/wp-content/plugins/juniorrojas-core/**'
-      - 'app/public/wp-content/plugins/juniorrojas-post-types/**'
+    branches: [main, developer]
+
+concurrency:
+  group: theme-smoke-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   php-lint:
+    name: php-lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +37,10 @@ jobs:
           test -f app/public/wp-content/themes/yuniorrojastheme/js/modules/header-menu.js
           test -f app/public/wp-content/themes/yuniorrojastheme/js/modules/cuenta.js
 
-      - name: No secrets hardcode Culqi
+      - name: No secrets Culqi hardcodeados
         run: |
-          ! grep -R "pk_test_AXEwZuPbByAfn7UE" app/public/wp-content/themes/yuniorrojastheme || true
-          if grep -R "pk_test_AXEwZuPbByAfn7UE" app/public/wp-content/themes/yuniorrojastheme; then exit 1; fi
+          if grep -R "pk_test_AXEwZuPbByAfn7UE" app/public/wp-content/themes/yuniorrojastheme; then
+            echo "Llave Culqi de prueba hardcodeada detectada"
+            exit 1
+          fi
+          echo "OK sin semillas hardcodeadas"

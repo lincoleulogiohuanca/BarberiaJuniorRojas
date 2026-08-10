@@ -43,7 +43,13 @@ app/public/wp-content/
 - Webhook Culqi: `https://TU-DOMINIO/wp-json/yuniorrojas/v1/culqi/webhook`
 - Tras activar Core: *Herramientas → JR DB Backfill* si hay reservas previas
 
-Detalle de deploy en [DEPLOY.md](./DEPLOY.md).
+Detalle de deploy en [DEPLOY.md](./DEPLOY.md).  
+Configuración de GitHub (protección, environments, issues): [`.github/GITHUB_SETUP.md`](./.github/GITHUB_SETUP.md).
+
+## Issues y PRs
+
+- **Bug / Feature / Go-live** → plantillas en *New issue*
+- **Pull requests** → plantilla con checklist de CI y deploy
 
 ## Desarrollo local
 

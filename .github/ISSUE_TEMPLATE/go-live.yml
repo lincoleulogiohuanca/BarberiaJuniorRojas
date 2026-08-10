@@ -1,0 +1,64 @@
+name: Go-live checklist
+description: Checklist para salida a producción / deploy crítico.
+title: "[go-live] "
+labels: ["go-live", "deploy"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Usa este issue antes de un cutover o tras el primer deploy a producción.
+        Detalle en [DEPLOY.md](../../blob/main/DEPLOY.md).
+  - type: input
+    id: target
+    attributes:
+      label: Dominio / entorno
+      placeholder: https://tudominio.com
+    validations:
+      required: true
+  - type: checkboxes
+    id: codigo
+    attributes:
+      label: Código y plugins
+      options:
+        - label: Tema yuniorrojastheme actualizado
+          required: true
+        - label: Plugin juniorrojas-core activo
+          required: true
+        - label: Backfill JR DB si había reservas previas
+        - label: Permalink / REST API OK
+  - type: checkboxes
+    id: pagos
+    attributes:
+      label: Pagos
+      options:
+        - label: Culqi pk_live_ / sk_live_ en producción
+          required: true
+        - label: Webhook Culqi configurado
+        - label: Medios de pago (Plin / estudio) OK
+        - label: QA: tarjeta test en staging, live con 1 cobro controlado
+  - type: checkboxes
+    id: ops
+    attributes:
+      label: Operación
+      options:
+        - label: HTTPS activo / forzar SSL
+          required: true
+        - label: SMTP probado (correo de confirma llega)
+          required: true
+        - label: Cron real (DISABLE_WP_CRON + crontab)
+        - label: Backup BD del hosting
+        - label: Environments GitHub con secretos FTP
+  - type: checkboxes
+    id: qa
+    attributes:
+      label: QA funcional
+      options:
+        - label: Reservar + reprogramar + cancelar estudio
+        - label: Culqi sin doble cargo (retry)
+        - label: Comprobante Plin
+        - label: Lista de espera / reseñas básicas
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notas / riesgos
+      placeholder: Pendientes, fechas de go-live, responsables…

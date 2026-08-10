@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentación de deploy
+    url: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/blob/main/DEPLOY.md
+    about: Checklist de producción, Culqi, SMTP y FTP.
+  - name: README del proyecto
+    url: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/blob/main/README.md
+    about: Estructura del repo, plugins y requisitos.

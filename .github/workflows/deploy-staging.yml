@@ -1,0 +1,72 @@
+# Deploy Staging → push a developer (sin aprobación)
+name: Deploy Staging
+
+on:
+  push:
+    branches: [developer]
+    paths:
+      - 'app/public/wp-content/themes/yuniorrojastheme/**'
+      - 'app/public/wp-content/plugins/juniorrojas-core/**'
+      - '.github/workflows/deploy-staging.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: ftp-staging
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: ${{ vars.SITE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verificar secretos FTP staging
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          if [ -z "$FTP_SERVER" ] || [ -z "$FTP_USERNAME" ] || [ -z "$FTP_PASSWORD" ]; then
+            echo "::error::Faltan secretos del environment «staging»."
+            echo "Configura en GitHub → Settings → Environments → staging:"
+            echo "  FTP_SERVER, FTP_USERNAME, FTP_PASSWORD"
+            echo "  (opcionales) FTP_SERVER_DIR_THEME, FTP_SERVER_DIR_PLUGIN"
+            exit 1
+          fi
+          echo "Secretos FTP presentes."
+
+      - name: Deploy tema → staging
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./app/public/wp-content/themes/yuniorrojastheme/
+          server-dir: ${{ secrets.FTP_SERVER_DIR_THEME || '/public_html/wp-content/themes/yuniorrojastheme/' }}
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/tests/**
+            **/node_modules/**
+
+      - name: Deploy juniorrojas-core → staging
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./app/public/wp-content/plugins/juniorrojas-core/
+          server-dir: ${{ secrets.FTP_SERVER_DIR_PLUGIN || '/public_html/wp-content/plugins/juniorrojas-core/' }}
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
