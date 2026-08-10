@@ -1,0 +1,21 @@
+# Docs — Barbería Junior Rojas
+# Publicadas en GitHub Pages (si el plan lo permite)
+
+title: Barbería Junior Rojas — Docs
+description: Manual de administración (agenda, pagos, fidelidad, producción)
+# Para project site: username.github.io/BarberiaJuniorRojas
+url: "https://lincoleulogiohuanca.github.io"
+baseurl: "/BarberiaJuniorRojas"
+
+# Layout local (docs/_layouts/default.html) — sin depender de remote_theme
+markdown: kramdown
+highlighter: rouge
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+exclude:
+  - README.md

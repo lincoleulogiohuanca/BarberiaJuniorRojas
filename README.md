@@ -46,14 +46,21 @@ app/public/wp-content/
 
 Detalle de deploy en [DEPLOY.md](./DEPLOY.md).  
 Changelog: [CHANGELOG.md](./CHANGELOG.md) · Seguridad: [SECURITY.md](./SECURITY.md)  
-GitHub ops: [`.github/GITHUB_SETUP.md`](./.github/GITHUB_SETUP.md).
+GitHub ops: [`.github/GITHUB_SETUP.md`](./.github/GITHUB_SETUP.md) · Crecimiento: [`.github/GROWTH.md`](./.github/GROWTH.md)
+
+## Manual del admin
+
+Documentación versionada en [`docs/`](./docs/) (agenda, pagos, fidelidad, producción, go-live).  
+Si GitHub Pages está activo: `https://lincoleulogiohuanca.github.io/BarberiaJuniorRojas/`
 
 ## Issues y PRs
 
 - **Bug / Feature / Go-live** → plantillas en *New issue*
+- **Discussions** → ideas / Q&A del equipo
+- **Milestones** → `v1.1.0`, `v1.2.0`
 - **Pull requests** → checklist Culqi, reservas, SMTP, backfill, CI
 - **CODEOWNERS** → `@lincoleulogiohuanca` en tema/plugin
-- **Board** → Project kanban (Backlog / En curso / Hecho)
+- **Releases** → ZIPs `yuniorrojastheme.zip` + `juniorrojas-core.zip` (workflow Release assets)
 
 ## Desarrollo local
 
