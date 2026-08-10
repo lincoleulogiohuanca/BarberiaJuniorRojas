@@ -65,7 +65,7 @@ function yuniorrojas_procesar_contacto(): void
     }
 
     $to      = get_option('admin_email');
-    $subject = sprintf('[Contacto JR] %s', $asunto);
+    $subject = sprintf('[Contacto] %s', $asunto);
     $body    = "Nombre: {$nombre}\nEmail: {$email}\n\n{$mensaje}";
     $headers = array(
         'Content-Type: text/plain; charset=UTF-8',

@@ -175,7 +175,37 @@
   margin: 0 !important;
 }
 
-/* Contacto JR — horarios (mismo patrón que procesos) */
+/* Contacto — selector de mapa (pin → lat/lng/zoom) */
+.yuniorrojas-contacto-settings .yuniorrojas-mapa-picker-help {
+  margin: 0 0 12px !important;
+  max-width: 720px;
+}
+
+.yuniorrojas-mapa-picker {
+  max-width: 720px;
+  margin: 0 0 16px;
+}
+
+.yuniorrojas-mapa-picker__map {
+  width: 100%;
+  height: 360px;
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f0f0f1;
+  z-index: 1;
+}
+
+.yuniorrojas-mapa-picker__map.leaflet-container {
+  font: inherit;
+}
+
+.yuniorrojas-mapa-picker__hint {
+  margin: 8px 0 0 !important;
+  color: #646970;
+}
+
+/* Contacto — horarios (mismo patrón que procesos) */
 .yuniorrojas-contacto-settings .yuniorrojas-horarios-help {
   margin: 0 0 12px !important;
 }

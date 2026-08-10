@@ -243,8 +243,8 @@ function yuniorrojas_normalizar_horarios(array $horarios): array
 function yuniorrojas_registrar_menu_contacto(): void
 {
     add_menu_page(
-        __('Contacto JR', YUNIORROJAS_TEXT_DOMAIN),
-        __('Contacto JR', YUNIORROJAS_TEXT_DOMAIN),
+        __('Contacto', YUNIORROJAS_TEXT_DOMAIN),
+        __('Contacto', YUNIORROJAS_TEXT_DOMAIN),
         'manage_options',
         'yuniorrojas-contacto',
         'yuniorrojas_renderizar_pagina_contacto',
@@ -267,7 +267,7 @@ function yuniorrojas_renderizar_pagina_contacto(): void
     $total_redes = count($redes);
     ?>
     <div class="wrap yuniorrojas-contacto-settings">
-        <h1><?php esc_html_e('Contacto Junior Rojas', YUNIORROJAS_TEXT_DOMAIN); ?></h1>
+        <h1><?php esc_html_e('Contacto', YUNIORROJAS_TEXT_DOMAIN); ?></h1>
         <p class="description">
             <?php esc_html_e('Estos datos alimentan la página de Contacto, horarios, mapa y las redes del footer.', YUNIORROJAS_TEXT_DOMAIN); ?>
         </p>
@@ -297,36 +297,53 @@ function yuniorrojas_renderizar_pagina_contacto(): void
                 <tr>
                     <th scope="row"><label for="yuniorrojas_direccion"><?php esc_html_e('Dirección / Ubicación', YUNIORROJAS_TEXT_DOMAIN); ?></label></th>
                     <td>
-                        <input type="text" class="large-text" id="yuniorrojas_direccion" name="yuniorrojas_contacto[direccion]" value="<?php echo esc_attr($settings['direccion']); ?>">
+                        <input type="text" class="large-text" id="yuniorrojas_direccion" name="yuniorrojas_contacto[direccion]" value="<?php echo esc_attr($settings['direccion']); ?>" autocomplete="street-address" data-mapa-admin-direccion>
+                        <p class="description" id="yuniorrojas-mapa-dir-status" data-mapa-admin-dir-status aria-live="polite">
+                            <?php esc_html_e('Al escribir una dirección se mueve el pin; al mover el pin se actualiza este texto. Luego guarda.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                        </p>
                     </td>
                 </tr>
             </table>
 
             <h2 class="title"><?php esc_html_e('Mapa', YUNIORROJAS_TEXT_DOMAIN); ?></h2>
+            <p class="description yuniorrojas-mapa-picker-help">
+                <?php esc_html_e('Arrastra el pin o haz clic en el mapa para ubicar el estudio. Al guardar, la página pública de Contacto usa estas coordenadas (si no hay iframe de embed).', YUNIORROJAS_TEXT_DOMAIN); ?>
+            </p>
+            <div class="yuniorrojas-mapa-picker" data-mapa-admin-picker>
+                <div
+                    id="yuniorrojas-mapa-admin"
+                    class="yuniorrojas-mapa-picker__map"
+                    role="application"
+                    aria-label="<?php esc_attr_e('Mapa para ubicar el estudio', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                ></div>
+                <p class="description yuniorrojas-mapa-picker__hint">
+                    <?php esc_html_e('Pin ↔ dirección: arrastra el pin, o escribe la dirección y pulsa Enter / sal del campo. El zoom lo controlas con la rueda o ±.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                </p>
+            </div>
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row"><label for="yuniorrojas_mapa_lat"><?php esc_html_e('Latitud', YUNIORROJAS_TEXT_DOMAIN); ?></label></th>
                     <td>
-                        <input type="text" class="regular-text" id="yuniorrojas_mapa_lat" name="yuniorrojas_contacto[mapa_lat]" value="<?php echo esc_attr((string) $settings['mapa_lat']); ?>">
+                        <input type="text" class="regular-text" id="yuniorrojas_mapa_lat" name="yuniorrojas_contacto[mapa_lat]" value="<?php echo esc_attr((string) $settings['mapa_lat']); ?>" inputmode="decimal" autocomplete="off" data-mapa-admin-lat>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row"><label for="yuniorrojas_mapa_lng"><?php esc_html_e('Longitud', YUNIORROJAS_TEXT_DOMAIN); ?></label></th>
                     <td>
-                        <input type="text" class="regular-text" id="yuniorrojas_mapa_lng" name="yuniorrojas_contacto[mapa_lng]" value="<?php echo esc_attr((string) $settings['mapa_lng']); ?>">
+                        <input type="text" class="regular-text" id="yuniorrojas_mapa_lng" name="yuniorrojas_contacto[mapa_lng]" value="<?php echo esc_attr((string) $settings['mapa_lng']); ?>" inputmode="decimal" autocomplete="off" data-mapa-admin-lng>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row"><label for="yuniorrojas_mapa_zoom"><?php esc_html_e('Zoom', YUNIORROJAS_TEXT_DOMAIN); ?></label></th>
                     <td>
-                        <input type="number" min="1" max="19" class="small-text" id="yuniorrojas_mapa_zoom" name="yuniorrojas_contacto[mapa_zoom]" value="<?php echo esc_attr((string) $settings['mapa_zoom']); ?>">
+                        <input type="number" min="1" max="19" class="small-text" id="yuniorrojas_mapa_zoom" name="yuniorrojas_contacto[mapa_zoom]" value="<?php echo esc_attr((string) $settings['mapa_zoom']); ?>" data-mapa-admin-zoom>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row"><label for="yuniorrojas_mapa_embed"><?php esc_html_e('Embed iframe (opcional)', YUNIORROJAS_TEXT_DOMAIN); ?></label></th>
                     <td>
                         <textarea class="large-text code" rows="4" id="yuniorrojas_mapa_embed" name="yuniorrojas_contacto[mapa_embed]" placeholder="<?php esc_attr_e('Si lo llenas, reemplaza el mapa Leaflet por este iframe.', YUNIORROJAS_TEXT_DOMAIN); ?>"><?php echo esc_textarea($settings['mapa_embed']); ?></textarea>
-                        <p class="description"><?php esc_html_e('Déjalo vacío para usar Leaflet. Si pegas un iframe de Google Maps, ese tiene prioridad.', YUNIORROJAS_TEXT_DOMAIN); ?></p>
+                        <p class="description"><?php esc_html_e('Déjalo vacío para usar el mapa de abajo (Leaflet) en la web. Si pegas un iframe de Google Maps, ese tiene prioridad en Contacto.', YUNIORROJAS_TEXT_DOMAIN); ?></p>
                     </td>
                 </tr>
             </table>

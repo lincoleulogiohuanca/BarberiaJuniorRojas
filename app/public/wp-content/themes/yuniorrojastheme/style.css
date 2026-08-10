@@ -4058,6 +4058,12 @@ body.is-lightbox-open {
 .contacto-mapa__leaflet.leaflet-container {
   font: inherit;
   background: #141414;
+  cursor: default;
+}
+
+.contacto-mapa__leaflet.leaflet-container.leaflet-drag-target,
+.contacto-mapa__leaflet.leaflet-container.leaflet-grab {
+  cursor: default;
 }
 
 .contacto-mapa__leaflet .leaflet-popup-content-wrapper {
@@ -4089,45 +4095,38 @@ body.is-lightbox-open {
   background: rgba(0, 0, 0, 0.65);
   color: var(--color-gris-claro);
   font-size: 1.1rem;
+  margin: 0 0 0.4rem 0.4rem;
+  max-width: calc(100% - 1.6rem);
 }
 
 .contacto-mapa__leaflet .leaflet-control-attribution a {
   color: var(--color-dorado);
 }
 
-.contacto-mapa__leaflet .leaflet-control-zoom a,
-.contacto-mapa__leaflet .contacto-mapa__reset-btn {
-  width: 3.4rem;
-  height: 3.4rem;
-  line-height: 3.4rem;
-  border-radius: 0;
-  border-bottom-color: rgba(200, 162, 74, 0.35);
-  background: rgba(0, 0, 0, 0.88);
-  color: var(--color-dorado);
-  font-size: 1.8rem;
-  font-weight: 600;
-}
-
-.contacto-mapa__leaflet .leaflet-control-zoom a:hover,
-.contacto-mapa__leaflet .contacto-mapa__reset-btn:hover {
-  background: rgba(20, 20, 20, 0.95);
-  color: #e8c76a;
-}
-
-.contacto-mapa__leaflet .leaflet-bar {
-  border: 1px solid rgba(200, 162, 74, 0.55);
-  border-radius: 0;
-  box-shadow: none;
-}
-
+/* Mapa fijo: ocultar controles por si quedan residuales */
+.contacto-mapa__leaflet .leaflet-control-zoom,
 .contacto-mapa__leaflet .contacto-mapa__reset {
-  margin-top: 0.8rem;
+  display: none !important;
 }
 
-.contacto-mapa__leaflet .contacto-mapa__reset-btn {
-  display: block;
-  text-align: center;
-  text-decoration: none;
+@media (max-width: 48em) {
+  .contacto-mapa__leaflet .leaflet-popup-content {
+    margin: 0.9rem 1rem;
+    font-size: 1.3rem;
+  }
+
+  .contacto-mapa__leaflet .leaflet-popup-content-wrapper {
+    max-width: min(78vw, 28rem);
+  }
+
+  .contacto-mapa__leaflet .leaflet-control-attribution {
+    font-size: 1rem;
+  }
+
+  /* Popup más compacto para no desviar la sensación de pin centrado */
+  .contacto-mapa__leaflet .leaflet-popup {
+    margin-bottom: 1.2rem;
+  }
 }
 
 .contacto-mapa__placeholder {

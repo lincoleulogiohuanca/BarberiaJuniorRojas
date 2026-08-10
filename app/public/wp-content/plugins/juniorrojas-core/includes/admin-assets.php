@@ -47,9 +47,12 @@ function yuniorrojas_admin_assets(string $hook): void
 
     $css_path = jr_core_asset_path('assets/admin/admin.css');
     $js_path  = jr_core_asset_path('assets/admin/admin.js');
+    $mapa_js  = jr_core_asset_path('assets/admin/mapa-contacto-admin.js');
 
-    if ($es_edit) {
-        wp_enqueue_media();
+    if ($es_edit || $es_contacto) {
+        if ($es_edit) {
+            wp_enqueue_media();
+        }
         wp_enqueue_script('jquery-ui-sortable');
         wp_enqueue_script(
             'yuniorrojas-admin',
@@ -60,10 +63,33 @@ function yuniorrojas_admin_assets(string $hook): void
         );
     }
 
+    if ($es_contacto) {
+        wp_enqueue_style(
+            'leaflet',
+            'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+            array(),
+            '1.9.4'
+        );
+        wp_enqueue_script(
+            'leaflet',
+            'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+            array(),
+            '1.9.4',
+            true
+        );
+        wp_enqueue_script(
+            'yuniorrojas-mapa-contacto-admin',
+            jr_core_asset_url('assets/admin/mapa-contacto-admin.js'),
+            array('leaflet'),
+            file_exists($mapa_js) ? (string) filemtime($mapa_js) : JR_CORE_VERSION,
+            true
+        );
+    }
+
     wp_enqueue_style(
         'yuniorrojas-admin',
         jr_core_asset_url('assets/admin/admin.css'),
-        array(),
+        $es_contacto ? array('leaflet') : array(),
         file_exists($css_path) ? (string) filemtime($css_path) : JR_CORE_VERSION
     );
 }

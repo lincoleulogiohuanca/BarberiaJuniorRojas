@@ -7,53 +7,51 @@ document.addEventListener("DOMContentLoaded", () => {
   const lat = Number(yuniorrojasMapa.lat);
   const lng = Number(yuniorrojasMapa.lng);
   const zoom = Number(yuniorrojasMapa.zoom) || 17;
-  const initialView = { center: [lat, lng], zoom };
+  const center = [lat, lng];
 
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return;
   }
 
   const map = L.map(el, {
-    scrollWheelZoom: true,
-    doubleClickZoom: true,
-    touchZoom: true,
-    boxZoom: true,
-    keyboard: true,
+    center,
+    zoom,
+    // Vista fija: sin pan, zoom ni gestos.
+    dragging: false,
+    touchZoom: false,
+    doubleClickZoom: false,
+    scrollWheelZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    tap: false,
+    bounceAtZoomLimits: false,
     zoomControl: false,
     attributionControl: true,
-  }).setView(initialView.center, initialView.zoom);
-
-  L.control
-    .zoom({
-      position: "topright",
-      zoomInTitle: "Acercar",
-      zoomOutTitle: "Alejar",
-    })
-    .addTo(map);
-
-  const ResetControl = L.Control.extend({
-    options: { position: "topright" },
-    onAdd() {
-      const container = L.DomUtil.create("div", "leaflet-bar contacto-mapa__reset");
-      const button = L.DomUtil.create("a", "contacto-mapa__reset-btn", container);
-
-      button.href = "#";
-      button.title = "Volver a la ubicación";
-      button.setAttribute("role", "button");
-      button.setAttribute("aria-label", "Volver a la ubicación");
-      button.innerHTML = "&#8634;";
-
-      L.DomEvent.disableClickPropagation(container);
-      L.DomEvent.on(button, "click", (event) => {
-        L.DomEvent.preventDefault(event);
-        map.setView(initialView.center, initialView.zoom, { animate: true });
-      });
-
-      return container;
-    },
   });
 
-  map.addControl(new ResetControl());
+  if (map.attributionControl) {
+    map.attributionControl.setPosition("bottomleft");
+  }
+
+  // Evita arrastre en el propio contenedor (trackpads / algunos browsers).
+  if (map.dragging && map.dragging.disable) {
+    map.dragging.disable();
+  }
+  if (map.touchZoom && map.touchZoom.disable) {
+    map.touchZoom.disable();
+  }
+  if (map.doubleClickZoom && map.doubleClickZoom.disable) {
+    map.doubleClickZoom.disable();
+  }
+  if (map.scrollWheelZoom && map.scrollWheelZoom.disable) {
+    map.scrollWheelZoom.disable();
+  }
+  if (map.boxZoom && map.boxZoom.disable) {
+    map.boxZoom.disable();
+  }
+  if (map.keyboard && map.keyboard.disable) {
+    map.keyboard.disable();
+  }
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -69,9 +67,16 @@ document.addEventListener("DOMContentLoaded", () => {
       : "",
   ].join("");
 
-  L.marker([lat, lng]).addTo(map).bindPopup(popupHtml).openPopup();
+  L.marker(center).addTo(map).bindPopup(popupHtml).openPopup();
 
-  requestAnimationFrame(() => {
-    map.invalidateSize();
-  });
+  const recenter = () => {
+    map.invalidateSize({ animate: false });
+    map.setView(center, zoom, { animate: false });
+  };
+
+  requestAnimationFrame(recenter);
+  window.setTimeout(recenter, 120);
+  window.setTimeout(recenter, 400);
+
+  window.addEventListener("resize", recenter, { passive: true });
 });
