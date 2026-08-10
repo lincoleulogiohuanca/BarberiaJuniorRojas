@@ -28,6 +28,7 @@
                 aria-controls="header-navigation">
                 <span class="header__toggle-line"></span>
                 <span class="header__toggle-line"></span>
+                <span class="header__toggle-line"></span>
             </button>
 
             <!--

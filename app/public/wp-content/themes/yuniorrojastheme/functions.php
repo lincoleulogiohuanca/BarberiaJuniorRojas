@@ -57,6 +57,37 @@ function yuniorrojas_theme_setup(): void
 }
 add_action('after_setup_theme', 'yuniorrojas_theme_setup');
 
+/**
+ * Logo monograma opcional en el Customizer (footer / iconos).
+ * El logo principal del header se controla con "Logo" de Identidad del sitio.
+ */
+function yuniorrojas_customize_branding(WP_Customize_Manager $wp_customize): void
+{
+    $wp_customize->add_setting(
+        'yuniorrojas_logo_mark',
+        array(
+            'default'           => 0,
+            'sanitize_callback' => 'absint',
+            'transport'         => 'refresh',
+        )
+    );
+
+    $wp_customize->add_control(
+        new WP_Customize_Media_Control(
+            $wp_customize,
+            'yuniorrojas_logo_mark',
+            array(
+                'label'       => __('Monograma / icono', YUNIORROJAS_TEXT_DOMAIN),
+                'description' => __('Opcional. Se usa en footer y lugares compactos. Si no hay monograma, se reutiliza el Logo del sitio.', YUNIORROJAS_TEXT_DOMAIN),
+                'section'     => 'title_tagline',
+                'mime_type'   => 'image',
+                'priority'    => 9,
+            )
+        )
+    );
+}
+add_action('customize_register', 'yuniorrojas_customize_branding');
+
 function yuniorrojas_scripts_styles(): void
 {
     $theme_uri  = get_template_directory_uri();
