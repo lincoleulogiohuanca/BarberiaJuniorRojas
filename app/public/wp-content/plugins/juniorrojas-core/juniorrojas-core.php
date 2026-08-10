@@ -3,7 +3,7 @@
  * Plugin Name: BarberFlow Pro
  * Plugin URI: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas
  * Description: Premium BarberFlow: agenda, CRM clientes, Gallery/Reviews admin, dashboard, contacto. Requiere Core + Book + Payments.
- * Version: 1.5.0
+ * Version: 1.0.0
  * Author: Lincol Eulogio Huanca
  * Author URI: https://x.com/LincolEulogio
  * Text Domain: juniorrojas-core
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('JR_CORE_VERSION', '1.5.0');
+define('JR_CORE_VERSION', '1.0.0');
 define('JR_CORE_FILE', __FILE__);
 define('JR_CORE_PATH', plugin_dir_path(__FILE__));
 define('JR_CORE_URL', plugin_dir_url(__FILE__));

@@ -8,7 +8,7 @@ Guía para el repo [BarberiaJuniorRojas](https://github.com/lincoleulogiohuanca/
 - **Topics:** `wordpress`, `culqi`, `peru`, `reservas`, `barberia`, `php`, `ftp-deploy`, `dark-mode`, `admin-ux`
 - **Homepage:** actualiza a la URL real del salón cuando exista
 - **Default branch:** `main`
-- **Tags / releases:** `v1.0.0` (lanzamiento), `v1.1.0` (admin dark + Agenda UX) — ver [CHANGELOG](../CHANGELOG.md) y [Releases](https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases)
+- **Tags / releases:** solo **`v1.0.0`** (versión final 1.0) — ver [CHANGELOG](../CHANGELOG.md) y [Releases](https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases)
 
 ## Flujo de ramas
 
