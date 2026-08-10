@@ -5,6 +5,7 @@
  * Description: Premium BarberFlow: agenda, CRM clientes, Gallery/Reviews admin, dashboard, contacto. Requiere Core + Book + Payments.
  * Version: 1.5.0
  * Author: Lincol Eulogio Huanca
+ * Author URI: https://x.com/LincolEulogio
  * Text Domain: juniorrojas-core
  * Requires at least: 6.1
  * Requires PHP: 8.0

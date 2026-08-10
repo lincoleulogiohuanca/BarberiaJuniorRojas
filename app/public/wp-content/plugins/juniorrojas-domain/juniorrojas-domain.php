@@ -5,6 +5,7 @@
  * Description: Funciones principales BarberFlow: servicios, staff (barberos), helpers y schema wp_jr_*. Módulos: Services + Staff. Requerido por Book, Payments y Pro.
  * Version: 1.0.0
  * Author: Lincol Eulogio Huanca
+ * Author URI: https://x.com/LincolEulogio
  * Text Domain: juniorrojas-domain
  * Requires at least: 6.1
  * Requires PHP: 8.0

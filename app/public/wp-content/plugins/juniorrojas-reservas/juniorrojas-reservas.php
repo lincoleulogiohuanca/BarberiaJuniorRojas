@@ -5,6 +5,7 @@
  * Description: Reservas BarberFlow (producto Booking): disponibilidad, locks, REST, lista de espera, notificaciones y fidelidad. Requiere BarberFlow Core.
  * Version: 1.0.0
  * Author: Lincol Eulogio Huanca
+ * Author URI: https://x.com/LincolEulogio
  * Text Domain: juniorrojas-reservas
  * Requires at least: 6.1
  * Requires PHP: 8.0

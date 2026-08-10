@@ -5,6 +5,7 @@
  * Description: Pagos BarberFlow: Culqi, medios, settings, webhook e idempotencia. Requiere BarberFlow Core + BarberFlow Book.
  * Version: 1.0.0
  * Author: Lincol Eulogio Huanca
+ * Author URI: https://x.com/LincolEulogio
  * Text Domain: juniorrojas-pagos
  * Requires at least: 6.1
  * Requires PHP: 8.0

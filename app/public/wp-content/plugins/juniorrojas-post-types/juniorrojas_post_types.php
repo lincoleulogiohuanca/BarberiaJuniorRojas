@@ -1,11 +1,11 @@
 <?php
 /*
     Plugin Name: BarberFlow Legacy CPTs
-    Plugin URI: http://x.com/lincoleulogio
+    Plugin URI: https://x.com/LincolEulogio
     Description: LEGACY. El CPT lo registra BarberFlow Core. Desactivar si Core + Theme están activos.
     Version: 1.1.0
     Author: Lincol Eulogio Huanca
-    Author URI: http://x.com/lincoleulogio
+    Author URI: https://x.com/LincolEulogio
     Text Domain: barberia-junior-rojas
 */
 
