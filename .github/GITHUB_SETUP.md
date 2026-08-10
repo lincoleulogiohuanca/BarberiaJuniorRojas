@@ -103,6 +103,32 @@ PR template con checklist de CI y deploy.
 5. [ ] (Opcional) Pro/público → branch protection + reviewers  
 6. [ ] Primer deploy: *Actions → Deploy Staging / Production → Run*  
 
+## Prioridad media (código + ops)
+
+| Item | Estado |
+|------|--------|
+| PR template (Culqi, reservas, SMTP, backfill) | En repo |
+| CODEOWNERS `@lincoleulogiohuanca` | En repo |
+| Labels bug/pagos/frontend/deploy/security/… | Creados |
+| Dependabot (GitHub Actions → `developer`) | `.github/dependabot.yml` |
+| Dependabot alerts + security updates | Activados vía API |
+| Secret scanning | No disponible en privado free (sí si se hace público o Pro) |
+| CHANGELOG.md | Versionado + enlace a Releases |
+| SECURITY.md | Política de secretos |
+
+### Project kanban (1 minuto manual)
+
+El token de Git del PC no tiene scope `project`. Créal o así:
+
+1. Abre: https://github.com/users/lincoleulogiohuanca/projects  
+2. **New project** → Template **Board**  
+3. Nombre: `Barbería Junior Rojas`  
+4. Renombra columnas Status a: **Backlog** → **En curso** → **Hecho**  
+5. Settings → **Link a repository** → `BarberiaJuniorRojas`  
+6. (Opcional) Workflow: issues nuevas van a Backlog  
+
+URL típica: `https://github.com/users/lincoleulogiohuanca/projects/1` (el número puede variar).
+
 ## Troubleshooting
 
 | Síntoma | Causa |
