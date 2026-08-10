@@ -13,16 +13,11 @@ Sitio público (si Pages está activo): misma estructura.
 
 | Guía | Tema |
 |------|------|
-| [Agenda y reservas](admin-agenda.md) | Ver citas, estados, reprogramar, no-show; modo oscuro del admin |
+| [Agenda y reservas](admin-agenda.md) | Ver citas, estados, reprogramar, no-show |
 | [Pagos](admin-pagos.md) | Culqi, Plin, verificar, reembolsar |
 | [Fidelidad](admin-fidelidad.md) | Classic / Gold / Platinum y descuentos |
 | [Producción](admin-produccion.md) | SMTP, HTTPS, cron, Core, backfill |
 | [Checklist go-live](go-live.md) | Antes de abrir al público |
-
-## Apariencia del panel
-
-En la **barra superior** del admin: interruptor **Oscuro / Claro** (preferencia por usuario).  
-Afecta menú, listados, Agenda, Plugins, Customizer y editor de archivos.
 
 ## Enlaces del proyecto
 

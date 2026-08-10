@@ -106,26 +106,12 @@ function yuniorrojas_dashboard_assets(string $hook): void
     $path = get_template_directory() . '/assets/admin/dashboard.css';
     $uri  = get_template_directory_uri() . '/assets/admin/dashboard.css';
 
-    // Si dark está enqueued, cargar dashboard ANTES y dark después (via priority 999).
-    $deps = array();
     wp_enqueue_style(
         'yuniorrojas-dashboard',
         $uri,
-        $deps,
+        array(),
         file_exists($path) ? (string) filemtime($path) : '1.0.0'
     );
-
-    // Re-encolar dark al final si modo oscuro.
-    if (function_exists('yuniorrojas_admin_theme_is_dark') && yuniorrojas_admin_theme_is_dark()) {
-        $dark_path = get_template_directory() . '/assets/admin/admin-theme-dark.css';
-        $dark_uri  = get_template_directory_uri() . '/assets/admin/admin-theme-dark.css';
-        wp_enqueue_style(
-            'yuniorrojas-admin-theme-dark',
-            $dark_uri,
-            array('yuniorrojas-dashboard'),
-            file_exists($dark_path) ? (string) filemtime($dark_path) : '1.0.0'
-        );
-    }
 }
 add_action('admin_enqueue_scripts', 'yuniorrojas_dashboard_assets');
 
