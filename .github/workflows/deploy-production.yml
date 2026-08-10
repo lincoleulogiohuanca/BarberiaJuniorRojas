@@ -61,7 +61,7 @@ jobs:
           echo "Secretos FTP production OK."
 
       - name: Deploy tema → production
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -78,7 +78,7 @@ jobs:
             **/node_modules/**
 
       - name: Deploy juniorrojas-core → production
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
