@@ -1,6 +1,6 @@
 # =============================================================================
-# Barbería Junior Rojas — WordPress Local
-# Solo versionamos código propio (tema + plugin custom).
+# BarberÃ­a Junior Rojas â€” WordPress Local
+# Solo versionamos cÃ³digo propio (tema + plugin custom).
 # NO versionamos: core WP, plugins de terceros, uploads, BD, claves, logs Local.
 # =============================================================================
 
@@ -20,7 +20,7 @@
 !.github/**
 
 
-# --- Código propio bajo app/public/wp-content ---
+# --- CÃ³digo propio bajo app/public/wp-content ---
 !app/
 app/*
 !app/public/
@@ -40,7 +40,13 @@ app/public/wp-content/plugins/*
 !app/public/wp-content/plugins/juniorrojas-post-types/
 !app/public/wp-content/plugins/juniorrojas-post-types/**
 
-# Plugin de dominio (reservas indexadas, Culqi webhook, locks)
+# Plugins JR (domain / reservas / pagos / core app)
+!app/public/wp-content/plugins/juniorrojas-domain/
+!app/public/wp-content/plugins/juniorrojas-domain/**
+!app/public/wp-content/plugins/juniorrojas-reservas/
+!app/public/wp-content/plugins/juniorrojas-reservas/**
+!app/public/wp-content/plugins/juniorrojas-pagos/
+!app/public/wp-content/plugins/juniorrojas-pagos/**
 !app/public/wp-content/plugins/juniorrojas-core/
 !app/public/wp-content/plugins/juniorrojas-core/**
 
@@ -51,7 +57,7 @@ app/public/wp-content/plugins/*
 **/.env.*
 !**/.env.example
 
-# Media y caché de WordPress
+# Media y cachÃ© de WordPress
 **/wp-content/uploads/
 **/wp-content/cache/
 **/wp-content/upgrade/
@@ -68,7 +74,7 @@ app/public/wp-content/plugins/*
 *.tar.gz
 *.zip
 
-# Nunca deploy/prod: diagnóstico xdebug y utilidades locales
+# Nunca deploy/prod: diagnÃ³stico xdebug y utilidades locales
 **/local-xdebuginfo.php
 **/phpinfo.php
 

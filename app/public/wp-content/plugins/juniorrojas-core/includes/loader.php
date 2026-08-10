@@ -1,8 +1,7 @@
 <?php
 /**
- * Carga el dominio de negocio (antes en el tema).
- *
- * El tema yuniorrojastheme solo presenta UI y encola assets de front.
+ * Carga app restante (admin operativo, contacto, hardening).
+ * Domain + Reservas + Pagos deben estar cargados antes.
  */
 
 if (!defined('ABSPATH')) {
@@ -10,7 +9,7 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Ruta absoluta a un asset del plugin.
+ * Ruta absoluta a un asset del plugin Core.
  */
 function jr_core_asset_path(string $relative): string
 {
@@ -18,7 +17,7 @@ function jr_core_asset_path(string $relative): string
 }
 
 /**
- * URL de un asset del plugin.
+ * URL de un asset del plugin Core.
  */
 function jr_core_asset_url(string $relative): string
 {
@@ -26,46 +25,21 @@ function jr_core_asset_url(string $relative): string
 }
 
 /**
- * Archivos de dominio (orden importa para dependencias suaves).
- *
  * @return list<string>
  */
-function jr_core_domain_files(): array
+function jr_core_app_files(): array
 {
     return array(
-        'constants.php',
-        'helpers.php',
-        'post-types.php',
-        'servicio-meta.php',
-        'metabox-procesos.php',
-        'metabox-galeria.php',
-        'metabox-imagen-perfil.php',
-        'metabox-especialidades.php',
-        'metabox-horario-barbero.php',
-        'queries.php',
-        'reservas-service.php',
-        'disponibilidad-service.php',
-        'admin-reservas.php',
-        'metabox-reserva.php',
         'admin-ingresos.php',
-        'reservas-notificaciones.php',
         'admin-notificaciones.php',
         'admin-acciones.php',
         'admin-agenda.php',
         'admin-dashboard.php',
-        'admin-pagos.php',
         'admin-clientes.php',
         'admin-bloqueos.php',
         'admin-productos.php',
-        'fidelidad.php',
-        'lista-espera.php',
-        'culqi-service.php',
-        'medios-pago-service.php',
-        'admin-medios-pago.php',
-        'settings-pagos.php',
         'rest-galeria.php',
         'rest-servicios.php',
-        'rest-reservas.php',
         'servicio-resenas.php',
         'prod-hardening.php',
         'widgets.php',
@@ -77,24 +51,22 @@ function jr_core_domain_files(): array
 }
 
 /**
- * Require de cada módulo de dominio.
+ * Require de módulos de aplicación.
  */
-function jr_core_load_domain(): void
+function jr_core_load_app(): void
 {
-    if (defined('YUNIORROJAS_DOMAIN_LOADED_BY_CORE') && YUNIORROJAS_DOMAIN_LOADED_BY_CORE) {
+    if (defined('JR_CORE_APP_LOADED') && JR_CORE_APP_LOADED) {
         return;
     }
 
-    foreach (jr_core_domain_files() as $file) {
+    foreach (jr_core_app_files() as $file) {
         $path = JR_CORE_PATH . 'includes/' . $file;
         if (is_readable($path)) {
             require_once $path;
         }
     }
 
-    if (!defined('YUNIORROJAS_DOMAIN_LOADED_BY_CORE')) {
-        define('YUNIORROJAS_DOMAIN_LOADED_BY_CORE', true);
+    if (!defined('JR_CORE_APP_LOADED')) {
+        define('JR_CORE_APP_LOADED', true);
     }
 }
-
-jr_core_load_domain();

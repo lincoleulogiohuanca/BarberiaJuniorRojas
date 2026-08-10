@@ -36,6 +36,9 @@ En el servidor WordPress, reemplaza/actualiza **solo**:
 
 ```text
 wp-content/themes/yuniorrojastheme/
+wp-content/plugins/juniorrojas-domain/
+wp-content/plugins/juniorrojas-reservas/
+wp-content/plugins/juniorrojas-pagos/
 wp-content/plugins/juniorrojas-core/
 wp-content/plugins/juniorrojas-post-types/   (opcional / legacy)
 ```
@@ -80,7 +83,10 @@ Resumen de secrets **por environment** (Settings → Environments):
 
 - `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`
 - `FTP_SERVER_DIR_THEME` → p.ej. `/public_html/wp-content/themes/yuniorrojastheme/`
-- `FTP_SERVER_DIR_PLUGIN` → p.ej. `/public_html/wp-content/plugins/juniorrojas-core/`
+- `FTP_SERVER_DIR_PLUGIN` → p.ej. `/public_html/wp-content/plugins/juniorrojas-domain/
+wp-content/plugins/juniorrojas-reservas/
+wp-content/plugins/juniorrojas-pagos/
+wp-content/plugins/juniorrojas-core/`
 
 Culqi/SMTP **no** van en GitHub Actions (solo en el WP del servidor).
 

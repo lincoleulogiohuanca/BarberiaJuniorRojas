@@ -1,4 +1,4 @@
-# CI: lint PHP/JS structure — gate de merge a main
+# CI: lint PHP/JS structure Ã¢â‚¬â€ gate de merge a main
 name: Theme smoke
 
 on:
@@ -28,7 +28,7 @@ jobs:
         run: |
           set -e
           find app/public/wp-content/themes/yuniorrojastheme -name '*.php' -print0 | xargs -0 -n1 php -l
-          find app/public/wp-content/plugins/juniorrojas-core -name '*.php' -print0 | xargs -0 -n1 php -l
+          find app/public/wp-content/plugins/juniorrojas-domain app/public/wp-content/plugins/juniorrojas-reservas app/public/wp-content/plugins/juniorrojas-pagos app/public/wp-content/plugins/juniorrojas-core -name '*.php' -print0 | xargs -0 -n1 php -l
           find app/public/wp-content/plugins/juniorrojas-post-types -name '*.php' -print0 | xargs -0 -n1 php -l
 
       - name: JS modules present

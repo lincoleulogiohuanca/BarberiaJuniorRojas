@@ -7,7 +7,10 @@ Sitio de reservas y pagos (Culqi / medios manuales) para **Barbería Junior Roja
 | Incluido en Git | No incluido (no va a GitHub) |
 |-----------------|------------------------------|
 | Tema `yuniorrojastheme` | Core de WordPress |
-| Plugin `juniorrojas-core` | Plugins de terceros (ACF, etc.) |
+| Plugin `juniorrojas-domain` (cimiento) | Plugins de terceros (ACF, etc.) |
+| Plugin `juniorrojas-reservas` (motor) | |
+| Plugin `juniorrojas-pagos` (dinero) | |
+| Plugin `juniorrojas-core` (app operativa) | (secretos solo en hosting) |
 | Plugin `juniorrojas-post-types` (legacy) | `wp-config.php` y secretos Culqi/SMTP |
 | Docs (`README`, `DEPLOY`, `CHANGELOG`, `SECURITY`) | Base de datos, uploads, carpeta Local |
 | `.github/` (CI, deploy, templates) | |
@@ -18,7 +21,10 @@ Sitio de reservas y pagos (Culqi / medios manuales) para **Barbería Junior Roja
 app/public/wp-content/
 ├── themes/yuniorrojastheme/     ← tema (solo UI: plantillas, CSS/JS front)
 └── plugins/
-    ├── juniorrojas-core/        ← dominio completo: reservas, Culqi, admin, REST, tablas
+    ├── juniorrojas-domain/      ← cimiento: CPT, helpers, schema, queries
+    ├── juniorrojas-reservas/    ← motor: citas, disponibilidad, REST, fidelidad
+    ├── juniorrojas-pagos/       ← dinero: Culqi, medios, webhook, settings
+    ├── juniorrojas-core/        ← app: admin operativo, contacto, hardening
     └── juniorrojas-post-types/  ← legacy CPT (opcional)
 ```
 
@@ -37,7 +43,10 @@ app/public/wp-content/
 
 - WordPress instalado
 - Tema activo: `yuniorrojastheme`
-- Plugin activo: **`juniorrojas-core`**
+- Plugin activo: **`juniorrojas-domain`** (cimiento)
+- Plugin activo: **`juniorrojas-reservas`** (motor de citas)
+- Plugin activo: **`juniorrojas-pagos`** (Culqi / medios)
+- Plugin activo: **`juniorrojas-core`** (admin ops; requiere Domain + Reservas + Pagos)
 - Plugin legacy `juniorrojas-post-types` opcional
 - Permalink + REST API
 - Culqi live en *Reservas → Ajustes Culqi*
@@ -60,7 +69,7 @@ Si GitHub Pages está activo: `https://lincoleulogiohuanca.github.io/BarberiaJun
 - **Milestones** → `v1.1.0`, `v1.2.0`
 - **Pull requests** → checklist Culqi, reservas, SMTP, backfill, CI
 - **CODEOWNERS** → `@lincoleulogiohuanca` en tema/plugin
-- **Releases** → ZIPs `yuniorrojastheme.zip` + `juniorrojas-core.zip` (workflow Release assets)
+- **Releases** → ZIPs `yuniorrojastheme.zip` + `juniorrojas-domain.zip` + `juniorrojas-reservas.zip` + `juniorrojas-pagos.zip` + `juniorrojas-core.zip` (workflow Release assets)
 
 ## Desarrollo local
 

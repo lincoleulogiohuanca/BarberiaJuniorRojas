@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
  */
 function yuniorrojas_theme_require_core(): void
 {
-    if (defined('JUNIORROJAS_CORE_LOADED') && JUNIORROJAS_CORE_LOADED) {
+    if (defined('JUNIORROJAS_DOMAIN_LOADED') && JUNIORROJAS_DOMAIN_LOADED && defined('JUNIORROJAS_RESERVAS_LOADED') && JUNIORROJAS_RESERVAS_LOADED && defined('JUNIORROJAS_PAGOS_LOADED') && JUNIORROJAS_PAGOS_LOADED && defined('JUNIORROJAS_CORE_LOADED') && JUNIORROJAS_CORE_LOADED) {
         return;
     }
 
@@ -22,7 +22,7 @@ function yuniorrojas_theme_require_core(): void
         if (!current_user_can('activate_plugins')) {
             return;
         }
-        echo '<div class="notice notice-error"><p><strong>yuniorrojastheme</strong> necesita el plugin <strong>Junior Rojas Core</strong> activo (reservas, pagos y admin).</p></div>';
+        echo '<div class="notice notice-error"><p><strong>yuniorrojastheme</strong> necesita <strong>Domain</strong>, <strong>Reservas</strong>, <strong>Pagos</strong> y <strong>Core</strong> activos.</p></div>';
     });
 
     // Minimal constants so theme setup does not fatal without Core.
