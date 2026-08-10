@@ -1,7 +1,7 @@
 <?php
 /**
  * Template Name: Contacto
- * Diseño: Contacto Junior Rojas
+ * Diseño: Contacto
  */
 get_header();
 

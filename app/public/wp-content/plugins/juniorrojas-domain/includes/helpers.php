@@ -318,7 +318,12 @@ function yuniorrojas_cuenta_mock_data(): array
 }
 
 /**
- * URL del logo de marca (custom logo WP o fallback del tema).
+ * URL del logo de marca (Custom Logo de WP o fallback del tema).
+ *
+ * Cada instalación/cliente sube el suyo en:
+ * Apariencia → Personalizar → Identidad del sitio → Logo
+ *
+ * Filtro: `yuniorrojas_logo_url` para overrides por código / multi-tenant.
  */
 function yuniorrojas_logo_url(): string
 {
@@ -326,11 +331,42 @@ function yuniorrojas_logo_url(): string
     if ($custom_id > 0) {
         $url = wp_get_attachment_image_url($custom_id, 'full');
         if (is_string($url) && $url !== '') {
-            return esc_url($url);
+            return esc_url((string) apply_filters('yuniorrojas_logo_url', $url));
         }
     }
 
-    return esc_url(get_template_directory_uri() . '/img/logo.png');
+    $fallback = get_template_directory_uri() . '/img/logo.png';
+
+    return esc_url((string) apply_filters('yuniorrojas_logo_url', $fallback));
+}
+
+/**
+ * URL del monograma / icono (footer, avatares fallback, etc.).
+ * Prioridad: theme_mod `yuniorrojas_logo_mark` → logo principal WP → monograma del tema.
+ *
+ * Filtro: `yuniorrojas_logo_mark_url`
+ */
+function yuniorrojas_logo_mark_url(): string
+{
+    $mark_id = (int) get_theme_mod('yuniorrojas_logo_mark', 0);
+    if ($mark_id > 0) {
+        $url = wp_get_attachment_image_url($mark_id, 'full');
+        if (is_string($url) && $url !== '') {
+            return esc_url((string) apply_filters('yuniorrojas_logo_mark_url', $url));
+        }
+    }
+
+    $custom_id = (int) get_theme_mod('custom_logo');
+    if ($custom_id > 0) {
+        $url = wp_get_attachment_image_url($custom_id, 'full');
+        if (is_string($url) && $url !== '') {
+            return esc_url((string) apply_filters('yuniorrojas_logo_mark_url', $url));
+        }
+    }
+
+    $fallback = get_template_directory_uri() . '/img/logo monograma.png';
+
+    return esc_url((string) apply_filters('yuniorrojas_logo_mark_url', $fallback));
 }
 
 /**

@@ -6,9 +6,12 @@ Sitio de reservas y pagos (Culqi / medios manuales) para **Barbería Junior Roja
 
 | Incluido en Git | No incluido (no va a GitHub) |
 |-----------------|------------------------------|
-| Tema `yuniorrojastheme` | Core de WordPress |
-| Plugin `juniorrojas-core` | Plugins de terceros (ACF, etc.) |
-| Plugin `juniorrojas-post-types` (legacy) | `wp-config.php` y secretos Culqi/SMTP |
+| Tema `yuniorrojastheme` — **BarberFlow Theme** (línea Free) | Core de WordPress |
+| Plugin `juniorrojas-domain` — **BarberFlow Core** (funciones principales; Services + Staff) | Plugins de terceros (ACF, etc.) |
+| Plugin `juniorrojas-reservas` — **BarberFlow Book** / Booking (reservas) | |
+| Plugin `juniorrojas-pagos` — **BarberFlow Payments** (pagos) | |
+| Plugin `juniorrojas-core` — **BarberFlow Pro** (CRM, agenda, galería/reseñas admin) | (secretos solo en hosting) |
+| Plugin `juniorrojas-post-types` — **Fade Legacy CPTs** | `wp-config.php` y secretos Culqi/SMTP |
 | Docs (`README`, `DEPLOY`, `CHANGELOG`, `SECURITY`) | Base de datos, uploads, carpeta Local |
 | `.github/` (CI, deploy, templates) | |
 
@@ -16,11 +19,47 @@ Sitio de reservas y pagos (Culqi / medios manuales) para **Barbería Junior Roja
 
 ```text
 app/public/wp-content/
-├── themes/yuniorrojastheme/     ← tema (UI, plantillas, assets)
+├── themes/yuniorrojastheme/     ← tema (solo UI: plantillas, CSS/JS front)
 └── plugins/
-    ├── juniorrojas-core/        ← dominio: tablas, locks, webhook Culqi
-    └── juniorrojas-post-types/  ← legacy CPT (opcional)
+    ├── juniorrojas-domain/      ← BarberFlow Core: Services, Staff, schema, helpers
+    ├── juniorrojas-reservas/    ← BarberFlow Book (Booking): citas, REST, fidelidad
+    ├── juniorrojas-pagos/       ← BarberFlow Payments: Culqi, medios, webhook
+    ├── juniorrojas-core/        ← BarberFlow Pro: CRM, agenda, Gallery/Reviews admin, dashboard
+    └── juniorrojas-post-types/  ← Fade Legacy CPTs (opcional)
 ```
+
+
+
+## Marca y catálogo BarberFlow
+
+| Producto | Qué es hoy en el repo |
+|----------|------------------------|
+| **BarberFlow Theme** | Tema `yuniorrojastheme` (línea **Free**) |
+| **BarberFlow Core** | Plugin `juniorrojas-domain` — funciones principales (incl. **Services** y **Staff**) |
+| **BarberFlow Book** | Plugin `juniorrojas-reservas` — reservas (**Booking**) |
+| **BarberFlow Payments** | Plugin `juniorrojas-pagos` — cobros Culqi / medios |
+| **BarberFlow Pro** | Plugin `juniorrojas-core` — premium: **CRM**, agenda, admin de **Gallery** / **Reviews** |
+
+### Suites / empaquetado
+
+| Suite | Contenido |
+|-------|-----------|
+| **BarberFlow Free** | Solo **BarberFlow Theme** (vitrina) |
+| **BarberFlow Booking** | Producto de reservas = **BarberFlow Book** (+ **Core**) |
+| **BarberFlow Pro** (suite) | Core + Book + Payments + plugin **Pro** (CRM / agenda / admin) |
+| **BarberFlow Suite** | Paquete completo: Theme + Core + Book + Payments + Pro |
+
+### Módulos del catálogo (hoy embebidos, no son carpetas aparte)
+
+| Módulo | Dónde vive hoy |
+|--------|----------------|
+| **Services** | BarberFlow Core (CPT servicios) |
+| **Staff** | BarberFlow Core (CPT barberos) |
+| **CRM** | BarberFlow Pro (clientes) |
+| **Gallery** | BarberFlow Pro / Core (metas y REST) |
+| **Reviews** | BarberFlow Pro (reseñas) |
+
+Más adelante se pueden extraer a plugins propios manteniendo estos nombres de producto.
 
 ## Flujo de trabajo
 
@@ -36,13 +75,16 @@ app/public/wp-content/
 ## Requisitos en hosting
 
 - WordPress instalado
-- Tema activo: `yuniorrojastheme`
-- Plugin activo: **`juniorrojas-core`**
-- Plugin legacy `juniorrojas-post-types` opcional
+- Tema activo: **BarberFlow Theme** (`yuniorrojastheme`)
+- Plugin activo: **BarberFlow Core** (`juniorrojas-domain`)
+- Plugin activo: **BarberFlow Book** (`juniorrojas-reservas`)
+- Plugin activo: **BarberFlow Payments** (`juniorrojas-pagos`)
+- Plugin activo: **BarberFlow Pro** (`juniorrojas-core`; requiere Core + Book + Payments)
+- Plugin legacy **Fade Legacy CPTs** opcional
 - Permalink + REST API
 - Culqi live en *Reservas → Ajustes Culqi*
 - Webhook Culqi: `https://TU-DOMINIO/wp-json/yuniorrojas/v1/culqi/webhook`
-- Tras activar Core: *Herramientas → JR DB Backfill* si hay reservas previas
+- Tras activar stack: *Herramientas → BarberFlow DB Backfill* si hay reservas previas
 
 Detalle de deploy en [DEPLOY.md](./DEPLOY.md).  
 Changelog: [CHANGELOG.md](./CHANGELOG.md) · Seguridad: [SECURITY.md](./SECURITY.md)  
@@ -60,7 +102,7 @@ Si GitHub Pages está activo: `https://lincoleulogiohuanca.github.io/BarberiaJun
 - **Milestones** → `v1.1.0`, `v1.2.0`
 - **Pull requests** → checklist Culqi, reservas, SMTP, backfill, CI
 - **CODEOWNERS** → `@lincoleulogiohuanca` en tema/plugin
-- **Releases** → ZIPs `yuniorrojastheme.zip` + `juniorrojas-core.zip` (workflow Release assets)
+- **Releases** → ZIPs `yuniorrojastheme.zip` + `juniorrojas-domain.zip` + `juniorrojas-reservas.zip` + `juniorrojas-pagos.zip` + `juniorrojas-core.zip` (workflow Release assets)
 
 ## Desarrollo local
 

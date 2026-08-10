@@ -10,7 +10,7 @@ También puedes abrir un issue con plantilla **Go-live checklist**.
 ## Código
 
 - [ ] Tema y Core en el servidor (ZIP o FTP deploy)
-- [ ] Plugin Core activo + backfill si aplica
+- [ ] BarberFlow Pro activo + backfill si aplica
 - [ ] Permalinks guardados de nuevo
 
 ## Pagos

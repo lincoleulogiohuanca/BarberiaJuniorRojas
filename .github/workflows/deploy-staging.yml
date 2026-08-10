@@ -1,4 +1,4 @@
-# Deploy Staging → push a developer (sin aprobación)
+# Deploy Staging → push a developer (sin aprobaciÃƒÂ³n)
 name: Deploy Staging
 
 on:
@@ -6,6 +6,9 @@ on:
     branches: [developer]
     paths:
       - 'app/public/wp-content/themes/yuniorrojastheme/**'
+      - 'app/public/wp-content/plugins/juniorrojas-domain/**'
+      - 'app/public/wp-content/plugins/juniorrojas-reservas/**'
+      - 'app/public/wp-content/plugins/juniorrojas-pagos/**'
       - 'app/public/wp-content/plugins/juniorrojas-core/**'
       - '.github/workflows/deploy-staging.yml'
   workflow_dispatch:
@@ -31,7 +34,7 @@ jobs:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
           if [ -z "$FTP_SERVER" ] || [ -z "$FTP_USERNAME" ] || [ -z "$FTP_PASSWORD" ]; then
-            echo "::error::Faltan secretos del environment «staging»."
+            echo "::error::Faltan secretos del environment Ã‚Â«stagingÃ‚Â»."
             echo "Configura en GitHub → Settings → Environments → staging:"
             echo "  FTP_SERVER, FTP_USERNAME, FTP_PASSWORD"
             echo "  (opcionales) FTP_SERVER_DIR_THEME, FTP_SERVER_DIR_PLUGIN"
@@ -55,6 +58,51 @@ jobs:
             **/.git*/**
             **/tests/**
             **/node_modules/**
+
+      - name: Deploy juniorrojas-domain → staging
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./app/public/wp-content/plugins/juniorrojas-domain/
+          server-dir: ${{ secrets.FTP_SERVER_DIR_PLUGIN_DOMAIN || '/public_html/wp-content/plugins/juniorrojas-domain/' }}
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+
+      - name: Deploy juniorrojas-reservas → staging
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./app/public/wp-content/plugins/juniorrojas-reservas/
+          server-dir: ${{ secrets.FTP_SERVER_DIR_PLUGIN_RESERVAS || '/public_html/wp-content/plugins/juniorrojas-reservas/' }}
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+
+      - name: Deploy juniorrojas-pagos → staging
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./app/public/wp-content/plugins/juniorrojas-pagos/
+          server-dir: ${{ secrets.FTP_SERVER_DIR_PLUGIN_PAGOS || '/public_html/wp-content/plugins/juniorrojas-pagos/' }}
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
 
       - name: Deploy juniorrojas-core → staging
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5

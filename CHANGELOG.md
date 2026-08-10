@@ -11,6 +11,38 @@ https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases
 
 ## [Unreleased]
 
+### Changed
+- Marca **BarberFlow**: Theme, Core, Book, Payments, Pro; catálogo Free / Booking / Suite.
+
+
+### Changed
+- Branding de plataforma: tema **BarberFlow Theme**; plugins **BarberFlow Core**, **BarberFlow Book**, **BarberFlow Payments**, **BarberFlow Pro** (slugs de carpeta sin cambio).
+
+
+### Added
+- Plugin **Junior Rojas Pagos**: Culqi, medios de pago, settings, webhook (idempotencia en Domain).
+
+### Changed
+- **Junior Rojas Core** v1.5.0: admin operativo / contacto; depende de Domain + Reservas + Pagos.
+
+
+### Added
+- Plugin **Junior Rojas Reservas**: motor de citas (disponibilidad, REST, lista de espera, notificaciones, fidelidad).
+
+### Changed
+- **Junior Rojas Core** v1.4.0: pagos/admin restante; depende de Domain + Reservas.
+
+
+### Added
+- Plugin **Junior Rojas Domain**: cimiento (CPT, constants, helpers, metas de catálogo, schema `wp_jr_*`, queries).
+
+### Changed
+- **Junior Rojas Core** v1.3.0 depende de Domain (reservas, pagos, admin, REST).
+
+
+### Changed
+- Separación arquitectura: **Junior Rojas Core** concentra el dominio (reservas, pagos, admin, REST); el tema yuniorrojastheme queda solo como UI pública.
+
 Cambios en `developer` / `main` aún no etiquetados.
 
 ### Planned / en curso

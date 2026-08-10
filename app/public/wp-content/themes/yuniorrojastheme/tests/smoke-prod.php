@@ -34,7 +34,7 @@ if (function_exists('yuniorrojas_precio_a_centimos')) {
 }
 
 // Culqi sin semillas hardcodeadas.
-$culqi_file = get_template_directory() . '/includes/culqi-service.php';
+$culqi_file = (defined('JR_CORE_PATH') ? JR_CORE_PATH . 'includes/culqi-service.php' : '');
 $src = is_readable($culqi_file) ? (string) file_get_contents($culqi_file) : '';
 $assert(
     strpos($src, 'pk_test_AXEwZuPbByAfn7UE') === false,

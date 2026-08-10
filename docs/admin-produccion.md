@@ -10,9 +10,9 @@ Detalle técnico ampliado: [DEPLOY.md](https://github.com/lincoleulogiohuanca/Ba
 ## WordPress
 
 1. Tema **yuniorrojastheme** activo  
-2. Plugin **Junior Rojas Core** activo  
+2. Plugin **BarberFlow Pro / stack BarberFlow** activo  
 3. Permalinks y REST API funcionando  
-4. Después del primer deploy del Core: **Herramientas → JR DB Backfill**
+4. Después del primer deploy del Core: **Herramientas → BarberFlow DB Backfill**
 
 ## Reservas → Producción
 

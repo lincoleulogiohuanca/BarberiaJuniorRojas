@@ -1,4 +1,4 @@
-# Genera ZIPs del tema + juniorrojas-core y los adjunta al Release
+# Genera ZIPs del tema + plugins y los adjunta al Release
 name: Release assets
 
 on:
@@ -35,14 +35,20 @@ jobs:
       - name: Install zip
         run: sudo apt-get update -qq && sudo apt-get install -y -qq zip
 
-      - name: Empaquetar tema y plugin
+      - name: Empaquetar tema y plugins
         run: |
           set -euo pipefail
           mkdir -p dist
           ( cd app/public/wp-content/themes && zip -r "$GITHUB_WORKSPACE/dist/yuniorrojastheme.zip" yuniorrojastheme -x "*/.git/*" "*/tests/*" "*/node_modules/*" )
+          ( cd app/public/wp-content/plugins && zip -r "$GITHUB_WORKSPACE/dist/juniorrojas-domain.zip" juniorrojas-domain -x "*/.git/*" )
+          ( cd app/public/wp-content/plugins && zip -r "$GITHUB_WORKSPACE/dist/juniorrojas-reservas.zip" juniorrojas-reservas -x "*/.git/*" )
+          ( cd app/public/wp-content/plugins && zip -r "$GITHUB_WORKSPACE/dist/juniorrojas-pagos.zip" juniorrojas-pagos -x "*/.git/*" )
           ( cd app/public/wp-content/plugins && zip -r "$GITHUB_WORKSPACE/dist/juniorrojas-core.zip" juniorrojas-core -x "*/.git/*" )
           ls -lah dist
           unzip -l dist/yuniorrojastheme.zip | head -n 15
+          unzip -l dist/juniorrojas-domain.zip | head -n 15
+          unzip -l dist/juniorrojas-reservas.zip | head -n 15
+          unzip -l dist/juniorrojas-pagos.zip | head -n 15
           unzip -l dist/juniorrojas-core.zip | head -n 15
 
       - name: Upload assets to release
@@ -51,6 +57,9 @@ jobs:
           tag_name: ${{ steps.meta.outputs.tag }}
           files: |
             dist/yuniorrojastheme.zip
+            dist/juniorrojas-domain.zip
+            dist/juniorrojas-reservas.zip
+            dist/juniorrojas-pagos.zip
             dist/juniorrojas-core.zip
           fail_on_unmatched_files: true
         env:

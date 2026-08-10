@@ -36,6 +36,9 @@ En el servidor WordPress, reemplaza/actualiza **solo**:
 
 ```text
 wp-content/themes/yuniorrojastheme/
+wp-content/plugins/juniorrojas-domain/
+wp-content/plugins/juniorrojas-reservas/
+wp-content/plugins/juniorrojas-pagos/
 wp-content/plugins/juniorrojas-core/
 wp-content/plugins/juniorrojas-post-types/   (opcional / legacy)
 ```
@@ -80,7 +83,10 @@ Resumen de secrets **por environment** (Settings → Environments):
 
 - `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`
 - `FTP_SERVER_DIR_THEME` → p.ej. `/public_html/wp-content/themes/yuniorrojastheme/`
-- `FTP_SERVER_DIR_PLUGIN` → p.ej. `/public_html/wp-content/plugins/juniorrojas-core/`
+- `FTP_SERVER_DIR_PLUGIN` → p.ej. `/public_html/wp-content/plugins/juniorrojas-domain/
+wp-content/plugins/juniorrojas-reservas/
+wp-content/plugins/juniorrojas-pagos/
+wp-content/plugins/juniorrojas-core/`
 
 Culqi/SMTP **no** van en GitHub Actions (solo en el WP del servidor).
 
@@ -112,11 +118,11 @@ Cambios de **contenido** (precios, páginas, menús) → se hacen en el admin de
 - Rechazo de pago en admin (y cancelación admin) también dispara reembolso si hay `culqi_charge_id`.
 - Gold/Platinum aplican **descuento online** en el monto Culqi (5% / 10% por defecto; editable en Fidelidad).
 
-## 5b. Plugin Junior Rojas Core
+## 5b. BarberFlow Pro (plugin Core)
 
-1. Activa **Junior Rojas Core** en el admin.
+1. Activa **BarberFlow Pro** (y el resto del stack: Base, Book, Pay) en el admin.
 2. Crea tablas `wp_jr_reservas`, `wp_jr_slot_locks`, `wp_jr_culqi_idempotency`.
-3. Si ya había reservas: **Herramientas → JR DB Backfill**.
+3. Si ya había reservas: **Herramientas → BarberFlow DB Backfill**.
 4. Los locks de horario y la disponibilidad usan la tabla indexada.
 ## 6. Producción (HTTPS, SMTP, cron, backups)
 

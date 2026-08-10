@@ -103,8 +103,8 @@ function yuniorrojas_dashboard_assets(string $hook): void
         return;
     }
 
-    $path = get_template_directory() . '/assets/admin/dashboard.css';
-    $uri  = get_template_directory_uri() . '/assets/admin/dashboard.css';
+    $path = jr_core_asset_path('assets/admin/dashboard.css');
+    $uri  = jr_core_asset_url('assets/admin/dashboard.css');
 
     wp_enqueue_style(
         'yuniorrojas-dashboard',

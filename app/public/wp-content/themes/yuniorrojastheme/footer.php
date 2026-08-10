@@ -4,8 +4,8 @@
         <div class="footer__info">
             <a href="<?php echo esc_url(home_url('/')); ?>" class="footer__logo">
                 <img
-                    src="<?php echo esc_url(get_template_directory_uri() . '/img/logo monograma.png'); ?>"
-                    alt="Junior Rojas Barber Studio">
+                    src="<?php echo esc_url(yuniorrojas_logo_mark_url()); ?>"
+                    alt="<?php echo esc_attr(get_bloginfo('name') ?: 'Junior Rojas Barber Studio'); ?>">
             </a>
 
             <p class="footer__description">
