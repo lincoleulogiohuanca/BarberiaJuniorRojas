@@ -65,10 +65,32 @@ Local → push → GitHub → Deploy en panel → archivos en el servidor
 1. `git push` a GitHub (backup y historial).
 2. Con FileZilla u otro cliente, subes la carpeta del tema y del plugin.
 
-### C) GitHub Actions + FTP (automático, más adelante)
+### C) GitHub Actions + FTP (automático)
 
-Cuando quieras que un `push` a `main` actualice el hosting solo, se puede añadir un workflow que publique por FTP/SSH con secretos en GitHub (`FTP_HOST`, `FTP_USER`, `FTP_PASSWORD`).  
-Eso se configura cuando tengas los datos del hosting listos.
+Workflows en `.github/workflows/`:
+
+| Branch | Workflow | Environment |
+|--------|----------|-------------|
+| `developer` | Deploy Staging | `staging` |
+| `main` | Deploy Production | `production` (requiere **aprobación** manual) |
+
+Configura secretos y aprobación en [`.github/GITHUB_SETUP.md`](./.github/GITHUB_SETUP.md).
+
+Resumen de secrets **por environment** (Settings → Environments):
+
+- `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`
+- `FTP_SERVER_DIR_THEME` → p.ej. `/public_html/wp-content/themes/yuniorrojastheme/`
+- `FTP_SERVER_DIR_PLUGIN` → p.ej. `/public_html/wp-content/plugins/juniorrojas-core/`
+
+Culqi/SMTP **no** van en GitHub Actions (solo en el WP del servidor).
+
+Flujo:
+
+```text
+push developer → CI smoke → FTP staging
+PR a main → CI smoke obligatorio
+merge main → CI + deploy production (espera tu Approve en GitHub)
+```
 
 ## 4. Base de datos
 
