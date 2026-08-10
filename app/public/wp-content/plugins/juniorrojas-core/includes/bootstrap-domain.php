@@ -1,10 +1,6 @@
 <?php
 /**
- * Carga el dominio desde el tema (una sola fuente de archivos de lógica)
- * y evita doble registro con el plugin legacy de CPTs.
- *
- * Arquitectura: el plugin es el entrypoint de dominio; el tema solo UI
- * cuando este plugin está activo.
+ * Hooks de infraestructura del Core (sync índice, legacy CPT, tools).
  */
 
 if (!defined('ABSPATH')) {
@@ -12,48 +8,21 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Ruta al tema yuniorrojastheme (activo o en carpeta themes).
- */
-function jr_core_theme_path(): string
-{
-    $theme = get_template_directory();
-    if (is_string($theme) && is_dir($theme . '/includes')) {
-        $slug = basename(str_replace('\\', '/', $theme));
-        if ($slug === 'yuniorrojastheme') {
-            return $theme;
-        }
-    }
-
-    $fallback = WP_CONTENT_DIR . '/themes/yuniorrojastheme';
-    return is_dir($fallback) ? $fallback : '';
-}
-
-/**
- * Marca al tema para no cargar includes de dominio de nuevo.
- */
-function jr_core_mark_domain_loaded(): void
-{
-    if (!defined('YUNIORROJAS_DOMAIN_LOADED_BY_CORE')) {
-        define('YUNIORROJAS_DOMAIN_LOADED_BY_CORE', true);
-    }
-}
-
-/**
- * ¿El plugin legacy de servicios está activo? Lo desactivamos suavemente
- * (deja de registrar CPT si el tema/core ya lo hace).
+ * Evita doble registro del plugin legacy de CPTs.
  */
 function jr_core_suppress_legacy_cpt_plugin(): void
 {
-    // El plugin legacy registra juniorojas_servicios en init:0.
-    // El tema lo registra en init:20 solo si no existe. No hace falta
-    // desactivar; solo documentamos unicidad. Aquí impedimos double-hook
-    // si alguien incluye ambos loaders.
     remove_action('init', 'juniorrojas_servicios_post_type', 0);
 }
 add_action('plugins_loaded', 'jr_core_suppress_legacy_cpt_plugin', 20);
 
 /**
- * Sync index tras guardar meta de reserva en admin o código.
+ * Sync index tras guardar meta de reserva.
+ *
+ * @param int|string $meta_id     Meta ID.
+ * @param int        $object_id   Post ID.
+ * @param string     $meta_key    Key.
+ * @param mixed      $_meta_value Valor.
  */
 function jr_core_sync_on_meta_update($meta_id, $object_id, $meta_key, $_meta_value): void
 {
@@ -68,7 +37,6 @@ function jr_core_sync_on_meta_update($meta_id, $object_id, $meta_key, $_meta_val
     if ($post_id <= 0) {
         return;
     }
-    // Differ a shutdown para batch de metas.
     static $pending = array();
     $pending[$post_id] = true;
     static $hooked = false;
@@ -87,7 +55,7 @@ add_action('updated_post_meta', 'jr_core_sync_on_meta_update', 20, 4);
 add_action('added_post_meta', 'jr_core_sync_on_meta_update', 20, 4);
 
 /**
- * Admin: botón backfill manual en Reservas → Producción (si existe) o menú Tools.
+ * Herramientas → JR DB Backfill.
  */
 function jr_core_tools_menu(): void
 {

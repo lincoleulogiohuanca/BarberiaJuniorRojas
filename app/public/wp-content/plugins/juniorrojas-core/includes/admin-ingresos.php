@@ -410,14 +410,14 @@ function yuniorrojas_ingresos_admin_assets(string $hook): void
         return;
     }
 
-    $theme_uri  = get_template_directory_uri();
-    $theme_path = get_template_directory();
-    $css_path   = $theme_path . '/assets/admin/ingresos.css';
-    $js_path    = $theme_path . '/assets/admin/ingresos.js';
+    $core_uri   = defined('JR_CORE_URL') ? JR_CORE_URL : get_template_directory_uri();
+    $core_path  = defined('JR_CORE_PATH') ? JR_CORE_PATH : get_template_directory() . '/';
+    $css_path   = jr_core_asset_path('assets/admin/ingresos.css');
+    $js_path    = jr_core_asset_path('assets/admin/ingresos.js');
 
     wp_enqueue_style(
         'yuniorrojas-ingresos',
-        $theme_uri . '/assets/admin/ingresos.css',
+        jr_core_asset_url('assets/admin/ingresos.css'),
         array(),
         file_exists($css_path) ? (string) filemtime($css_path) : '1.0.0'
     );
@@ -432,7 +432,7 @@ function yuniorrojas_ingresos_admin_assets(string $hook): void
 
     wp_enqueue_script(
         'yuniorrojas-ingresos',
-        $theme_uri . '/assets/admin/ingresos.js',
+        jr_core_asset_url('assets/admin/ingresos.js'),
         array('chartjs'),
         file_exists($js_path) ? (string) filemtime($js_path) : '1.0.0',
         true

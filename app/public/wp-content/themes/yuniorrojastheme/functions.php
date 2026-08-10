@@ -1,59 +1,36 @@
 <?php
 /**
- * Tema Junior Rojas — bootstrap.
+ * Theme Junior Rojas — presentation only (UI).
+ *
+ * Business domain (bookings, Culqi, admin, REST): plugin juniorrojas-core.
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-$yuniorrojas_includes = array(
-    'includes/constants.php',
-    'includes/helpers.php',
-    'includes/post-types.php',
-    'includes/servicio-meta.php',
-    'includes/metabox-procesos.php',
-    'includes/metabox-galeria.php',
-    'includes/metabox-imagen-perfil.php',
-    'includes/metabox-especialidades.php',
-    'includes/metabox-horario-barbero.php',
-    'includes/queries.php',
-    'includes/reservas-service.php',
-    'includes/disponibilidad-service.php',
-    'includes/admin-reservas.php',
-    'includes/metabox-reserva.php',
-    'includes/admin-ingresos.php',
-    'includes/reservas-notificaciones.php',
-    'includes/admin-notificaciones.php',
-    'includes/admin-acciones.php',
-    'includes/admin-agenda.php',
-    'includes/admin-dashboard.php',
-    'includes/admin-pagos.php',
-    'includes/admin-clientes.php',
-    'includes/admin-bloqueos.php',
-    'includes/admin-productos.php',
-    'includes/fidelidad.php',
-    'includes/lista-espera.php',
-    'includes/culqi-service.php',
-    'includes/medios-pago-service.php',
-    'includes/admin-medios-pago.php',
-    'includes/settings-pagos.php',
-    'includes/rest-galeria.php',
-    'includes/rest-servicios.php',
-    'includes/rest-reservas.php',
-    'includes/servicio-resenas.php',
-    'includes/prod-hardening.php',
-    'includes/widgets.php',
-    'includes/contacto.php',
-    'includes/settings-contacto.php',
-);
+/**
+ * Aviso + guard si falta el Core.
+ */
+function yuniorrojas_theme_require_core(): void
+{
+    if (defined('JUNIORROJAS_CORE_LOADED') && JUNIORROJAS_CORE_LOADED) {
+        return;
+    }
 
-foreach ($yuniorrojas_includes as $yuniorrojas_file) {
-    $yuniorrojas_path = get_template_directory() . '/' . $yuniorrojas_file;
-    if (file_exists($yuniorrojas_path)) {
-        require_once $yuniorrojas_path;
+    add_action('admin_notices', static function (): void {
+        if (!current_user_can('activate_plugins')) {
+            return;
+        }
+        echo '<div class="notice notice-error"><p><strong>yuniorrojastheme</strong> necesita el plugin <strong>Junior Rojas Core</strong> activo (reservas, pagos y admin).</p></div>';
+    });
+
+    // Minimal constants so theme setup does not fatal without Core.
+    if (!defined('YUNIORROJAS_TEXT_DOMAIN')) {
+        define('YUNIORROJAS_TEXT_DOMAIN', 'yuniorrojastheme');
     }
 }
+yuniorrojas_theme_require_core();
 
 function yuniorrojas_menus(): void
 {
@@ -80,9 +57,6 @@ function yuniorrojas_theme_setup(): void
 }
 add_action('after_setup_theme', 'yuniorrojas_theme_setup');
 
-/**
- * Assets del front (locales).
- */
 function yuniorrojas_scripts_styles(): void
 {
     $theme_uri  = get_template_directory_uri();
@@ -345,7 +319,7 @@ function yuniorrojas_resource_hints(array $urls, string $relation_type): array
 add_filter('wp_resource_hints', 'yuniorrojas_resource_hints', 10, 2);
 
 /**
- * crossorigin anónimo en scripts de CDN (preparado para SRI real si se fija versión local).
+ * crossorigin anónimo en scripts de CDN.
  *
  * @param string $tag    Tag HTML.
  * @param string $handle Handle WP.
@@ -365,73 +339,7 @@ function yuniorrojas_script_sri(string $tag, string $handle, string $src): strin
 add_filter('script_loader_tag', 'yuniorrojas_script_sri', 10, 3);
 
 /**
- * Assets admin: listados/edición de CPTs JR y Contacto.
- */
-function yuniorrojas_admin_assets(string $hook): void
-{
-    $es_contacto = ($hook === 'toplevel_page_yuniorrojas-contacto');
-    $es_edit     = in_array($hook, array('post.php', 'post-new.php'), true);
-    $es_list     = ($hook === 'edit.php');
-
-    if (!$es_contacto && !$es_edit && !$es_list) {
-        return;
-    }
-
-    $tipo = '';
-    if ($es_edit || $es_list) {
-        $screen = function_exists('get_current_screen') ? get_current_screen() : null;
-        $tipo   = $screen && !empty($screen->post_type) ? (string) $screen->post_type : '';
-
-        if ($tipo === '' && isset($_GET['post_type'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $tipo = sanitize_key(wp_unslash((string) $_GET['post_type'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        }
-
-        if ($tipo === '' && $es_edit && isset($_GET['post'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $tipo = (string) get_post_type(absint($_GET['post'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        }
-
-        $permitidos = array(
-            YUNIORROJAS_CPT_SERVICIOS,
-            'barberos',
-            YUNIORROJAS_CPT_RESERVAS,
-            YUNIORROJAS_CPT_MEDIOS_PAGO,
-            defined('YUNIORROJAS_CPT_PRODUCTOS') ? YUNIORROJAS_CPT_PRODUCTOS : 'jr_productos',
-        );
-        if (!in_array($tipo, $permitidos, true)) {
-            return;
-        }
-    }
-
-    $theme_uri  = get_template_directory_uri();
-    $theme_path = get_template_directory();
-    $css_path   = $theme_path . '/assets/admin/admin.css';
-    $js_path    = $theme_path . '/assets/admin/admin.js';
-
-    if ($es_edit) {
-        wp_enqueue_media();
-        wp_enqueue_script('jquery-ui-sortable');
-        wp_enqueue_script(
-            'yuniorrojas-admin',
-            $theme_uri . '/assets/admin/admin.js',
-            array('jquery', 'jquery-ui-sortable'),
-            file_exists($js_path) ? (string) filemtime($js_path) : '1.0.0',
-            true
-        );
-    }
-
-    wp_enqueue_style(
-        'yuniorrojas-admin',
-        $theme_uri . '/assets/admin/admin.css',
-        array(),
-        file_exists($css_path) ? (string) filemtime($css_path) : '1.0.0'
-    );
-}
-add_action('admin_enqueue_scripts', 'yuniorrojas_admin_assets');
-
-/**
  * Clases de enlaces del menú.
- * Menú secundario header: outline / sólido (btn-reservar).
- * Footer: solo “Reservar Ahora” como botón sólido.
  */
 function yuniorrojas_menu_link_attributes($atts, $item, $args, $depth)
 {
@@ -480,11 +388,11 @@ add_filter('nav_menu_link_attributes', 'yuniorrojas_menu_link_attributes', 10, 4
  */
 function yuniorrojas_ocultar_menu_reservar_admin(array $items): array
 {
-    if (yuniorrojas_puede_reservar_en_front()) {
+    if (!function_exists('yuniorrojas_puede_reservar_en_front') || yuniorrojas_puede_reservar_en_front()) {
         return $items;
     }
 
-    $reservar_url = yuniorrojas_url_reservar();
+    $reservar_url = function_exists('yuniorrojas_url_reservar') ? yuniorrojas_url_reservar() : '';
     $filtrados    = array();
 
     foreach ($items as $item) {
@@ -510,7 +418,7 @@ function yuniorrojas_ocultar_menu_reservar_admin(array $items): array
 add_filter('wp_nav_menu_objects', 'yuniorrojas_ocultar_menu_reservar_admin', 20);
 
 /**
- * Clase de body para pantallas de autenticación (login / registro).
+ * Clase de body para pantallas de autenticación / cuenta.
  *
  * @param string[] $classes
  * @return string[]
@@ -543,51 +451,7 @@ function yuniorrojas_auth_body_class(array $classes): array
 add_filter('body_class', 'yuniorrojas_auth_body_class');
 
 /**
- * Usa la foto de perfil del cliente en get_avatar / get_avatar_url (header, etc.).
- *
- * @param array<string, mixed> $args Args de avatar.
- * @param mixed                $id_or_email User ID, email o objeto.
- * @return array<string, mixed>
- */
-function yuniorrojas_pre_get_avatar_data(array $args, $id_or_email): array
-{
-    if (!function_exists('yuniorrojas_cliente_avatar_id') || !function_exists('yuniorrojas_cliente_avatar_url')) {
-        return $args;
-    }
-
-    $user_id = 0;
-    if (is_numeric($id_or_email)) {
-        $user_id = (int) $id_or_email;
-    } elseif ($id_or_email instanceof WP_User) {
-        $user_id = (int) $id_or_email->ID;
-    } elseif (is_object($id_or_email) && isset($id_or_email->user_id)) {
-        $user_id = (int) $id_or_email->user_id;
-    } elseif (is_string($id_or_email) && is_email($id_or_email)) {
-        $user = get_user_by('email', $id_or_email);
-        if ($user instanceof WP_User) {
-            $user_id = (int) $user->ID;
-        }
-    }
-
-    if ($user_id <= 0 || yuniorrojas_cliente_avatar_id($user_id) <= 0) {
-        return $args;
-    }
-
-    $size = isset($args['size']) ? (int) $args['size'] : 96;
-    $url  = yuniorrojas_cliente_avatar_url($user_id, max(48, $size));
-    if ($url === '') {
-        return $args;
-    }
-
-    $args['url']          = $url;
-    $args['found_avatar'] = true;
-
-    return $args;
-}
-add_filter('pre_get_avatar_data', 'yuniorrojas_pre_get_avatar_data', 10, 2);
-
-/**
- * Asegura plantillas auth en páginas iniciar-sesion, registro, recuperar y mi-cuenta.
+ * Asegura plantillas auth en páginas del tema.
  */
 function yuniorrojas_asignar_plantillas_auth(): void
 {
@@ -643,159 +507,3 @@ function yuniorrojas_asignar_plantillas_auth(): void
     }
 }
 add_action('init', 'yuniorrojas_asignar_plantillas_auth', 30);
-
-/**
- * WordPress debe apuntar login/registro a las páginas de cliente del tema.
- *
- * @param string $login_url    URL por defecto.
- * @param string $redirect     Destino opcional.
- * @param bool   $force_reauth Forzar reautenticación.
- */
-function yuniorrojas_filtrar_login_url(string $login_url, string $redirect = '', bool $force_reauth = false): string
-{
-    // Acceso al panel WP: conservar wp-login.php.
-    if ($redirect !== '' && str_contains($redirect, 'wp-admin')) {
-        return $login_url;
-    }
-
-    $url = yuniorrojas_url_login();
-    if ($redirect !== '') {
-        $url = add_query_arg('redirect_to', rawurlencode($redirect), $url);
-    }
-    if ($force_reauth) {
-        $url = add_query_arg('reauth', '1', $url);
-    }
-
-    return $url;
-}
-add_filter('login_url', 'yuniorrojas_filtrar_login_url', 10, 3);
-
-/**
- * @param string $register_url URL por defecto de WP.
- */
-function yuniorrojas_filtrar_register_url(string $register_url): string
-{
-    unset($register_url);
-    return yuniorrojas_url_registro();
-}
-add_filter('register_url', 'yuniorrojas_filtrar_register_url');
-
-/**
- * @param string $lostpassword_url URL WP.
- * @param string $redirect         Destino opcional.
- */
-function yuniorrojas_filtrar_lostpassword_url(string $lostpassword_url, string $redirect = ''): string
-{
-    unset($lostpassword_url);
-    $url = yuniorrojas_url_recuperar();
-    if ($redirect !== '') {
-        $url = add_query_arg('redirect_to', rawurlencode($redirect), $url);
-    }
-    return $url;
-}
-add_filter('lostpassword_url', 'yuniorrojas_filtrar_lostpassword_url', 10, 2);
-
-/**
- * El correo de recuperación debe abrir la página cliente, no wp-login.php.
- *
- * @param string  $message    Mensaje HTML/texto.
- * @param string  $key        Key de reset.
- * @param string  $user_login Login.
- * @param WP_User $user_data  Usuario.
- */
-function yuniorrojas_mensaje_recuperar_clave(string $message, string $key, string $user_login, $user_data): string
-{
-    unset($message, $user_data);
-
-    $url = yuniorrojas_url_recuperar(array(
-        'key'   => $key,
-        'login' => $user_login,
-    ));
-
-    $site = wp_specialchars_decode((string) get_option('blogname'), ENT_QUOTES);
-
-    $lines = array(
-        'Hola,',
-        '',
-        'Recibimos una solicitud para restablecer la contraseña de tu cuenta en ' . $site . '.',
-        '',
-        'Usa este enlace para crear una nueva contraseña:',
-        $url,
-        '',
-        'Si no solicitaste este cambio, ignora este correo.',
-        '',
-        'Junior Rojas Barber Studio',
-    );
-
-    return implode("\r\n", $lines);
-}
-add_filter('retrieve_password_message', 'yuniorrojas_mensaje_recuperar_clave', 10, 4);
-
-/**
- * Si alguien entra a wp-login.php (registro/login/recuperar), redirigir al front de cliente.
- * Excepciones: logout y acceso a wp-admin.
- */
-function yuniorrojas_redirigir_wp_login_cliente(): void
-{
-    if (defined('REST_REQUEST') && REST_REQUEST) {
-        return;
-    }
-
-    $action = isset($_REQUEST['action']) ? sanitize_key(wp_unslash((string) $_REQUEST['action'])) : 'login';
-    if (in_array($action, array('logout', 'postpass', 'confirmaction'), true)) {
-        return;
-    }
-
-    $redirect_to = isset($_REQUEST['redirect_to'])
-        ? (string) wp_unslash($_REQUEST['redirect_to'])
-        : '';
-
-    if ($redirect_to !== '' && str_contains($redirect_to, 'wp-admin')) {
-        return;
-    }
-
-    if (in_array($action, array('lostpassword', 'retrievepassword'), true)) {
-        wp_safe_redirect(yuniorrojas_url_recuperar());
-        exit;
-    }
-
-    if (in_array($action, array('rp', 'resetpass'), true)) {
-        $key   = isset($_REQUEST['key']) ? sanitize_text_field(wp_unslash((string) $_REQUEST['key'])) : '';
-        $login = isset($_REQUEST['login']) ? sanitize_text_field(wp_unslash((string) $_REQUEST['login'])) : '';
-
-        // Cookie legacy de WP (rp_ + cookiehash).
-        if ($login === '' && !empty($_COOKIE)) {
-            foreach ($_COOKIE as $name => $value) {
-                if (str_starts_with((string) $name, 'wp-resetpass-') || str_starts_with((string) $name, 'rp_')) {
-                    $parts = explode(':', wp_unslash((string) $value), 2);
-                    if (count($parts) === 2) {
-                        $login = sanitize_text_field($parts[0]);
-                        $key   = sanitize_text_field($parts[1]);
-                    }
-                    break;
-                }
-            }
-        }
-
-        $args = array();
-        if ($key !== '') {
-            $args['key'] = $key;
-        }
-        if ($login !== '') {
-            $args['login'] = $login;
-        }
-
-        wp_safe_redirect(yuniorrojas_url_recuperar($args));
-        exit;
-    }
-
-    if ($action === 'register') {
-        wp_safe_redirect(yuniorrojas_url_registro());
-        exit;
-    }
-
-    wp_safe_redirect(yuniorrojas_url_login());
-    exit;
-}
-add_action('login_init', 'yuniorrojas_redirigir_wp_login_cliente');
-

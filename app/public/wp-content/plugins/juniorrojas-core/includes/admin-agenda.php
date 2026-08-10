@@ -145,10 +145,10 @@ function yuniorrojas_agenda_assets(string $hook): void
     if ($hook !== 'toplevel_page_yuniorrojas-agenda') {
         return;
     }
-    $path = get_template_directory() . '/assets/admin/agenda.css';
-    $uri  = get_template_directory_uri() . '/assets/admin/agenda.css';
-    $js   = get_template_directory() . '/assets/admin/agenda.js';
-    $jsu  = get_template_directory_uri() . '/assets/admin/agenda.js';
+    $path = jr_core_asset_path('assets/admin/agenda.css');
+    $uri  = jr_core_asset_url('assets/admin/agenda.css');
+    $js   = jr_core_asset_path('assets/admin/agenda.js');
+    $jsu  = jr_core_asset_url('assets/admin/agenda.js');
 
     wp_enqueue_style(
         'yuniorrojas-agenda',

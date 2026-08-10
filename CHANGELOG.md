@@ -11,6 +11,9 @@ https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases
 
 ## [Unreleased]
 
+### Changed
+- Separación arquitectura: **Junior Rojas Core** concentra el dominio (reservas, pagos, admin, REST); el tema yuniorrojastheme queda solo como UI pública.
+
 Cambios en `developer` / `main` aún no etiquetados.
 
 ### Planned / en curso

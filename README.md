@@ -16,9 +16,9 @@ Sitio de reservas y pagos (Culqi / medios manuales) para **Barbería Junior Roja
 
 ```text
 app/public/wp-content/
-├── themes/yuniorrojastheme/     ← tema (UI, plantillas, assets)
+├── themes/yuniorrojastheme/     ← tema (solo UI: plantillas, CSS/JS front)
 └── plugins/
-    ├── juniorrojas-core/        ← dominio: tablas, locks, webhook Culqi
+    ├── juniorrojas-core/        ← dominio completo: reservas, Culqi, admin, REST, tablas
     └── juniorrojas-post-types/  ← legacy CPT (opcional)
 ```
 

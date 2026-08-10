@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Junior Rojas Core
- * Plugin URI: https://github.com/
- * Description: Dominio de negocio de Barbería Junior Rojas: reservas indexadas, locks, Culqi, CPT. El tema solo presenta UI.
- * Version: 1.0.0
+ * Plugin URI: https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas
+ * Description: Dominio de negocio (reservas, pagos Culqi, admin, REST, tablas). El tema yuniorrojastheme solo presenta la UI pública.
+ * Version: 1.2.0
  * Author: Lincol Eulogio Huanca
  * Text Domain: juniorrojas-core
  * Requires at least: 6.1
@@ -14,13 +14,14 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('JR_CORE_VERSION', '1.0.0');
+define('JR_CORE_VERSION', '1.2.0');
 define('JR_CORE_FILE', __FILE__);
 define('JR_CORE_PATH', plugin_dir_path(__FILE__));
 define('JR_CORE_URL', plugin_dir_url(__FILE__));
 define('JUNIORROJAS_CORE_LOADED', true);
 
 require_once JR_CORE_PATH . 'includes/db.php';
+require_once JR_CORE_PATH . 'includes/loader.php';
 require_once JR_CORE_PATH . 'includes/bootstrap-domain.php';
 require_once JR_CORE_PATH . 'includes/culqi-webhook.php';
 
@@ -61,7 +62,7 @@ function jr_core_maybe_upgrade_db(): void
 add_action('plugins_loaded', 'jr_core_maybe_upgrade_db', 5);
 
 /**
- * Aviso si el tema no está activo (opcional).
+ * Aviso si el tema de UI no está activo.
  */
 function jr_core_admin_notice_theme(): void
 {
