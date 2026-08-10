@@ -1576,6 +1576,505 @@
           el.setAttribute("aria-selected", isActive ? "true" : "false");
         });
       };
+
+      /**
+       * Barberos móvil: un slide a la vez; cambio SOLO con flechas (← →).
+       * Tablet/desktop: grilla CSS (sin track transform).
+       * Sin swipe y sin scroll vertical al cambiar de barbero.
+       */
+      const initBarberosSlider = () => {
+        const slider = reservaRoot.querySelector("[data-barberos-slider]");
+        if (!(slider instanceof HTMLElement) || !slider.classList.contains("is-slider")) {
+          barberoEls.forEach((el) => {
+            if (el instanceof HTMLElement) {
+              el.setAttribute("tabindex", "0");
+            }
+          });
+          return { scrollSelectedIntoView: () => {} };
+        }
+
+        const viewport = slider.querySelector("[data-barberos-viewport]");
+        const track = slider.querySelector("[data-barberos-track]");
+        const prevBtn = slider.querySelector("[data-barberos-prev]");
+        const nextBtn = slider.querySelector("[data-barberos-next]");
+        const slideItems = () => Array.from(slider.querySelectorAll(".reservar-barberos__item"));
+        const mqCarousel = window.matchMedia("(max-width: 767.98px)");
+
+        if (!(viewport instanceof HTMLElement) || !(track instanceof HTMLElement)) {
+          barberoEls.forEach((el) => {
+            if (el instanceof HTMLElement) {
+              el.setAttribute("tabindex", "0");
+            }
+          });
+          return { scrollSelectedIntoView: () => {} };
+        }
+
+        let index = 0;
+        let slideWidthPx = 0;
+
+        const isCarousel = () => mqCarousel.matches;
+        const maxIndex = () => Math.max(0, slideItems().length - 1);
+
+        // Sin scroll-behavior smooth (si no, “sube/baja” animado al seleccionar).
+        const rootEl = document.documentElement;
+        const prevRootScrollBehavior = rootEl.style.scrollBehavior;
+        rootEl.style.scrollBehavior = "auto";
+
+        const nativeScrollIntoView = Element.prototype.scrollIntoView;
+        Element.prototype.scrollIntoView = function jrBarberosScrollIntoViewGuard(arg) {
+          if (this instanceof Element && slider.contains(this)) {
+            return;
+          }
+          return nativeScrollIntoView.call(this, arg);
+        };
+
+        const measureSlideWidth = () => {
+          slideWidthPx = Math.max(1, Math.round(viewport.getBoundingClientRect().width));
+          return slideWidthPx;
+        };
+
+        const syncFocusability = () => {
+          const carousel = isCarousel();
+          barberoEls.forEach((el) => {
+            if (el instanceof HTMLElement) {
+              // Carrusel: no enfocables (evita scroll-on-focus). Grid: sí.
+              el.setAttribute("tabindex", carousel ? "-1" : "0");
+            }
+          });
+          viewport.setAttribute("tabindex", carousel ? "0" : "-1");
+        };
+
+        const clearTrackMotion = () => {
+          track.style.transform = "";
+        };
+
+        const applyTransform = () => {
+          if (!isCarousel()) {
+            clearTrackMotion();
+            return;
+          }
+          const w = slideWidthPx || measureSlideWidth();
+          track.style.transform = `translate3d(${-index * w}px, 0, 0)`;
+        };
+
+        const updateArrows = () => {
+          const atStart = index <= 0;
+          const atEnd = index >= maxIndex();
+          if (prevBtn instanceof HTMLButtonElement) {
+            prevBtn.disabled = atStart;
+            prevBtn.setAttribute("aria-disabled", atStart ? "true" : "false");
+          }
+          if (nextBtn instanceof HTMLButtonElement) {
+            nextBtn.disabled = atEnd;
+            nextBtn.setAttribute("aria-disabled", atEnd ? "true" : "false");
+          }
+        };
+
+        const blurCardFocus = () => {
+          const active = document.activeElement;
+          if (active instanceof HTMLElement && active.hasAttribute("data-reserva-barbero")) {
+            active.blur();
+          }
+        };
+
+        const goTo = (next, select = true) => {
+          if (!isCarousel()) {
+            return;
+          }
+
+          const section =
+            slider.closest(".reservar-step--barberos") ||
+            slider.closest(".reservar-step") ||
+            slider;
+          const topBefore =
+            section instanceof HTMLElement ? section.getBoundingClientRect().top : 0;
+
+          index = Math.min(maxIndex(), Math.max(0, next));
+          applyTransform();
+          updateArrows();
+
+          if (select) {
+            const card = slideItems()[index]?.querySelector("[data-reserva-barbero]");
+            if (card instanceof HTMLElement) {
+              selectExclusive(barberoEls, card);
+              syncStep1Summary();
+            }
+            blurCardFocus();
+          }
+
+          // Mantenerse en la sección de barberos al cambiar (no saltar el scroll).
+          const pinSection = () => {
+            if (!(section instanceof HTMLElement)) {
+              return;
+            }
+            const topAfter = section.getBoundingClientRect().top;
+            const delta = topAfter - topBefore;
+            if (Math.abs(delta) > 0.5) {
+              window.scrollBy(0, delta);
+            }
+          };
+          pinSection();
+          window.requestAnimationFrame(() => {
+            pinSection();
+            window.requestAnimationFrame(pinSection);
+          });
+        };
+
+        const indexFromSelected = () => {
+          const selected = getSelectedBarbero();
+          if (!(selected instanceof HTMLElement)) {
+            return 0;
+          }
+          const item = selected.closest(".reservar-barberos__item");
+          if (!(item instanceof HTMLElement)) {
+            return 0;
+          }
+          const i = slideItems().indexOf(item);
+          return i >= 0 ? i : 0;
+        };
+
+        const scrollSelectedIntoView = () => {
+          if (!isCarousel()) {
+            clearTrackMotion();
+            return;
+          }
+          index = indexFromSelected();
+          applyTransform();
+          updateArrows();
+        };
+
+        // Flechas: único control de cambio en móvil
+        if (prevBtn instanceof HTMLButtonElement) {
+          prevBtn.addEventListener("mousedown", (event) => {
+            event.preventDefault();
+          });
+          prevBtn.addEventListener("click", (event) => {
+            event.preventDefault();
+            if (!isCarousel() || prevBtn.disabled) {
+              return;
+            }
+            goTo(index - 1, true);
+          });
+        }
+
+        if (nextBtn instanceof HTMLButtonElement) {
+          nextBtn.addEventListener("mousedown", (event) => {
+            event.preventDefault();
+          });
+          nextBtn.addEventListener("click", (event) => {
+            event.preventDefault();
+            if (!isCarousel() || nextBtn.disabled) {
+              return;
+            }
+            goTo(index + 1, true);
+          });
+        }
+
+        // Teclado en el viewport del carrusel
+        viewport.addEventListener("keydown", (event) => {
+          if (!isCarousel()) {
+            return;
+          }
+          if (event.key === "ArrowRight") {
+            event.preventDefault();
+            goTo(index + 1, true);
+          } else if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            goTo(index - 1, true);
+          } else if (event.key === "Home") {
+            event.preventDefault();
+            goTo(0, true);
+          } else if (event.key === "End") {
+            event.preventDefault();
+            goTo(maxIndex(), true);
+          }
+        });
+
+        // Clicks en cards en modo carrusel: NO cambian de barbero (solo las flechas).
+        // En grid desktop el listener global sí selecciona.
+        barberoEls.forEach((el) => {
+          el.addEventListener(
+            "click",
+            (event) => {
+              if (!isCarousel()) {
+                return;
+              }
+              event.preventDefault();
+              event.stopPropagation();
+              // Refuerza la selección del slide actual (por si el estado se desincronizó)
+              goTo(index, true);
+            },
+            true
+          );
+        });
+
+        const syncCarouselLayout = () => {
+          syncFocusability();
+          if (isCarousel()) {
+            measureSlideWidth();
+            index = indexFromSelected();
+            applyTransform();
+            updateArrows();
+          } else {
+            clearTrackMotion();
+            updateArrows();
+          }
+        };
+
+        if (typeof mqCarousel.addEventListener === "function") {
+          mqCarousel.addEventListener("change", syncCarouselLayout);
+        } else if (typeof mqCarousel.addListener === "function") {
+          mqCarousel.addListener(syncCarouselLayout);
+        }
+
+        let resizeTimer = 0;
+        window.addEventListener("resize", () => {
+          window.clearTimeout(resizeTimer);
+          resizeTimer = window.setTimeout(() => {
+            if (!isCarousel()) {
+              syncFocusability();
+              clearTrackMotion();
+              return;
+            }
+            measureSlideWidth();
+            applyTransform();
+          }, 120);
+        });
+
+        window.addEventListener(
+          "pagehide",
+          () => {
+            Element.prototype.scrollIntoView = nativeScrollIntoView;
+            rootEl.style.scrollBehavior = prevRootScrollBehavior;
+          },
+          { once: true }
+        );
+
+        index = indexFromSelected();
+        window.requestAnimationFrame(() => {
+          syncCarouselLayout();
+        });
+
+        return { scrollSelectedIntoView };
+      };
+
+      const barberosSlider = initBarberosSlider();
+
+      /**
+       * Servicios:
+       * - 4 por página (móvil 1 col; tablet/desktop 2×2)
+       * - Flechas solo si total > 4 (a partir de la 2.ª página)
+       * - Al paginar en móvil, tablet y desktop: se queda en la sección de servicios
+       */
+      const initServiciosSlider = () => {
+        const slider = reservaRoot.querySelector("[data-servicios-slider]");
+        if (!(slider instanceof HTMLElement)) {
+          return;
+        }
+
+        const items = Array.from(slider.querySelectorAll("[data-servicios-item]"));
+        if (!items.length) {
+          return;
+        }
+
+        const viewport = slider.querySelector("[data-servicios-viewport]");
+        const prevBtn = slider.querySelector("[data-servicios-prev]");
+        const nextBtn = slider.querySelector("[data-servicios-next]");
+        const nav = slider.querySelector("[data-servicios-nav]");
+        const pageLabel = slider.querySelector("[data-servicios-page-label]");
+        const section =
+          slider.closest(".reservar-step--servicios") ||
+          slider.closest(".reservar-step") ||
+          slider;
+
+        const selectedAttr = Number.parseInt(slider.getAttribute("data-selected-index") || "0", 10);
+        const selectedIndex = Number.isFinite(selectedAttr) ? Math.max(0, selectedAttr) : 0;
+        const attrSize = Number.parseInt(slider.getAttribute("data-page-size") || "4", 10);
+        const PAGE_SIZE = Number.isFinite(attrSize) && attrSize > 0 ? attrSize : 4;
+        let page = 0;
+
+        const pageSize = () => PAGE_SIZE;
+        const maxPage = () => Math.max(0, Math.ceil(items.length / pageSize()) - 1);
+
+        const applyPage = () => {
+          const size = pageSize();
+          const max = maxPage();
+          page = Math.min(max, Math.max(0, page));
+          const start = page * size;
+          const end = start + size;
+
+          items.forEach((item, i) => {
+            if (!(item instanceof HTMLElement)) {
+              return;
+            }
+            item.classList.toggle("is-page-hidden", !(i >= start && i < end));
+          });
+
+          // Solo con 2.ª página en adelante (total > 4). Con 1–4: sin botones.
+          const multi = items.length > size;
+          slider.classList.toggle("is-nav-visible", multi);
+          if (nav instanceof HTMLElement) {
+            nav.hidden = !multi;
+          }
+
+          if (pageLabel instanceof HTMLElement) {
+            pageLabel.textContent = multi ? `${page + 1} / ${max + 1}` : "";
+          }
+
+          if (prevBtn instanceof HTMLButtonElement) {
+            prevBtn.disabled = page <= 0;
+            prevBtn.setAttribute("aria-disabled", page <= 0 ? "true" : "false");
+          }
+          if (nextBtn instanceof HTMLButtonElement) {
+            nextBtn.disabled = page >= max;
+            nextBtn.setAttribute("aria-disabled", page >= max ? "true" : "false");
+          }
+        };
+
+        /**
+         * Cambia de página y mantiene la vista en Servicios (móvil, tablet y desktop).
+         * Al reducir de 4 cards a 1 el alto baja; sin esto el scroll “cae” en Barberos.
+         */
+        const goTo = (next) => {
+          const target = Math.min(maxPage(), Math.max(0, next));
+          if (target === page) {
+            return;
+          }
+
+          const root = document.documentElement;
+          const prevBehavior = root.style.scrollBehavior;
+          root.style.scrollBehavior = "auto";
+
+          // Toda la sección de servicios (título + grilla + flechas)
+          const block =
+            section instanceof HTMLElement ? section : slider;
+          const heightBefore = block.getBoundingClientRect().height;
+          const topBefore = block.getBoundingClientRect().top;
+
+          page = target;
+          applyPage();
+
+          const keepServiciosInView = () => {
+            // 1) Compensa el cambio de altura del bloque (todas las resoluciones).
+            const heightAfter = block.getBoundingClientRect().height;
+            const deltaH = heightBefore - heightAfter;
+            if (Math.abs(deltaH) > 0.5) {
+              window.scrollBy(0, -deltaH);
+            }
+
+            // 2) Si el bloque se movió en pantalla, re-alinea su top.
+            const topAfter = block.getBoundingClientRect().top;
+            const deltaTop = topAfter - topBefore;
+            if (Math.abs(deltaTop) > 0.5) {
+              window.scrollBy(0, deltaTop);
+            }
+
+            // 3) Garantía: si “02 Barberos” entra en la mitad superior, fija “01 Servicios”.
+            const barberos = reservaRoot.querySelector(".reservar-step--barberos");
+            const title =
+              document.getElementById("reservar-paso-servicio") || block;
+            if (!(barberos instanceof HTMLElement) || !(title instanceof HTMLElement)) {
+              return;
+            }
+            const vh = window.innerHeight || 1;
+            if (barberos.getBoundingClientRect().top < vh * 0.5) {
+              const headerEl = document.querySelector(".header");
+              const headerOffset =
+                headerEl instanceof HTMLElement
+                  ? Math.ceil(headerEl.getBoundingClientRect().height)
+                  : 80;
+              const dest =
+                title.getBoundingClientRect().top +
+                window.scrollY -
+                headerOffset -
+                12;
+              window.scrollTo(0, Math.max(0, dest));
+            }
+          };
+
+          keepServiciosInView();
+          window.requestAnimationFrame(() => {
+            keepServiciosInView();
+            window.requestAnimationFrame(() => {
+              keepServiciosInView();
+              root.style.scrollBehavior = prevBehavior;
+            });
+          });
+        };
+
+        const pageOfIndex = (itemIndex) =>
+          Math.floor(Math.max(0, itemIndex) / pageSize());
+
+        if (prevBtn instanceof HTMLButtonElement) {
+          prevBtn.addEventListener("mousedown", (event) => {
+            event.preventDefault();
+          });
+          prevBtn.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (typeof event.stopImmediatePropagation === "function") {
+              event.stopImmediatePropagation();
+            }
+            if (prevBtn.disabled) {
+              return;
+            }
+            goTo(page - 1);
+          });
+        }
+
+        if (nextBtn instanceof HTMLButtonElement) {
+          nextBtn.addEventListener("mousedown", (event) => {
+            event.preventDefault();
+          });
+          nextBtn.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (typeof event.stopImmediatePropagation === "function") {
+              event.stopImmediatePropagation();
+            }
+            if (nextBtn.disabled) {
+              return;
+            }
+            goTo(page + 1);
+          });
+        }
+
+        if (viewport instanceof HTMLElement) {
+          viewport.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowRight") {
+              event.preventDefault();
+              goTo(page + 1);
+            } else if (event.key === "ArrowLeft") {
+              event.preventDefault();
+              goTo(page - 1);
+            } else if (event.key === "Home") {
+              event.preventDefault();
+              goTo(0);
+            } else if (event.key === "End") {
+              event.preventDefault();
+              goTo(maxPage());
+            }
+          });
+        }
+
+        // Resize: no volver a página del preseleccionado (bug móvil).
+        let resizeTimer = 0;
+        window.addEventListener("resize", () => {
+          window.clearTimeout(resizeTimer);
+          resizeTimer = window.setTimeout(() => {
+            const max = maxPage();
+            if (page > max) {
+              page = max;
+            }
+            applyPage();
+          }, 150);
+        });
+
+        page = pageOfIndex(selectedIndex);
+        applyPage();
+      };
+
+      initServiciosSlider();
     
       servicioEls.forEach((el) => {
         el.addEventListener("click", () => {
@@ -1586,8 +2085,13 @@
     
       barberoEls.forEach((el) => {
         el.addEventListener("click", () => {
+          // En móvil carrusel el handler del slider (capture) se encarga / bloquea.
+          // Aquí solo actúa grid desktop o un solo barbero.
           selectExclusive(barberoEls, el);
           syncStep1Summary();
+          if (barberosSlider && typeof barberosSlider.scrollSelectedIntoView === "function") {
+            barberosSlider.scrollSelectedIntoView();
+          }
         });
       });
     

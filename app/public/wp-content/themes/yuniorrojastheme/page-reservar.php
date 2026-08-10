@@ -69,12 +69,7 @@ if ($barbero_pre > 0 && !in_array($barbero_pre, $barberos_ids, true)) {
     $barbero_pre = 0;
 }
 
-if ($servicio_pre === 0 && !empty($servicios_ids)) {
-    $servicio_pre = (int) $servicios_ids[0];
-}
-if ($barbero_pre === 0 && !empty($barberos_ids)) {
-    $barbero_pre = (int) $barberos_ids[0];
-}
+// Sin selección por defecto: solo se marca servicio/barbero si vienen por URL (?servicio= / ?barbero=).
 
 $vista_cita              = $paso_pre === 'cita';
 $vista_datos             = $paso_pre === 'datos';
@@ -182,51 +177,120 @@ if (is_user_logged_in()) {
                         </h2>
 
                         <?php if ($servicios_q->have_posts()) : ?>
-                            <ul class="reservar-servicios" role="listbox" aria-label="<?php esc_attr_e('Servicios disponibles', YUNIORROJAS_TEXT_DOMAIN); ?>">
-                                <?php while ($servicios_q->have_posts()) : $servicios_q->the_post(); ?>
-                                    <?php
-                                    $sid      = (int) get_the_ID();
-                                    $precio   = (string) yuniorrojas_field('precio', $sid, '');
-                                    $duracion = (string) yuniorrojas_field('tiempo_de_servicio', $sid, '');
-                                    $activo   = $sid === $servicio_pre;
-                                    $thumb    = get_the_post_thumbnail_url($sid, 'large');
-                                    ?>
-                                    <li>
+                            <?php
+                            $servicios_posts = $servicios_q->posts;
+                            $servicios_total = count($servicios_posts);
+                            // Nav solo si hay 2.ª página (más de 4). Con 1–4 no se muestran flechas.
+                            $servicios_per_page = 4;
+                            $servicios_slider  = $servicios_total > $servicios_per_page;
+                            $servicios_index_pre = 0;
+                            if ($servicio_pre > 0) {
+                                foreach ($servicios_posts as $s_idx => $s_post) {
+                                    if ((int) $s_post->ID === $servicio_pre) {
+                                        $servicios_index_pre = (int) $s_idx;
+                                        break;
+                                    }
+                                }
+                            }
+                            ?>
+                            <div
+                                class="reservar-servicios-slider<?php echo $servicios_slider ? ' is-slider' : ' is-single'; ?>"
+                                data-servicios-slider
+                                data-count="<?php echo esc_attr((string) $servicios_total); ?>"
+                                data-page-size="<?php echo esc_attr((string) $servicios_per_page); ?>"
+                                data-selected-index="<?php echo esc_attr((string) $servicios_index_pre); ?>"
+                            >
+                                <div
+                                    class="reservar-servicios-slider__viewport"
+                                    data-servicios-viewport
+                                    tabindex="0"
+                                    <?php if ($servicios_slider) : ?>
+                                        aria-roledescription="<?php esc_attr_e('carrusel', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                                    <?php endif; ?>
+                                >
+                                    <ul
+                                        class="reservar-servicios"
+                                        data-servicios-list
+                                        role="listbox"
+                                        aria-label="<?php esc_attr_e('Servicios disponibles', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                                    >
+                                        <?php foreach ($servicios_posts as $servicio_post) : ?>
+                                            <?php
+                                            $sid      = (int) $servicio_post->ID;
+                                            $precio   = (string) yuniorrojas_field('precio', $sid, '');
+                                            $duracion = (string) yuniorrojas_field('tiempo_de_servicio', $sid, '');
+                                            $activo   = $sid === $servicio_pre;
+                                            $thumb    = get_the_post_thumbnail_url($sid, 'large');
+                                            $titulo   = get_the_title($sid);
+                                            ?>
+                                            <li class="reservar-servicios__item" data-servicios-item>
+                                                <button
+                                                    type="button"
+                                                    class="reservar-servicio<?php echo $activo ? ' is-selected' : ''; ?>"
+                                                    role="option"
+                                                    aria-selected="<?php echo $activo ? 'true' : 'false'; ?>"
+                                                    data-reserva-servicio
+                                                    data-id="<?php echo esc_attr((string) $sid); ?>"
+                                                    data-nombre="<?php echo esc_attr($titulo); ?>"
+                                                    data-precio="<?php echo esc_attr($precio); ?>"
+                                                    data-duracion="<?php echo esc_attr($duracion); ?>"
+                                                    <?php if ($thumb) : ?>
+                                                        style="--reservar-servicio-img:url('<?php echo esc_url($thumb); ?>')"
+                                                    <?php endif; ?>
+                                                >
+                                                    <span class="reservar-servicio__overlay" aria-hidden="true"></span>
+                                                    <span class="reservar-servicio__meta">
+                                                        <span class="reservar-servicio__info">
+                                                            <span class="reservar-servicio__name"><?php echo esc_html($titulo); ?></span>
+                                                            <?php if ($duracion !== '') : ?>
+                                                                <span class="reservar-servicio__duration">
+                                                                    <?php echo esc_html($duracion); ?> Minutos
+                                                                </span>
+                                                            <?php endif; ?>
+                                                        </span>
+                                                        <?php if ($precio !== '') : ?>
+                                                            <span class="reservar-servicio__price">
+                                                                S/. <?php echo esc_html($precio); ?>
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </span>
+                                                </button>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+
+                                <?php if ($servicios_slider) : ?>
+                                    <div
+                                        class="reservar-servicios-slider__nav"
+                                        data-servicios-nav
+                                        role="group"
+                                        aria-label="<?php esc_attr_e('Navegación de servicios', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                                    >
                                         <button
                                             type="button"
-                                            class="reservar-servicio<?php echo $activo ? ' is-selected' : ''; ?>"
-                                            role="option"
-                                            aria-selected="<?php echo $activo ? 'true' : 'false'; ?>"
-                                            data-reserva-servicio
-                                            data-id="<?php echo esc_attr((string) $sid); ?>"
-                                            data-nombre="<?php echo esc_attr(get_the_title()); ?>"
-                                            data-precio="<?php echo esc_attr($precio); ?>"
-                                            data-duracion="<?php echo esc_attr($duracion); ?>"
-                                            <?php if ($thumb) : ?>
-                                                style="--reservar-servicio-img:url('<?php echo esc_url($thumb); ?>')"
-                                            <?php endif; ?>
+                                            class="reservar-servicios-slider__arrow reservar-servicios-slider__arrow--prev"
+                                            data-servicios-prev
+                                            aria-label="<?php esc_attr_e('Servicios anteriores', YUNIORROJAS_TEXT_DOMAIN); ?>"
                                         >
-                                            <span class="reservar-servicio__overlay" aria-hidden="true"></span>
-                                            <span class="reservar-servicio__meta">
-                                                <span class="reservar-servicio__info">
-                                                    <span class="reservar-servicio__name"><?php the_title(); ?></span>
-                                                    <?php if ($duracion !== '') : ?>
-                                                        <span class="reservar-servicio__duration">
-                                                            <?php echo esc_html($duracion); ?> Minutos
-                                                        </span>
-                                                    <?php endif; ?>
-                                                </span>
-                                                <?php if ($precio !== '') : ?>
-                                                    <span class="reservar-servicio__price">
-                                                        S/. <?php echo esc_html($precio); ?>
-                                                    </span>
-                                                <?php endif; ?>
-                                            </span>
+                                            <i class="ti ti-arrow-left" aria-hidden="true"></i>
                                         </button>
-                                    </li>
-                                <?php endwhile; ?>
-                                <?php wp_reset_postdata(); ?>
-                            </ul>
+                                        <span
+                                            class="reservar-servicios-slider__page-label"
+                                            data-servicios-page-label
+                                            aria-live="polite"
+                                        ></span>
+                                        <button
+                                            type="button"
+                                            class="reservar-servicios-slider__arrow reservar-servicios-slider__arrow--next"
+                                            data-servicios-next
+                                            aria-label="<?php esc_attr_e('Servicios siguientes', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                                        >
+                                            <i class="ti ti-arrow-right" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                         <?php else : ?>
                             <p class="reservar__empty">Aún no hay servicios publicados.</p>
                         <?php endif; ?>
@@ -239,56 +303,108 @@ if (is_user_logged_in()) {
                         </h2>
 
                         <?php if ($barberos_q->have_posts()) : ?>
-                            <ul class="reservar-barberos" role="listbox" aria-label="<?php esc_attr_e('Barberos disponibles', YUNIORROJAS_TEXT_DOMAIN); ?>">
-                                <?php while ($barberos_q->have_posts()) : $barberos_q->the_post(); ?>
-                                    <?php
-                                    $bid    = (int) get_the_ID();
-                                    $cargo  = (string) yuniorrojas_field('cargo', $bid, 'Barbero');
-                                    $activo = $bid === $barbero_pre;
-                                    $perfil = yuniorrojas_imagen_perfil_barbero($bid);
-                                    $foto   = $perfil > 0
-                                        ? (string) wp_get_attachment_image_url($perfil, 'thumbnail')
-                                        : (string) get_the_post_thumbnail_url($bid, 'thumbnail');
-                                    $horario = yuniorrojas_obtener_horario_barbero($bid);
-                                    $horario_json = wp_json_encode($horario, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-                                    ?>
-                                    <li>
+                            <?php
+                            $barberos_total = (int) $barberos_q->post_count;
+                            $barberos_slider = $barberos_total > 1;
+                            ?>
+                            <div
+                                class="reservar-barberos-slider<?php echo $barberos_slider ? ' is-slider' : ' is-single'; ?>"
+                                data-barberos-slider
+                                data-count="<?php echo esc_attr((string) $barberos_total); ?>"
+                            >
+                                <div
+                                    class="reservar-barberos-slider__viewport"
+                                    data-barberos-viewport
+                                    tabindex="0"
+                                    <?php if ($barberos_slider) : ?>
+                                        aria-roledescription="<?php esc_attr_e('carrusel', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                                    <?php endif; ?>
+                                >
+                                    <ul
+                                        id="reservar-barberos-track"
+                                        class="reservar-barberos"
+                                        role="listbox"
+                                        aria-label="<?php esc_attr_e('Barberos disponibles', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                                        aria-orientation="horizontal"
+                                        data-barberos-track
+                                    >
+                                        <?php while ($barberos_q->have_posts()) : $barberos_q->the_post(); ?>
+                                            <?php
+                                            $bid    = (int) get_the_ID();
+                                            $cargo  = (string) yuniorrojas_field('cargo', $bid, 'Barbero');
+                                            $activo = $bid === $barbero_pre;
+                                            $perfil = yuniorrojas_imagen_perfil_barbero($bid);
+                                            $foto   = $perfil > 0
+                                                ? (string) wp_get_attachment_image_url($perfil, 'thumbnail')
+                                                : (string) get_the_post_thumbnail_url($bid, 'thumbnail');
+                                            $horario = yuniorrojas_obtener_horario_barbero($bid);
+                                            $horario_json = wp_json_encode($horario, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                                            ?>
+                                            <li class="reservar-barberos__item">
+                                                <div
+                                                    class="reservar-barbero<?php echo $activo ? ' is-selected' : ''; ?>"
+                                                    role="option"
+                                                    tabindex="-1"
+                                                    aria-selected="<?php echo $activo ? 'true' : 'false'; ?>"
+                                                    data-reserva-barbero
+                                                    data-id="<?php echo esc_attr((string) $bid); ?>"
+                                                    data-nombre="<?php echo esc_attr(get_the_title()); ?>"
+                                                    data-cargo="<?php echo esc_attr($cargo); ?>"
+                                                    data-foto="<?php echo esc_url($foto); ?>"
+                                                    data-horario="<?php echo esc_attr($horario_json ?: '{}'); ?>"
+                                                >
+                                                    <span class="reservar-barbero__media">
+                                                        <?php
+                                                        $barbero_img_attrs = array(
+                                                            'class'    => 'reservar-barbero__img',
+                                                            'alt'      => '',
+                                                            'loading'  => 'eager',
+                                                            'decoding' => 'async',
+                                                        );
+                                                        if ($perfil > 0) {
+                                                            echo wp_get_attachment_image($perfil, 'large', false, $barbero_img_attrs);
+                                                        } elseif (has_post_thumbnail()) {
+                                                            the_post_thumbnail('large', $barbero_img_attrs);
+                                                        }
+                                                        ?>
+                                                    </span>
+                                                    <span class="reservar-barbero__body">
+                                                        <span class="reservar-barbero__name"><?php the_title(); ?></span>
+                                                        <span class="reservar-barbero__role"><?php echo esc_html($cargo); ?></span>
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        <?php endwhile; ?>
+                                        <?php wp_reset_postdata(); ?>
+                                    </ul>
+                                </div>
+
+                                <?php if ($barberos_slider) : ?>
+                                    <div
+                                        class="reservar-barberos-slider__nav"
+                                        data-barberos-nav
+                                        role="group"
+                                        aria-label="<?php esc_attr_e('Navegación de barberos', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                                    >
                                         <button
                                             type="button"
-                                            class="reservar-barbero<?php echo $activo ? ' is-selected' : ''; ?>"
-                                            role="option"
-                                            aria-selected="<?php echo $activo ? 'true' : 'false'; ?>"
-                                            data-reserva-barbero
-                                            data-id="<?php echo esc_attr((string) $bid); ?>"
-                                            data-nombre="<?php echo esc_attr(get_the_title()); ?>"
-                                            data-cargo="<?php echo esc_attr($cargo); ?>"
-                                            data-foto="<?php echo esc_url($foto); ?>"
-                                            data-horario="<?php echo esc_attr($horario_json ?: '{}'); ?>"
+                                            class="reservar-barberos-slider__arrow reservar-barberos-slider__arrow--prev"
+                                            data-barberos-prev
+                                            aria-label="<?php esc_attr_e('Barbero anterior', YUNIORROJAS_TEXT_DOMAIN); ?>"
                                         >
-                                            <span class="reservar-barbero__media">
-                                                <?php
-                                                if ($perfil > 0) {
-                                                    echo wp_get_attachment_image($perfil, 'large', false, array(
-                                                        'class' => 'reservar-barbero__img',
-                                                        'alt'   => '',
-                                                    ));
-                                                } elseif (has_post_thumbnail()) {
-                                                    the_post_thumbnail('large', array(
-                                                        'class' => 'reservar-barbero__img',
-                                                        'alt'   => '',
-                                                    ));
-                                                }
-                                                ?>
-                                            </span>
-                                            <span class="reservar-barbero__body">
-                                                <span class="reservar-barbero__name"><?php the_title(); ?></span>
-                                                <span class="reservar-barbero__role"><?php echo esc_html($cargo); ?></span>
-                                            </span>
+                                            <i class="ti ti-chevron-left" aria-hidden="true"></i>
                                         </button>
-                                    </li>
-                                <?php endwhile; ?>
-                                <?php wp_reset_postdata(); ?>
-                            </ul>
+                                        <button
+                                            type="button"
+                                            class="reservar-barberos-slider__arrow reservar-barberos-slider__arrow--next"
+                                            data-barberos-next
+                                            aria-label="<?php esc_attr_e('Barbero siguiente', YUNIORROJAS_TEXT_DOMAIN); ?>"
+                                        >
+                                            <i class="ti ti-chevron-right" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                         <?php else : ?>
                             <p class="reservar__empty">Aún no hay barberos publicados.</p>
                         <?php endif; ?>
