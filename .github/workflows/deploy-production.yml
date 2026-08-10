@@ -1,4 +1,7 @@
-# Deploy Production → push a main (environment con aprobación manual)
+# Deploy Production
+# Plan free + repo privado: no hay "required reviewers" en environments.
+# Por defecto solo se desplega con workflow_dispatch (manual).
+# Auto en push a main: variable de repo DEPLOY_ON_PUSH_MAIN=true
 name: Deploy Production
 
 on:
@@ -15,10 +18,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Gate: no desplegar si el lint del mismo commit fallaría (re-ejecuta checks)
   php-lint:
     name: php-lint
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || vars.DEPLOY_ON_PUSH_MAIN == 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
@@ -34,6 +37,7 @@ jobs:
   deploy:
     name: ftp-production
     needs: php-lint
+    if: github.event_name == 'workflow_dispatch' || vars.DEPLOY_ON_PUSH_MAIN == 'true'
     runs-on: ubuntu-latest
     environment:
       name: production
@@ -51,8 +55,7 @@ jobs:
             echo "::error::Faltan secretos del environment «production»."
             echo "Settings → Environments → production → Secrets:"
             echo "  FTP_SERVER, FTP_USERNAME, FTP_PASSWORD"
-            echo "  FTP_SERVER_DIR_THEME, FTP_SERVER_DIR_PLUGIN (rutas remotas)"
-            echo "Nunca pongas llaves Culqi en el Action de deploy (van en wp-config del hosting)."
+            echo "  FTP_SERVER_DIR_THEME, FTP_SERVER_DIR_PLUGIN"
             exit 1
           fi
           echo "Secretos FTP production OK."

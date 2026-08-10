@@ -2,104 +2,112 @@
 
 Guía para el repo [BarberiaJuniorRojas](https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas).
 
-## About del repositorio
+## About del repositorio (ya aplicado)
 
-- **Descripción:** sistema de reservas y pagos (Culqi) para Barbería Junior Rojas — WordPress.
-- **Topics:** `wordpress`, `culqi`, `peru`, `reservas`, `barberia`, `php`
-- **Homepage:** URL pública del salón (cuando la tengas).
+- **Descripción:** Reservas y pagos (Culqi) para Barberia Junior Rojas - tema WordPress + plugin Core.
+- **Topics:** `wordpress`, `culqi`, `peru`, `reservas`, `barberia`, `php`, `ftp-deploy`
+- **Homepage:** actualiza a la URL real del salón cuando exista
 - **Default branch:** `main`
 
 ## Flujo de ramas
 
 ```text
-feature → developer → PR → main → (deploy production con aprobación)
-              ↓
-        deploy staging (automático si hay secretos FTP)
+feature → developer → PR → main
+              ↓                      ↓
+     Deploy Staging (FTP auto)   Deploy Production (manual en plan free)
 ```
 
-- **No pushees a `main` a mano** (protección de rama).
-- Trabaja en `developer` o en feature branches → PR hacia `main`.
+- Trabaja en `developer` (o feature) → **Pull Request a `main`**.
+- No subas secretos ni `wp-config` al repo.
 
 ## Branch protection (`main`)
 
-Activado vía API o UI (Settings → Branches):
+### Plan free + repo privado
+
+GitHub **no habilita** branch protection clásica ni “required reviewers” de environments sin **GitHub Pro** o repo **público**.
+
+**Mitigación operativa (free):**
+
+1. Flujo por PR (plantilla + CI Theme smoke).
+2. Deploy production **manual**: Actions → **Deploy Production** → *Run workflow*.
+3. Deploy al push a `main` (opcional): Settings → Variables → `DEPLOY_ON_PUSH_MAIN` = `true`.
+4. Cuando quieras protection real: repo público o plan Pro, y en Settings → Branches:
 
 | Regla | Valor |
 |-------|--------|
 | Require a pull request before merging | Sí |
 | Require status checks to pass | `Theme smoke / php-lint` |
-| Require branches to be up to date | Recomendado |
+| Require branches to be up to date | Sí |
 | Allow force pushes | No |
 | Allow deletions | No |
-| Restrict who can push | (opcional: solo admins) |
 
-> El check se llama exactamente **`Theme smoke / php-lint`** (workflow + job).
+> Check exacto: **`Theme smoke / php-lint`**.
 
-## Environments
+## Environments (ya creados: `staging`, `production`)
 
-Settings → Environments:
+Settings → Environments. Secretos **por environment** (no en Actions genéricos del repo).
 
-### `staging`
+### Ambos: secrets
 
-- Secrets (FTP del hosting de pruebas, si lo tienes):
-  - `FTP_SERVER` — host FTP
-  - `FTP_USERNAME`
-  - `FTP_PASSWORD`
-  - `FTP_SERVER_DIR_THEME` — ej. `/public_html/wp-content/themes/yuniorrojastheme/`
-  - `FTP_SERVER_DIR_PLUGIN` — ej. `/public_html/wp-content/plugins/juniorrojas-core/`
-  - `FTP_PROTOCOL` — opcional: `ftp` | `ftps` | `sftp` (default `ftp`)
-  - `FTP_PORT` — opcional (default `21`)
-- Variables:
-  - `SITE_URL` — URL del staging (aparece en el deploy)
+| Secret | Ejemplo |
+|--------|---------|
+| `FTP_SERVER` | `ftp.tudominio.com` |
+| `FTP_USERNAME` | usuario FTP |
+| `FTP_PASSWORD` | contraseña FTP |
+| `FTP_SERVER_DIR_THEME` | `/public_html/wp-content/themes/yuniorrojastheme/` |
+| `FTP_SERVER_DIR_PLUGIN` | `/public_html/wp-content/plugins/juniorrojas-core/` |
 
-Sin secretos, el workflow de staging falla con mensaje claro (no despliega a ciegas).
+### Ambos: variables
 
-### `production`
+| Variable | Uso |
+|----------|-----|
+| `SITE_URL` | URL del sitio (badge del deploy) |
 
-- **Mismos nombres de secretos** (valores del hosting real).
-- **Protection rules:**
-  - Required reviewers: tú (u otro admin)
-  - Wait timer: 0 min (o 5 si quieres enfriarte)
-- Variables: `SITE_URL` del dominio real
+Sin secretos FTP, el deploy falla con un mensaje claro (no sube a ciegas).
+
+### Production en free
+
+- Deploy **manual** por defecto (`workflow_dispatch`).
+- Con Pro/público puedes añadir *Required reviewers* al environment.
 
 ### Culqi / SMTP
 
-**No** pongas `sk_live_` ni passwords SMTP en GitHub Actions.  
-Van en el **servidor** (`wp-config.php` o *Reservas → Ajustes* del WP de cada entorno).
+**Nunca** en GitHub Actions. Solo en el WP del hosting (`wp-config` o admin).
 
 ## Workflows
 
 | Workflow | Trigger | Environment |
-|----------|---------|-------------|
+|----------|---------|---------------|
 | Theme smoke | push/PR `main` y `developer` | — |
-| Deploy Staging | push `developer` (paths tema/core) o manual | `staging` |
-| Deploy Production | push `main` (paths) o manual | `production` (+ aprobación) |
+| Deploy Staging | push `developer` (paths) o manual | `staging` |
+| Deploy Production | **manual** (o push main si `DEPLOY_ON_PUSH_MAIN=true`) | `production` |
 
-## Issues
+## Issues y labels (ya)
 
-Plantillas:
+Plantillas al crear issue:
 
 - **Bug**
 - **Feature**
 - **Go-live checklist**
 
-Labels sugeridos (créalos si no existen): `bug`, `enhancement`, `go-live`, `deploy`, `pagos`, `security`.
+Labels: `bug`, `enhancement`, `go-live`, `deploy`, `pagos`, `security`.
 
-## Checklist post-setup (humano, 5 min)
+PR template con checklist de CI y deploy.
 
-1. [ ] About + topics guardados  
-2. [ ] Environments `staging` y `production` creados  
+## Checklist que te queda a ti (5 min)
+
+1. [x] About + topics  
+2. [x] Environments `staging` y `production`  
 3. [ ] Secretos FTP en cada environment  
-4. [ ] Production: required reviewers  
-5. [ ] Branch protection en `main` con check `Theme smoke / php-lint`  
-6. [ ] Probar: PR dummy o “Re-run jobs” del smoke  
-7. [ ] Primer deploy staging con `workflow_dispatch`  
+4. [ ] Variable `SITE_URL` en cada one  
+5. [ ] (Opcional) Pro/público → branch protection + reviewers  
+6. [ ] Primer deploy: *Actions → Deploy Staging / Production → Run*  
 
 ## Troubleshooting
 
-| Síntoma | Causa probable |
-|---------|----------------|
-| Deploy falla “missing secrets” | Environment mal elegido o secretos vacíos |
-| Status check “expected” nunca corre | PR a `main` sin workflow; nombres de check distintos |
-| FTP 550 / path | `FTP_SERVER_DIR_*` con trailing slash y path real del hosting |
-| Merge a main bloqueado | Smoke en rojo o PR sin updates |
+| Síntoma | Causa |
+|---------|--------|
+| Deploy “missing secrets” | Secretos vacíos en ese environment |
+| Protection 403 | Plan free privado — ver sección arriba |
+| FTP 550 | Ruta `FTP_SERVER_DIR_*` incorrecta |
+| CI no corre en PR | Workflow debe estar en la rama destino (ya en main) |
