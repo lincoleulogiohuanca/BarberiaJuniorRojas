@@ -1,10 +1,6 @@
 (function () {
   "use strict";
 
-  function isDarkAdmin() {
-    return document.body && document.body.classList.contains("jr-admin-theme-dark");
-  }
-
   function emptyChartMessage(canvas, text) {
     if (!(canvas instanceof HTMLCanvasElement)) {
       return;
@@ -17,7 +13,7 @@
     const p = document.createElement("p");
     p.setAttribute("data-jr-empty", "");
     p.style.margin = "12px 0";
-    p.style.color = isDarkAdmin() ? "#9aa3af" : "#646970";
+    p.style.color = "#646970";
     p.textContent = text || "Sin datos para este filtro.";
     parent.appendChild(p);
   }
@@ -29,19 +25,16 @@
   }
 
   function chartTheme() {
-    var dark = isDarkAdmin();
     return {
       gold: "#d4b45a",
       goldSoft: "#e4c872",
-      bar: dark ? "#d4b45a" : "#c8a24a",
-      barAlt: dark ? "#e4c872" : "#1c1b1b",
-      palette: dark
-        ? ["#d4b45a", "#7ec0ff", "#4ade96", "#f0c14d", "#c084fc", "#fb923c", "#94a3b8"]
-        : ["#c8a24a", "#2a2a2a", "#8f6f2e", "#4a4a4a", "#eac166", "#6b5a3a"],
-      tick: dark ? "#9aa3af" : "#646970",
-      grid: dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
-      legend: dark ? "#c9ced6" : "#1d2327",
-      fill: dark ? "rgba(212, 180, 90, 0.18)" : "rgba(200, 162, 74, 0.15)",
+      bar: "#c8a24a",
+      barAlt: "#1c1b1b",
+      palette: ["#c8a24a", "#2a2a2a", "#8f6f2e", "#4a4a4a", "#eac166", "#6b5a3a"],
+      tick: "#646970",
+      grid: "rgba(0,0,0,0.08)",
+      legend: "#1d2327",
+      fill: "rgba(200, 162, 74, 0.15)",
     };
   }
 
@@ -65,7 +58,6 @@
     axes.forEach(function (axis) {
       out[axis] = base;
     });
-    // La otra categoría (labels)
     var cat = horizontal ? "y" : "x";
     out[cat] = {
       ticks: {
@@ -150,8 +142,8 @@
               {
                 data: metodos.values || [],
                 backgroundColor: theme.palette.slice(0, (metodos.values || []).length),
-                borderWidth: isDarkAdmin() ? 2 : 0,
-                borderColor: isDarkAdmin() ? "#1c2129" : "#fff",
+                borderWidth: 0,
+                borderColor: "#fff",
               },
             ],
           },
@@ -159,13 +151,8 @@
             cutout: "62%",
             plugins: {
               legend: {
-                position: "right",
-                labels: {
-                  boxWidth: 12,
-                  padding: 10,
-                  font: { size: 11 },
-                  color: theme.legend,
-                },
+                position: "bottom",
+                labels: { color: theme.legend, boxWidth: 12, padding: 12 },
               },
             },
           }),
@@ -184,9 +171,10 @@
             labels: barberos.labels || [],
             datasets: [
               {
-                label: (payload.i18n && payload.i18n.barberos) || "Barberos",
+                label: (payload.i18n && payload.i18n.ingresos) || "Ingresos",
                 data: barberos.values || [],
                 backgroundColor: theme.bar,
+                borderRadius: 2,
               },
             ],
           },
@@ -203,21 +191,16 @@
       if (!hasValues(servicios.values)) {
         emptyChartMessage(serviciosCanvas, emptyText);
       } else {
-        var n = (servicios.values || []).length;
-        var barColors = [];
-        var i;
-        for (i = 0; i < n; i++) {
-          barColors.push(theme.palette[i % theme.palette.length]);
-        }
         new Chart(serviciosCanvas, {
           type: "bar",
           data: {
             labels: servicios.labels || [],
             datasets: [
               {
-                label: (payload.i18n && payload.i18n.servicios) || "Servicios",
+                label: (payload.i18n && payload.i18n.ingresos) || "Ingresos",
                 data: servicios.values || [],
-                backgroundColor: isDarkAdmin() ? barColors : theme.barAlt,
+                backgroundColor: theme.barAlt,
+                borderRadius: 2,
               },
             ],
           },

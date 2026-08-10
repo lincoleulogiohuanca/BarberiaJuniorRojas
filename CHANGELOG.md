@@ -18,6 +18,9 @@ Cambios en `developer` / `main` aún no etiquetados.
 - Branch protection con approvals cuando el equipo > 1
 - Ajustes finos de pantallas admin de plugins de terceros
 
+### Removed (pendiente de versionar)
+- Tema oscuro del admin (CSS dark, toggle barra, preferencia usuario): solo light WP admin
+
 ---
 
 ## [1.1.0] — 2026-08-10

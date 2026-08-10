@@ -422,16 +422,6 @@ function yuniorrojas_ingresos_admin_assets(string $hook): void
         file_exists($css_path) ? (string) filemtime($css_path) : '1.0.0'
     );
 
-    if (function_exists('yuniorrojas_admin_theme_is_dark') && yuniorrojas_admin_theme_is_dark()) {
-        $dark_path = $theme_path . '/assets/admin/admin-theme-dark.css';
-        wp_enqueue_style(
-            'yuniorrojas-admin-theme-dark',
-            $theme_uri . '/assets/admin/admin-theme-dark.css',
-            array('yuniorrojas-ingresos'),
-            file_exists($dark_path) ? (string) filemtime($dark_path) : '1.0.0'
-        );
-    }
-
     wp_enqueue_script(
         'chartjs',
         'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',

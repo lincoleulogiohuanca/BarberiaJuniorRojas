@@ -28,7 +28,6 @@ $yuniorrojas_includes = array(
     'includes/admin-acciones.php',
     'includes/admin-agenda.php',
     'includes/admin-dashboard.php',
-    'includes/admin-theme.php',
     'includes/admin-pagos.php',
     'includes/admin-clientes.php',
     'includes/admin-bloqueos.php',
@@ -426,16 +425,6 @@ function yuniorrojas_admin_assets(string $hook): void
         array(),
         file_exists($css_path) ? (string) filemtime($css_path) : '1.0.0'
     );
-
-    if (function_exists('yuniorrojas_admin_theme_is_dark') && yuniorrojas_admin_theme_is_dark()) {
-        $dark_path = $theme_path . '/assets/admin/admin-theme-dark.css';
-        wp_enqueue_style(
-            'yuniorrojas-admin-theme-dark',
-            $theme_uri . '/assets/admin/admin-theme-dark.css',
-            array('yuniorrojas-admin'),
-            file_exists($dark_path) ? (string) filemtime($dark_path) : '1.0.0'
-        );
-    }
 }
 add_action('admin_enqueue_scripts', 'yuniorrojas_admin_assets');
 
