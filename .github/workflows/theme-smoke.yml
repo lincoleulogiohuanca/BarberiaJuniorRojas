@@ -1,0 +1,45 @@
+# Smoke-check del tema (sintaxis PHP + estructura)
+name: Theme smoke
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'app/public/wp-content/themes/yuniorrojastheme/**'
+      - 'app/public/wp-content/plugins/juniorrojas-core/**'
+      - 'app/public/wp-content/plugins/juniorrojas-post-types/**'
+  pull_request:
+    paths:
+      - 'app/public/wp-content/themes/yuniorrojastheme/**'
+      - 'app/public/wp-content/plugins/juniorrojas-core/**'
+      - 'app/public/wp-content/plugins/juniorrojas-post-types/**'
+
+jobs:
+  php-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: PHP syntax check (theme + plugins)
+        run: |
+          set -e
+          find app/public/wp-content/themes/yuniorrojastheme -name '*.php' -print0 | xargs -0 -n1 php -l
+          find app/public/wp-content/plugins/juniorrojas-core -name '*.php' -print0 | xargs -0 -n1 php -l
+          find app/public/wp-content/plugins/juniorrojas-post-types -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: JS modules present
+        run: |
+          test -f app/public/wp-content/themes/yuniorrojastheme/js/modules/reservar.js
+          test -f app/public/wp-content/themes/yuniorrojastheme/js/modules/header-menu.js
+          test -f app/public/wp-content/themes/yuniorrojastheme/js/modules/cuenta.js
+
+      - name: No secrets hardcode Culqi
+        run: |
+          ! grep -R "pk_test_AXEwZuPbByAfn7UE" app/public/wp-content/themes/yuniorrojastheme || true
+          if grep -R "pk_test_AXEwZuPbByAfn7UE" app/public/wp-content/themes/yuniorrojastheme; then exit 1; fi

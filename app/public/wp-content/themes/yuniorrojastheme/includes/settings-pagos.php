@@ -86,10 +86,22 @@ function yuniorrojas_pagos_settings_save(): void
     }
 
     $data = array_merge($prev, array(
-        'culqi_public_key' => $public,
-        'culqi_secret_key' => $secret,
+        'culqi_public_key'     => $public,
+        'culqi_secret_key'     => $secret,
+        'culqi_webhook_secret' => isset($_POST['culqi_webhook_secret'])
+            ? sanitize_text_field(wp_unslash((string) $_POST['culqi_webhook_secret']))
+            : (string) ($prev['culqi_webhook_secret'] ?? ''),
     ));
 
+    // Placeholder: no borrar webhook secret.
+    $wh_raw = isset($_POST['culqi_webhook_secret'])
+        ? trim(wp_unslash((string) $_POST['culqi_webhook_secret']))
+        : '';
+    if ($wh_raw === '' || $wh_raw === '••••••••') {
+        $data['culqi_webhook_secret'] = (string) ($prev['culqi_webhook_secret'] ?? '');
+    } else {
+        $data['culqi_webhook_secret'] = sanitize_text_field($wh_raw);
+    }
     update_option('yuniorrojas_pagos_settings', $data, false);
 
     add_settings_error(
@@ -188,6 +200,24 @@ function yuniorrojas_pagos_settings_render(): void
                             spellcheck="false">
                         <p class="description">
                             <?php esc_html_e('Solo servidor. Déjala en •••• para no cambiarla. Pega una nueva sk_… para reemplazarla.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="culqi_webhook_secret"><?php esc_html_e('Secreto webhook', YUNIORROJAS_TEXT_DOMAIN); ?></label></th>
+                    <td>
+                        <?php
+                        $wh = trim((string) ($s['culqi_webhook_secret'] ?? ''));
+                        ?>
+                        <input type="password" class="regular-text code" name="culqi_webhook_secret" id="culqi_webhook_secret"
+                            value="<?php echo $wh !== '' ? '••••••••' : ''; ?>"
+                            autocomplete="new-password"
+                            spellcheck="false">
+                        <p class="description">
+                            <?php esc_html_e('Opcional. Misma cadena que configures en Culqi o YUNIORROJAS_CULQI_WEBHOOK_SECRET en wp-config.', YUNIORROJAS_TEXT_DOMAIN); ?>
+                            <br>
+                            <?php esc_html_e('URL del webhook:', YUNIORROJAS_TEXT_DOMAIN); ?>
+                            <code><?php echo esc_html(rest_url('yuniorrojas/v1/culqi/webhook')); ?></code>
                         </p>
                     </td>
                 </tr>

@@ -81,6 +81,11 @@ function yuniorrojas_reservas_activas_dia(int $barbero_id, string $fecha, int $e
         $args['post__not_in'] = array($exclude_id);
     }
 
+    // Índice SQL (plugin juniorrojas-core).
+    if (function_exists('jr_db_ready') && jr_db_ready() && function_exists('jr_db_reservas_activas_dia')) {
+        return jr_db_reservas_activas_dia($barbero_id, $fecha, $exclude_id);
+    }
+
     $ids = get_posts($args);
     $out = array();
 

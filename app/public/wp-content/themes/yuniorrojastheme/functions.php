@@ -107,10 +107,18 @@ function yuniorrojas_scripts_styles(): void
         file_exists($icons_path) ? (string) filemtime($icons_path) : '3.19.0'
     );
 
+    // Fuentes locales-first vía Google con preconnect (sin @import en CSS).
+    wp_enqueue_style(
+        'yuniorrojas-fonts',
+        'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap',
+        array(),
+        null
+    );
+
     wp_enqueue_style(
         'yuniorrojas-style',
         get_stylesheet_uri(),
-        array('normalize', 'tabler-icons'),
+        array('normalize', 'tabler-icons', 'yuniorrojas-fonts'),
         file_exists($style_path) ? (string) filemtime($style_path) : '1.0.0'
     );
 
@@ -146,7 +154,6 @@ function yuniorrojas_scripts_styles(): void
 
     $culqi_enabled = function_exists('yuniorrojas_culqi_esta_configurado') && yuniorrojas_culqi_esta_configurado();
     if ($culqi_enabled && (is_page_template('page-reservar.php') || is_page('reservar'))) {
-        // Checkout Culqi v4 — tokenización segura en PCI de Culqi.
         wp_enqueue_script(
             'culqi-checkout',
             'https://checkout.culqi.com/js/v4',
@@ -157,15 +164,74 @@ function yuniorrojas_scripts_styles(): void
         $script_deps[] = 'culqi-checkout';
     }
 
-    wp_enqueue_script(
-        'yuniorrojas-scripts',
-        $theme_uri . '/js/main.js',
-        $script_deps,
-        file_exists($script_path) ? (string) filemtime($script_path) : '1.0.0',
-        true
+    // Módulos front (ex-main.js monólito).
+    $modules = array(
+        'header-menu' => true,
+        'faq'         => true,
+        'testimonios' => is_front_page(),
+        'galeria'     => is_page_template('page-galeria.php') || is_page('galeria') || is_post_type_archive('galeria'),
+        'servicios'   => is_page_template('page-listado-servicios.php')
+            || is_page('servicios')
+            || is_post_type_archive(YUNIORROJAS_CPT_SERVICIOS),
+        'reservar'    => is_page_template('page-reservar.php') || is_page('reservar'),
+        'auth'        => is_page('iniciar-sesion')
+            || is_page('registro')
+            || is_page('recuperar-clave')
+            || is_page_template('page-iniciar-sesion.php')
+            || is_page_template('page-registro.php')
+            || is_page_template('page-recuperar-clave.php'),
+        'cuenta'      => is_page('mi-cuenta') || is_page_template('page-mi-cuenta.php'),
+        'resenas'     => is_singular(YUNIORROJAS_CPT_SERVICIOS),
+        'scroll-top'  => true,
     );
-    // WP 6.3+: carga diferida sin bloquear el render.
-    wp_script_add_data('yuniorrojas-scripts', 'strategy', 'defer');
+
+    $last_handle = '';
+    $localize_handle = '';
+    foreach ($modules as $mod => $load) {
+        if (!$load) {
+            continue;
+        }
+        $mod_path = $theme_path . '/js/modules/' . $mod . '.js';
+        if (!file_exists($mod_path)) {
+            continue;
+        }
+        $handle = 'yuniorrojas-' . $mod;
+        $deps   = array();
+        // Deps CDN solo donde se usan.
+        if ($mod === 'reservar') {
+            $deps = $script_deps;
+        } elseif ($mod === 'testimonios' && in_array('swiper', $script_deps, true)) {
+            $deps[] = 'swiper';
+        }
+        if ($last_handle !== '') {
+            $deps[] = $last_handle;
+        }
+        wp_enqueue_script(
+            $handle,
+            $theme_uri . '/js/modules/' . $mod . '.js',
+            $deps,
+            (string) filemtime($mod_path),
+            true
+        );
+        wp_script_add_data($handle, 'strategy', 'defer');
+        if ($localize_handle === '') {
+            $localize_handle = $handle;
+        }
+        $last_handle = $handle;
+    }
+
+    // Fallback legacy si no hay módulos.
+    if ($last_handle === '') {
+        wp_enqueue_script(
+            'yuniorrojas-scripts',
+            $theme_uri . '/js/main.js',
+            $script_deps,
+            file_exists($script_path) ? (string) filemtime($script_path) : '1.0.0',
+            true
+        );
+        wp_script_add_data('yuniorrojas-scripts', 'strategy', 'defer');
+        $localize_handle = 'yuniorrojas-scripts';
+    }
 
     $pago_alt = function_exists('yuniorrojas_datos_pago_alternativo')
         ? yuniorrojas_datos_pago_alternativo()
@@ -175,7 +241,12 @@ function yuniorrojas_scripts_styles(): void
         ? yuniorrojas_productos_checkout_lista()
         : array();
 
-    wp_localize_script('yuniorrojas-scripts', 'yuniorrojasTheme', array(
+    $fidelidad_pct = 0;
+    if (is_user_logged_in() && function_exists('yuniorrojas_fidelidad_descuento_pct_usuario')) {
+        $fidelidad_pct = yuniorrojas_fidelidad_descuento_pct_usuario((int) get_current_user_id());
+    }
+
+    wp_localize_script($localize_handle, 'yuniorrojasTheme', array(
         'restGaleria'        => esc_url_raw(rest_url('yuniorrojas/v1/galeria')),
         'restServicios'      => esc_url_raw(rest_url('yuniorrojas/v1/listado-servicios')),
         'restReservas'       => esc_url_raw(rest_url('yuniorrojas/v1/reservas')),
@@ -196,6 +267,7 @@ function yuniorrojas_scripts_styles(): void
         'isLoggedIn'         => is_user_logged_in(),
         'userId'             => is_user_logged_in() ? (int) get_current_user_id() : 0,
         'userEmail'          => is_user_logged_in() ? (string) wp_get_current_user()->user_email : '',
+        'fidelidadDescuento' => $fidelidad_pct,
         'mediosPago'         => function_exists('yuniorrojas_medios_pago_checkout_js')
             ? yuniorrojas_medios_pago_checkout_js()
             : array(),
@@ -212,6 +284,8 @@ function yuniorrojas_scripts_styles(): void
         ),
     ));
 
+    // header-menu siempre debe existir para localize en páginas sin el primero si falla
+    // (ya cubierto).
     if (is_page_template('page-contacto.php') || is_page('contacto')) {
         $contacto   = yuniorrojas_contacto();
         $mapa_js    = $theme_path . '/js/mapa-contacto.js';
@@ -249,6 +323,45 @@ function yuniorrojas_scripts_styles(): void
     }
 }
 add_action('wp_enqueue_scripts', 'yuniorrojas_scripts_styles');
+
+/**
+ * Preconnect a orígenes de fuentes/CDN + SRI en scripts de terceros.
+ */
+function yuniorrojas_resource_hints(array $urls, string $relation_type): array
+{
+    if ($relation_type === 'preconnect') {
+        $urls[] = array(
+            'href' => 'https://fonts.googleapis.com',
+            'crossorigin' => 'anonymous',
+        );
+        $urls[] = array(
+            'href' => 'https://fonts.gstatic.com',
+            'crossorigin' => 'anonymous',
+        );
+    }
+    return $urls;
+}
+add_filter('wp_resource_hints', 'yuniorrojas_resource_hints', 10, 2);
+
+/**
+ * crossorigin anónimo en scripts de CDN (preparado para SRI real si se fija versión local).
+ *
+ * @param string $tag    Tag HTML.
+ * @param string $handle Handle WP.
+ * @param string $src    URL.
+ */
+function yuniorrojas_script_sri(string $tag, string $handle, string $src): string
+{
+    unset($handle);
+    if (
+        (str_contains($src, 'cdn.jsdelivr.net') || str_contains($src, 'unpkg.com'))
+        && !str_contains($tag, 'crossorigin')
+    ) {
+        $tag = str_replace(' src', ' crossorigin="anonymous" src', $tag);
+    }
+    return $tag;
+}
+add_filter('script_loader_tag', 'yuniorrojas_script_sri', 10, 3);
 
 /**
  * Assets admin: Servicios (proceso/galería), Barberos y página Contacto JR.

@@ -18,35 +18,38 @@ function yuniorrojas_fidelidad_defaults(): array
 {
     return array(
         'classic' => array(
-            'min'        => 0,
-            'max'        => 4,
-            'label'      => 'Classic',
-            'beneficios' => array(
+            'min'           => 0,
+            'max'           => 4,
+            'label'         => 'Classic',
+            'descuento_pct' => 0,
+            'beneficios'    => array(
                 'Reserva online 24/7',
                 'Historial de cortes en tu cuenta',
                 'Preferencias de estilo guardadas',
             ),
         ),
         'gold' => array(
-            'min'        => 5,
-            'max'        => 11,
-            'label'      => 'Gold',
-            'beneficios' => array(
+            'min'           => 5,
+            'max'           => 11,
+            'label'         => 'Gold',
+            'descuento_pct' => 5,
+            'beneficios'    => array(
                 'Todo lo de Classic',
                 'Prioridad al reprogramar',
                 'Bebida de cortesía en el estudio',
-                '5% de descuento en servicios seleccionados (en local)',
+                '5% de descuento en reservas online y en local',
             ),
         ),
         'platinum' => array(
-            'min'        => 12,
-            'max'        => 9999,
-            'label'      => 'Platinum',
-            'beneficios' => array(
+            'min'           => 12,
+            'max'           => 9999,
+            'label'         => 'Platinum',
+            'descuento_pct' => 10,
+            'beneficios'    => array(
                 'Todo lo de Gold',
                 'Máxima prioridad en agenda',
                 'Tratamiento premium de cortesía 1 vez al mes',
-                '10% de descuento en servicios (en local)',
+                '10% de descuento en reservas online y en local',
             ),
         ),
     );
@@ -85,6 +88,9 @@ function yuniorrojas_fidelidad_config(): array
         if (isset($saved[$key]['max'])) {
             $base[$key]['max'] = max(0, (int) $saved[$key]['max']);
         }
+        if (isset($saved[$key]['descuento_pct'])) {
+            $base[$key]['descuento_pct'] = max(0, min(50, (int) $saved[$key]['descuento_pct']));
+        }
     }
 
     // Normalizar cascada: classic.min=0, gold.min, platinum.min.
@@ -116,6 +122,42 @@ function yuniorrojas_fidelidad_clave_nivel(int $completadas): string
     }
 
     return 'classic';
+}
+
+/**
+ * Porcentaje de descuento online según nivel (0–50).
+ */
+function yuniorrojas_fidelidad_descuento_pct_nivel(string $clave): int
+{
+    $cfg = yuniorrojas_fidelidad_config();
+    $clave = sanitize_key($clave);
+    if (!isset($cfg[$clave])) {
+        return 0;
+    }
+    return max(0, min(50, (int) ($cfg[$clave]['descuento_pct'] ?? 0)));
+}
+
+/**
+ * Descuento aplicable al usuario actual (por visitas completadas).
+ */
+function yuniorrojas_fidelidad_descuento_pct_usuario(int $user_id): int
+{
+    $user_id = absint($user_id);
+    if ($user_id <= 0) {
+        return 0;
+    }
+
+    $completadas = 0;
+    if (function_exists('yuniorrojas_reservas_cliente')) {
+        foreach (yuniorrojas_reservas_cliente($user_id, 'historial') as $item) {
+            if (($item['estado'] ?? '') === 'completada') {
+                $completadas++;
+            }
+        }
+    }
+
+    $clave = yuniorrojas_fidelidad_clave_nivel($completadas);
+    return yuniorrojas_fidelidad_descuento_pct_nivel($clave);
 }
 
 /**
@@ -164,7 +206,11 @@ function yuniorrojas_fidelidad_admin_page(): void
                     $cfg[$key]['label'] = $label;
                 }
             }
+            if (isset($_POST['descuento'][$key])) {
+                $cfg[$key]['descuento_pct'] = max(0, min(50, absint($_POST['descuento'][$key])));
+            }
         }
+        $cfg['classic']['descuento_pct'] = 0; // Classic nunca descuenta online.
 
         // Guardar y dejar que config normalice max.
         update_option('yuniorrojas_fidelidad_settings', $cfg, false);
@@ -203,6 +249,15 @@ function yuniorrojas_fidelidad_admin_page(): void
                         (<?php echo esc_html((string) $nivel['min'] . '–' . ($nivel['max'] >= 9999 ? '∞' : (string) $nivel['max'])); ?> visitas)
                     </span>
                 </h2>
+                <p>
+                    <label>
+                        <?php esc_html_e('Descuento online (%)', YUNIORROJAS_TEXT_DOMAIN); ?>
+                        <input type="number" min="0" max="50" name="descuento[<?php echo esc_attr($key); ?>]"
+                            value="<?php echo esc_attr((string) (int) ($nivel['descuento_pct'] ?? 0)); ?>"
+                            class="small-text" <?php disabled($key === 'classic'); ?>>
+                    </label>
+                    <span class="description"><?php esc_html_e('Se aplica al cobro Culqi (servicios + productos).', YUNIORROJAS_TEXT_DOMAIN); ?></span>
+                </p>
                 <textarea name="beneficios[<?php echo esc_attr($key); ?>]" rows="5" class="large-text"><?php
                     echo esc_textarea(implode("\n", $nivel['beneficios']));
                 ?></textarea>

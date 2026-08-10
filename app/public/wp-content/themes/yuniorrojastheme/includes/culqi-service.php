@@ -31,15 +31,16 @@ if (!defined('ABSPATH')) {
 function yuniorrojas_pagos_defaults(): array
 {
     return array(
-        'culqi_public_key' => '',
-        'culqi_secret_key' => '',
-        'yape_numero'      => '',
-        'yape_titular'     => '',
-        'yape_qr_id'       => 0,
-        'banco_nombre'     => '',
-        'banco_cuenta'     => '',
-        'banco_cci'        => '',
-        'banco_titular'    => '',
+        'culqi_public_key'      => '',
+        'culqi_secret_key'      => '',
+        'culqi_webhook_secret'  => '',
+        'yape_numero'           => '',
+        'yape_titular'          => '',
+        'yape_qr_id'            => 0,
+        'banco_nombre'          => '',
+        'banco_cuenta'          => '',
+        'banco_cci'             => '',
+        'banco_titular'         => '',
     );
 }
 
@@ -109,15 +110,16 @@ function yuniorrojas_pagos_settings(): array
     }
 
     return array(
-        'culqi_public_key' => (string) ($saved['culqi_public_key'] ?? $defaults['culqi_public_key']),
-        'culqi_secret_key' => (string) ($saved['culqi_secret_key'] ?? $defaults['culqi_secret_key']),
-        'yape_numero'      => (string) ($saved['yape_numero'] ?? $defaults['yape_numero']),
-        'yape_titular'     => (string) ($saved['yape_titular'] ?? $defaults['yape_titular']),
-        'yape_qr_id'       => absint($saved['yape_qr_id'] ?? $defaults['yape_qr_id']),
-        'banco_nombre'     => (string) ($saved['banco_nombre'] ?? $defaults['banco_nombre']),
-        'banco_cuenta'     => (string) ($saved['banco_cuenta'] ?? $defaults['banco_cuenta']),
-        'banco_cci'        => (string) ($saved['banco_cci'] ?? $defaults['banco_cci']),
-        'banco_titular'    => (string) ($saved['banco_titular'] ?? $defaults['banco_titular']),
+        'culqi_public_key'     => (string) ($saved['culqi_public_key'] ?? $defaults['culqi_public_key']),
+        'culqi_secret_key'     => (string) ($saved['culqi_secret_key'] ?? $defaults['culqi_secret_key']),
+        'culqi_webhook_secret' => (string) ($saved['culqi_webhook_secret'] ?? $defaults['culqi_webhook_secret']),
+        'yape_numero'          => (string) ($saved['yape_numero'] ?? $defaults['yape_numero']),
+        'yape_titular'         => (string) ($saved['yape_titular'] ?? $defaults['yape_titular']),
+        'yape_qr_id'           => absint($saved['yape_qr_id'] ?? $defaults['yape_qr_id']),
+        'banco_nombre'         => (string) ($saved['banco_nombre'] ?? $defaults['banco_nombre']),
+        'banco_cuenta'         => (string) ($saved['banco_cuenta'] ?? $defaults['banco_cuenta']),
+        'banco_cci'            => (string) ($saved['banco_cci'] ?? $defaults['banco_cci']),
+        'banco_titular'        => (string) ($saved['banco_titular'] ?? $defaults['banco_titular']),
     );
 }
 
@@ -247,9 +249,26 @@ function yuniorrojas_datos_pago_alternativo(): array
 }
 
 /**
- * Crea un cargo en Culqi a partir de un token (tkn_ / ype_).
+ * Genera clave de idempotencia estable para un intento de cobro (evita doble cargo en retry).
  *
- * @param array{amount:int,currency_code?:string,email:string,source_id:string,description?:string,metadata?:array<string,string>} $args
+ * @param array<string,scalar> $parts
+ */
+function yuniorrojas_culqi_idempotency_key(array $parts): string
+{
+    $normalized = array();
+    foreach ($parts as $k => $v) {
+        $normalized[sanitize_key((string) $k)] = is_scalar($v) ? (string) $v : '';
+    }
+    ksort($normalized);
+    $salt = defined('AUTH_SALT') ? (string) AUTH_SALT : 'jr-barberia';
+    return hash('sha256', wp_json_encode($normalized) . '|' . $salt);
+}
+
+/**
+ * Crea un cargo en Culqi a partir de un token (tkn_ / ype_).
+ * Soporta Idempotency-Key + cache local (plugin juniorrojas-core).
+ *
+ * @param array{amount:int,currency_code?:string,email:string,source_id:string,description?:string,metadata?:array<string,string>,idempotency_key?:string} $args
  * @return array<string, mixed>|WP_Error
  */
 function yuniorrojas_culqi_crear_cargo(array $args)
@@ -269,6 +288,10 @@ function yuniorrojas_culqi_crear_cargo(array $args)
     $description = isset($args['description'])
         ? substr(sanitize_text_field((string) $args['description']), 0, 80)
         : 'Reserva barbería';
+    $idem = isset($args['idempotency_key']) ? preg_replace('/[^a-f0-9]/', '', strtolower((string) $args['idempotency_key'])) : '';
+    if (!is_string($idem)) {
+        $idem = '';
+    }
 
     if ($amount < 100) {
         return new WP_Error('monto_invalido', 'El monto mínimo de pago es S/. 1.00.', array('status' => 400));
@@ -281,6 +304,26 @@ function yuniorrojas_culqi_crear_cargo(array $args)
     }
     if (!in_array($currency, array('PEN', 'USD'), true)) {
         $currency = 'PEN';
+    }
+
+    // Reutilizar cargo exitoso previo (retry client / timeout).
+    if ($idem !== '' && function_exists('jr_db_idempotency_get')) {
+        $cached = jr_db_idempotency_get($idem);
+        if (is_array($cached) && !empty($cached['id'])) {
+            return $cached;
+        }
+        // Si otra request está cobrando con la misma key, no lanzar segundo cargo.
+        if (function_exists('jr_db_idempotency_begin') && !jr_db_idempotency_begin($idem, (int) get_current_user_id())) {
+            $cached2 = jr_db_idempotency_get($idem);
+            if (is_array($cached2) && !empty($cached2['id'])) {
+                return $cached2;
+            }
+            return new WP_Error(
+                'culqi_en_curso',
+                'Tu pago se está procesando. Espera unos segundos e inténtalo de nuevo si no ves la confirmación.',
+                array('status' => 409)
+            );
+        }
     }
 
     $body = array(
@@ -306,20 +349,29 @@ function yuniorrojas_culqi_crear_cargo(array $args)
         }
     }
 
+    $headers = array(
+        'Authorization' => 'Bearer ' . yuniorrojas_culqi_secret_key(),
+        'Content-Type'  => 'application/json',
+        'Accept'        => 'application/json',
+    );
+    // Culqi / gateways suelen respetar Idempotency-Key en reintentos idénticos.
+    if ($idem !== '') {
+        $headers['Idempotency-Key'] = $idem;
+    }
+
     $response = wp_remote_post(
         'https://api.culqi.com/v2/charges',
         array(
             'timeout' => 45,
-            'headers' => array(
-                'Authorization' => 'Bearer ' . yuniorrojas_culqi_secret_key(),
-                'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json',
-            ),
+            'headers' => $headers,
             'body'    => wp_json_encode($body),
         )
     );
 
     if (is_wp_error($response)) {
+        if ($idem !== '' && function_exists('jr_db_idempotency_fail')) {
+            jr_db_idempotency_fail($idem);
+        }
         return new WP_Error(
             'culqi_red',
             'No pudimos conectar con Culqi. Verifica tu internet e inténtalo otra vez.',
@@ -335,7 +387,17 @@ function yuniorrojas_culqi_crear_cargo(array $args)
     }
 
     if ($code >= 200 && $code < 300 && !empty($data['id'])) {
+        if ($idem !== '' && function_exists('jr_db_idempotency_succeed')) {
+            jr_db_idempotency_succeed($idem, $data);
+        }
+        if ($idem !== '') {
+            $data['_idempotency_key'] = $idem;
+        }
         return $data;
+    }
+
+    if ($idem !== '' && function_exists('jr_db_idempotency_fail')) {
+        jr_db_idempotency_fail($idem);
     }
 
     $user_msg = yuniorrojas_culqi_mensaje_error($data, $code);

@@ -36,7 +36,8 @@ En el servidor WordPress, reemplaza/actualiza **solo**:
 
 ```text
 wp-content/themes/yuniorrojastheme/
-wp-content/plugins/juniorrojas-post-types/
+wp-content/plugins/juniorrojas-core/
+wp-content/plugins/juniorrojas-post-types/   (opcional / legacy)
 ```
 
 No reemplaces a ciegas:
@@ -44,7 +45,7 @@ No reemplaces a ciegas:
 - `wp-config.php` de producción
 - `wp-content/uploads/`
 - la base de datos de producción
-
+- **`app/public/local-xdebuginfo.php`** (no existe en el tema; no lo subas)
 ## 3. Opciones de deploy según hosting
 
 ### A) Hostinger / cPanel — Git Version Control
@@ -82,10 +83,19 @@ Cambios de **contenido** (precios, páginas, menús) → se hacen en el admin de
 ## 5. Culqi
 
 - Local / pruebas: llaves `pk_test_` / `sk_test_` en **Reservas → Ajustes Culqi** (o constantes `YUNIORROJAS_CULQI_*` en `wp-config.php`).
-- Dominio público: llaves `pk_live_` / `sk_live_` **obligatorias** (el tema ya no auto-importa llaves de prueba).
+- Dominio público: llaves `pk_live_` / `sk_live_` **obligatorias**.
 - Tras un cobro fallido al guardar la cita, el tema intenta **reembolso automático** del cargo Culqi.
+- Cargos usan **idempotency key** (no doble cobro en retry/timeout).
+- Webhook (plugin Core): `POST /wp-json/yuniorrojas/v1/culqi/webhook` + secreto opcional.
 - Rechazo de pago en admin (y cancelación admin) también dispara reembolso si hay `culqi_charge_id`.
+- Gold/Platinum aplican **descuento online** en el monto Culqi (5% / 10% por defecto; editable en Fidelidad).
 
+## 5b. Plugin Junior Rojas Core
+
+1. Activa **Junior Rojas Core** en el admin.
+2. Crea tablas `wp_jr_reservas`, `wp_jr_slot_locks`, `wp_jr_culqi_idempotency`.
+3. Si ya había reservas: **Herramientas → JR DB Backfill**.
+4. Los locks de horario y la disponibilidad usan la tabla indexada.
 ## 6. Producción (HTTPS, SMTP, cron, backups)
 
 Pantalla: **Reservas → Producción**

@@ -7,14 +7,14 @@ Description: Tema personalizado para Junior Rojas Barber Studio — identidad da
 Requires at least: 6.1
 Tested up to: 6.6
 Requires PHP: 8.0
-Version: 1.1.1
+Version: 1.2.0
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 Text Domain: yuniorrojastheme
 Tags: custom-theme, barberia, modern, responsive, custom-logo
 */
 
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+/* Fuentes: wp_enqueue en functions.php (yuniorrojas-fonts) — sin @import bloqueante. */
 
 :root {
   --fuente-principal: "Montserrat", sans-serif;

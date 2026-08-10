@@ -13,24 +13,40 @@ if (!defined('YUNIORROJAS_COMPROBANTE_MAX_BYTES')) {
 }
 
 /**
- * IP del cliente (proxy-aware básico).
+ * IP del cliente.
+ * Prioriza Cloudflare; X-Forwarded-For solo si el hosting define YUNIORROJAS_TRUST_PROXY=true.
  */
 function yuniorrojas_cliente_ip(): string
 {
-    $keys = array('HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR');
-    foreach ($keys as $key) {
-        if (empty($_SERVER[$key])) {
-            continue;
+    // Cloudflare (cabecera controlada por CF, no spoofable desde el cliente).
+    if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+        $ip = sanitize_text_field((string) wp_unslash($_SERVER['HTTP_CF_CONNECTING_IP']));
+        if ($ip !== '' && filter_var($ip, FILTER_VALIDATE_IP)) {
+            return $ip;
         }
-        $raw = (string) wp_unslash($_SERVER[$key]);
+    }
+
+    $trust_proxy = (defined('YUNIORROJAS_TRUST_PROXY') && YUNIORROJAS_TRUST_PROXY)
+        || !empty(getenv('YUNIORROJAS_TRUST_PROXY'));
+
+    if ($trust_proxy && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $raw = (string) wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR']);
         if (strpos($raw, ',') !== false) {
             $raw = trim(explode(',', $raw)[0]);
         }
         $ip = sanitize_text_field($raw);
+        if ($ip !== '' && filter_var($ip, FILTER_VALIDATE_IP)) {
+            return $ip;
+        }
+    }
+
+    if (!empty($_SERVER['REMOTE_ADDR'])) {
+        $ip = sanitize_text_field((string) wp_unslash($_SERVER['REMOTE_ADDR']));
         if ($ip !== '') {
             return $ip;
         }
     }
+
     return '0.0.0.0';
 }
 
@@ -80,9 +96,14 @@ function yuniorrojas_slot_lock_option_key(int $barbero_id, string $fecha, string
 
 /**
  * Adquiere lock atómico del horario (TTL ~90s).
+ * Preferencia: tabla wp_jr_slot_locks (PRIMARY KEY) → object cache → options.
  */
 function yuniorrojas_slot_adquirir_lock(int $barbero_id, string $fecha, string $hora): bool
 {
+    if (function_exists('jr_db_ready') && jr_db_ready() && function_exists('jr_db_slot_adquirir_lock')) {
+        return jr_db_slot_adquirir_lock($barbero_id, $fecha, $hora);
+    }
+
     $key = yuniorrojas_slot_lock_option_key($barbero_id, $fecha, $hora);
     $now = time();
 
@@ -109,6 +130,10 @@ function yuniorrojas_slot_adquirir_lock(int $barbero_id, string $fecha, string $
  */
 function yuniorrojas_slot_liberar_lock(int $barbero_id, string $fecha, string $hora): void
 {
+    if (function_exists('jr_db_slot_liberar_lock')) {
+        jr_db_slot_liberar_lock($barbero_id, $fecha, $hora);
+    }
+
     $key = yuniorrojas_slot_lock_option_key($barbero_id, $fecha, $hora);
     if (wp_using_ext_object_cache()) {
         wp_cache_delete($key, 'jr_slot_locks');

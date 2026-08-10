@@ -12,6 +12,9 @@
 !.gitattributes
 !README.md
 !DEPLOY.md
+!.github/
+!.github/**
+
 
 # --- Código propio bajo app/public/wp-content ---
 !app/
@@ -21,17 +24,21 @@ app/public/*
 !app/public/wp-content/
 app/public/wp-content/*
 
-# Tema personalizado
+# Theme custom
 !app/public/wp-content/themes/
 app/public/wp-content/themes/*
 !app/public/wp-content/themes/yuniorrojastheme/
 !app/public/wp-content/themes/yuniorrojastheme/**
 
-# Plugin custom post types
+# Plugin custom post types (legacy)
 !app/public/wp-content/plugins/
 app/public/wp-content/plugins/*
 !app/public/wp-content/plugins/juniorrojas-post-types/
 !app/public/wp-content/plugins/juniorrojas-post-types/**
+
+# Plugin de dominio (reservas indexadas, Culqi webhook, locks)
+!app/public/wp-content/plugins/juniorrojas-core/
+!app/public/wp-content/plugins/juniorrojas-core/**
 
 # --- Seguridad / entorno (por si se reabre la regla) ---
 **/wp-config.php
@@ -56,6 +63,10 @@ app/public/wp-content/plugins/*
 *.sql.gz
 *.tar.gz
 *.zip
+
+# Nunca deploy/prod: diagnóstico xdebug y utilidades locales
+**/local-xdebuginfo.php
+**/phpinfo.php
 
 # IDE / SO
 .vscode/

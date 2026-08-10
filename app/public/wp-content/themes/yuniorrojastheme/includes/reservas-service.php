@@ -226,6 +226,41 @@ function yuniorrojas_cliente_puede_subir_comprobante(array $reserva): bool
 }
 
 /**
+ * ¿El attachment es imagen y pertenece al usuario (o será suyo si acaba de subir)?
+ *
+ * @return true|WP_Error
+ */
+function yuniorrojas_validar_attachment_cliente(int $attachment_id, int $user_id)
+{
+    $attachment_id = absint($attachment_id);
+    $user_id       = absint($user_id);
+
+    if ($attachment_id <= 0 || $user_id <= 0) {
+        return new WP_Error('adjunto', 'Archivo no válido.', array('status' => 400));
+    }
+
+    if (get_post_type($attachment_id) !== 'attachment') {
+        return new WP_Error('adjunto', 'Archivo no válido.', array('status' => 400));
+    }
+
+    $mime = (string) get_post_mime_type($attachment_id);
+    if ($mime === '' || strpos($mime, 'image/') !== 0) {
+        return new WP_Error('adjunto', 'El archivo debe ser una imagen (JPG, PNG o WEBP).', array('status' => 400));
+    }
+
+    $author = (int) get_post_field('post_author', $attachment_id);
+    if ($author !== $user_id && !user_can($user_id, 'manage_options')) {
+        return new WP_Error(
+            'adjunto_ajeno',
+            'No puedes usar un archivo que no te pertenece.',
+            array('status' => 403)
+        );
+    }
+
+    return true;
+}
+
+/**
  * Asocia comprobante (attachment) a una reserva del cliente logueado.
  *
  * @return array{ok:bool,comprobante_id:int,comprobante_url:string}|WP_Error
@@ -257,13 +292,9 @@ function yuniorrojas_cliente_adjuntar_comprobante(int $reserva_id, int $user_id,
         );
     }
 
-    if (get_post_type($attachment_id) !== 'attachment') {
-        return new WP_Error('comprobante', 'Archivo no válido.', array('status' => 400));
-    }
-
-    $mime = (string) get_post_mime_type($attachment_id);
-    if ($mime === '' || strpos($mime, 'image/') !== 0) {
-        return new WP_Error('comprobante', 'El comprobante debe ser una imagen (JPG, PNG o WEBP).', array('status' => 400));
+    $valid = yuniorrojas_validar_attachment_cliente($attachment_id, $user_id);
+    if (is_wp_error($valid)) {
+        return $valid;
     }
 
     update_post_meta($reserva_id, yuniorrojas_reserva_meta_key('comprobante_id'), (string) $attachment_id);
@@ -512,6 +543,7 @@ function yuniorrojas_crear_reserva(array $data)
     $culqi_charge_id = '';
     $culqi_outcome   = '';
     $amount_centimos = 0;
+    $descuento_pct   = 0;
     try {
     if ($tipo_cobro === 'culqi' && $reprogramar_id <= 0 && $culqi_token !== '') {
         $amount = function_exists('yuniorrojas_precio_a_centimos')
@@ -519,6 +551,14 @@ function yuniorrojas_crear_reserva(array $data)
             : (int) round(((float) preg_replace('/[^\d.]/', '', $precio)) * 100);
         if ($total_productos > 0) {
             $amount += (int) round($total_productos * 100);
+        }
+
+        // Fidelidad: descuento online (Gold/Platinum) sobre el total.
+        if (function_exists('yuniorrojas_fidelidad_descuento_pct_usuario')) {
+            $descuento_pct = yuniorrojas_fidelidad_descuento_pct_usuario($user_id);
+            if ($descuento_pct > 0 && $descuento_pct < 100) {
+                $amount = (int) round($amount * (100 - $descuento_pct) / 100);
+            }
         }
         $amount_centimos = $amount;
 
@@ -529,19 +569,33 @@ function yuniorrojas_crear_reserva(array $data)
             return new WP_Error('monto_invalido', 'El precio del servicio no es válido para cobro online.', array('status' => 400));
         }
 
+        $idem_key = function_exists('yuniorrojas_culqi_idempotency_key')
+            ? yuniorrojas_culqi_idempotency_key(array(
+                'user'     => $user_id,
+                'servicio' => $servicio_id,
+                'barbero'  => $barbero_id,
+                'fecha'    => $fecha,
+                'hora'     => $hora,
+                'amount'   => $amount,
+                'medio'    => $metodo,
+            ))
+            : '';
+
         $cargo = yuniorrojas_culqi_crear_cargo(array(
-            'amount'        => $amount,
-            'currency_code' => 'PEN',
-            'email'         => $email,
-            'source_id'     => $culqi_token,
-            'description'   => sprintf('Reserva %s', $servicio_nombre),
-            'metadata'      => array(
-                'servicio_id' => (string) $servicio_id,
-                'barbero_id'  => (string) $barbero_id,
-                'fecha'       => $fecha,
-                'hora'        => $hora,
-                'user_id'     => (string) $user_id,
-                'medio'       => (string) $metodo,
+            'amount'           => $amount,
+            'currency_code'    => 'PEN',
+            'email'            => $email,
+            'source_id'        => $culqi_token,
+            'description'      => sprintf('Reserva %s', $servicio_nombre),
+            'idempotency_key'  => $idem_key,
+            'metadata'         => array(
+                'servicio_id'   => (string) $servicio_id,
+                'barbero_id'    => (string) $barbero_id,
+                'fecha'         => $fecha,
+                'hora'          => $hora,
+                'user_id'       => (string) $user_id,
+                'medio'         => (string) $metodo,
+                'descuento_pct' => (string) $descuento_pct,
             ),
         ));
 
@@ -554,6 +608,10 @@ function yuniorrojas_crear_reserva(array $data)
 
         $culqi_charge_id = (string) ($cargo['id'] ?? '');
         $culqi_outcome   = (string) ($cargo['outcome']['type'] ?? 'venta_exitosa');
+        if ($idem_key !== '') {
+            $data['_culqi_idempotency_key'] = $idem_key;
+        }
+        $data['_descuento_pct'] = $descuento_pct;
         if ($culqi_charge_id === '') {
             if ($slot_locked) {
                 yuniorrojas_slot_liberar_lock($barbero_id, $fecha, $hora);
@@ -672,6 +730,10 @@ function yuniorrojas_crear_reserva(array $data)
         $metas['codigo_operacion'] = $codigo_operacion;
     }
     if ($comprobante_id > 0) {
+        $valid_comp = yuniorrojas_validar_attachment_cliente($comprobante_id, $user_id);
+        if (is_wp_error($valid_comp)) {
+            return $valid_comp;
+        }
         $metas['comprobante_id'] = (string) $comprobante_id;
     }
     if ($culqi_charge_id !== '') {
@@ -681,6 +743,12 @@ function yuniorrojas_crear_reserva(array $data)
         if ($amount_centimos > 0) {
             $metas['culqi_amount_centimos'] = (string) $amount_centimos;
         }
+        if (!empty($data['_culqi_idempotency_key'])) {
+            $metas['culqi_idempotency_key'] = sanitize_text_field((string) $data['_culqi_idempotency_key']);
+        }
+    }
+    if (!empty($data['_descuento_pct'])) {
+        $metas['descuento_pct'] = (string) max(0, min(100, (int) $data['_descuento_pct']));
     }
     if ($lineas_productos !== array()) {
         $metas['productos']        = wp_json_encode($lineas_productos);
@@ -693,6 +761,10 @@ function yuniorrojas_crear_reserva(array $data)
 
     foreach ($metas as $key => $value) {
         update_post_meta((int) $reserva_id, yuniorrojas_reserva_meta_key($key), $value);
+    }
+
+    if (function_exists('jr_db_sync_reserva_from_post')) {
+        jr_db_sync_reserva_from_post((int) $reserva_id);
     }
 
     if ($user_id > 0 && $telefono !== '') {
@@ -826,6 +898,10 @@ function yuniorrojas_cancelar_reserva(int $reserva_id, int $user_id)
     }
 
     update_post_meta($reserva_id, yuniorrojas_reserva_meta_key('estado'), 'cancelada');
+
+    if (function_exists('jr_db_sync_reserva_from_post')) {
+        jr_db_sync_reserva_from_post($reserva_id);
+    }
 
     // Admin: reembolso Culqi si hay cargo (cliente solo cancela estudio, sin charge).
     if (user_can($user_id, 'manage_options') && function_exists('yuniorrojas_reserva_refund_culqi_si_aplica')) {

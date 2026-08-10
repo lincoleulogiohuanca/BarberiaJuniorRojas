@@ -278,6 +278,14 @@ function yuniorrojas_rest_subir_comprobante_desde_request(WP_REST_Request $reque
         return 0;
     }
 
+    // Ownership: el uploader es el autor (evita reutilizar IDs ajenos).
+    if (is_user_logged_in()) {
+        wp_update_post(array(
+            'ID'          => (int) $attach_id,
+            'post_author' => (int) get_current_user_id(),
+        ));
+    }
+
     $meta = wp_generate_attachment_metadata((int) $attach_id, $upload['file']);
     if (is_array($meta)) {
         wp_update_attachment_metadata((int) $attach_id, $meta);
@@ -303,6 +311,12 @@ function yuniorrojas_rest_crear_reserva(WP_REST_Request $request)
     $comprobante_id = yuniorrojas_rest_subir_comprobante_desde_request($request);
     if ($comprobante_id <= 0) {
         $comprobante_id = absint($request->get_param('comprobante_id'));
+        if ($comprobante_id > 0 && function_exists('yuniorrojas_validar_attachment_cliente')) {
+            $valid = yuniorrojas_validar_attachment_cliente($comprobante_id, (int) get_current_user_id());
+            if (is_wp_error($valid)) {
+                return $valid;
+            }
+        }
     }
 
     $productos_param = $request->get_param('productos');
