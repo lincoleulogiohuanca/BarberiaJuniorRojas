@@ -99,7 +99,7 @@ Si GitHub Pages está activo: `https://lincoleulogiohuanca.github.io/BarberiaJun
 
 - **Bug / Feature / Go-live** → plantillas en *New issue*
 - **Discussions** → ideas / Q&A del equipo
-- **Milestones** → `v1.1.0`, `v1.2.0`
+- **Milestones** → `v1.0.0` (final), `v1.1.0` (siguiente)
 - **Pull requests** → checklist Culqi, reservas, SMTP, backfill, CI
 - **CODEOWNERS** → `@lincoleulogiohuanca` en tema/plugin
 - **Releases** → ZIPs `yuniorrojastheme.zip` + `juniorrojas-domain.zip` + `juniorrojas-reservas.zip` + `juniorrojas-pagos.zip` + `juniorrojas-core.zip` (workflow Release assets)

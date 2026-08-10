@@ -37,19 +37,19 @@ Si el job falla al **asignar runner** (`startup_failure` / 0 steps), es un fallo
 
 | Milestone | Uso | Estado |
 |-----------|-----|--------|
-| **v1.1.0** | Admin dark mode, Agenda UX, docs Pages | **Release** — ver [CHANGELOG 1.1.0](../CHANGELOG.md#110--2026-08-10) |
-| **v1.2.0** | Features del siguiente ciclo (antes de un 2.0) | Abierto |
+| **v1.0.0** | Release final consolidada (BarberFlow) | **Release** — ver [CHANGELOG 1.0.0](../CHANGELOG.md#100--2026-08-10) |
+| **v1.1.0** | Siguiente ciclo (features post-1.0) | Abierto |
 
-Asigna issues a un milestone: Issue → Milestone → v1.1.0 / v1.2.0.
+Asigna issues a un milestone: Issue → Milestone → v1.0.0 / v1.1.0.
 
-### Issues / labels sugeridos post-1.1.0
+### Issues / labels sugeridos post-1.0.0
 
 | Label | Uso |
 |-------|-----|
-| `enhancement` | Mejoras UX admin (más pantallas dark) |
-| `bug` | Contraste / overlays de plugins en dark |
-| `frontend` | Tema público (no confundir con admin dark) |
-| `deploy` | FTP / staging tras release |
+| `enhancement` | Mejoras de producto |
+| `bug` | Defectos |
+| `frontend` | Tema público |
+| `deploy` | FTP / staging / production |
 
 ## Release assets (ZIP)
 
@@ -58,12 +58,14 @@ Workflow **Release assets** (al publicar un Release o *Run workflow* con tag).
 Adjuntos esperados por release:
 
 - `yuniorrojastheme.zip`
+- `juniorrojas-domain.zip`
+- `juniorrojas-reservas.zip`
+- `juniorrojas-pagos.zip`
 - `juniorrojas-core.zip`
 
 | Tag | Notas |
 |-----|--------|
-| **v1.0.0** | Primera pública — [release](https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases/tag/v1.0.0) |
-| **v1.1.0** | Admin dark + Agenda — [release](https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases/tag/v1.1.0) |
+| **v1.0.0** | Versión final 1.0 — [release](https://github.com/lincoleulogiohuanca/BarberiaJuniorRojas/releases/tag/v1.0.0) |
 
 (si Actions falla al subir, se pueden adjuntar a mano: Release → Edit → Attach binaries).
 
