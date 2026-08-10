@@ -4489,7 +4489,7 @@ body.is-lightbox-open {
   min-width: 0;
   min-height: 16rem;
   padding: 0;
-  border: 1px solid rgba(200, 162, 74, 0.35);
+  border: 1px solid var(--color-negro-profundo);
   background-color: var(--color-carbon);
   background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.78) 100%),
     var(--reservar-servicio-img, none);
@@ -4500,7 +4500,11 @@ body.is-lightbox-open {
   cursor: pointer;
   overflow: hidden;
   box-sizing: border-box;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: none;
+  outline: none;
+  filter: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.25s ease, border-width 0.25s ease;
 }
 
 /* Tablet: 2 columnas · 4 por pagina */
@@ -4537,13 +4541,21 @@ body.is-lightbox-open {
 
 .reservar-servicio:hover,
 .reservar-servicio:focus-visible {
-  border-color: var(--color-dorado);
+  border-color: var(--color-negro-profundo);
+  box-shadow: none;
   outline: none;
+  filter: none;
 }
 
 .reservar-servicio.is-selected {
-  border-color: var(--color-dorado);
-  box-shadow: 0 0 0 1px var(--color-dorado);
+  border: 2px solid var(--color-dorado);
+  box-shadow: none;
+  outline: none;
+  filter: none;
+}
+
+.reservar-servicio.is-selected .reservar-servicio__overlay {
+  background: linear-gradient(180deg, transparent 30%, rgba(0, 0, 0, 0.88) 100%);
 }
 
 .reservar-servicio__overlay {
@@ -4757,7 +4769,8 @@ body.is-lightbox-open {
   height: 100%;
   margin: 0;
   padding: 0;
-  border: 1px solid rgba(200, 162, 74, 0.35);
+  box-sizing: border-box;
+  border: 1px solid rgba(200, 162, 74, 0.7);
   background: transparent;
   color: inherit;
   text-align: left;
@@ -4767,7 +4780,7 @@ body.is-lightbox-open {
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: border-color 0.25s ease, border-width 0.25s ease;
 }
 
 /* Móvil: card centrada más chica + altura rígida (solo se mueve el track en X) */
@@ -4991,7 +5004,7 @@ body.is-lightbox-open {
 
 .reservar-barbero.is-selected {
   border-color: var(--color-dorado);
-  box-shadow: 0 0 0 1px var(--color-dorado);
+  border-width: 2px;
 }
 
 .reservar-barbero__media {
@@ -5009,10 +5022,20 @@ body.is-lightbox-open {
   transition: filter 0.3s ease, transform 0.35s ease;
 }
 
+/* Solo al seleccionar: foto a color (móvil + desktop) */
+.reservar-barbero.is-selected .reservar-barbero__img {
+  filter: grayscale(0) contrast(1.05);
+}
+
 @media (min-width: 768px) {
-  .reservar-barbero:hover .reservar-barbero__img,
-  .reservar-barbero.is-selected .reservar-barbero__img {
-    filter: grayscale(0.35) contrast(1.05);
+  .reservar-barbero:hover:not(.is-selected) .reservar-barbero__img {
+    filter: grayscale(0.45) contrast(1.05);
+    transform: scale(1.03);
+  }
+
+  .reservar-barbero.is-selected .reservar-barbero__img,
+  .reservar-barbero.is-selected:hover .reservar-barbero__img {
+    filter: grayscale(0) contrast(1.05);
     transform: scale(1.03);
   }
 }
