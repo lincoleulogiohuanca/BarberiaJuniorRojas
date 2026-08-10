@@ -12,6 +12,8 @@
 !.gitattributes
 !README.md
 !DEPLOY.md
+!CHANGELOG.md
+!SECURITY.md
 !.github/
 !.github/**
 

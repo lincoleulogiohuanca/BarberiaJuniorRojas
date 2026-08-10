@@ -1,0 +1,23 @@
+# Code owners — revisores por área.
+# User: @lincoleulogiohuanca (dueño del repo).
+# Requiere que el PR toque estas rutas para solicitar review (branch protection + code owners en planes que lo soporten).
+
+# Default
+*       @lincoleulogiohuanca
+
+# Tema (UI + lógica de presentación)
+/app/public/wp-content/themes/yuniorrojastheme/ @lincoleulogiohuanca
+
+# Plugin de dominio
+/app/public/wp-content/plugins/juniorrojas-core/ @lincoleulogiohuanca
+
+# Plugin CPT legacy
+/app/public/wp-content/plugins/juniorrojas-post-types/ @lincoleulogiohuanca
+
+# CI / deploy / GitHub
+/.github/ @lincoleulogiohuanca
+
+# Docs de operación
+/README.md @lincoleulogiohuanca
+/DEPLOY.md @lincoleulogiohuanca
+/CHANGELOG.md @lincoleulogiohuanca
